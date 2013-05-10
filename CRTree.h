@@ -156,6 +156,10 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
   boost::variate_generator<boost::mt19937&,
     boost::uniform_real<> > rand2( gen, dst2 );
 
+
+  config.learningMode = 2;
+  std::cout << "learning mode : " << config.learningMode << std::endl;
+
   switch(config.learningMode){
   case 0:
     // rgbd

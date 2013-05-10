@@ -2,7 +2,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # リリースビルド用オプション
-SET(CMAKE_C_FLAGS_RELEASE "-Wall -O2")
+# SET(CMAKE_C_FLAGS_RELEASE "-Wall -O2")
 
 # デバッグビルド用オプション
 SET(CMAKE_C_FLAGS_DEBUG "-g")

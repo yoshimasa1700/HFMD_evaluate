@@ -1,2 +1,2 @@
-/Users/masahiko/Programs/objectPoseEstimation_with_qt/CMakeFiles/learning.dir
-/Users/masahiko/Programs/objectPoseEstimation_with_qt/CMakeFiles/objectPoseEstimation.dir
+/Users/masahiko/Programs/OPE_inputBigPicture/CMakeFiles/learning.dir
+/Users/masahiko/Programs/OPE_inputBigPicture/CMakeFiles/objectPoseEstimation.dir

@@ -28,7 +28,7 @@ class CRForest {
   void growATree(const int treeNum);
   
   void detection(const CDataset &dataSet, 
-		 const cv::vector<cv::Mat*> &image, std::vector<double> &detectionResult, int &detectClass) const;
+         const cv::vector<cv::Mat*> &image) const;//, std::vector<double> &detectionResult, int &detectClass) const;
   
   void extractPatches(std::vector<std::vector<CPatch> > &patches, 
 		      const std::vector<CDataset> dataSet, 

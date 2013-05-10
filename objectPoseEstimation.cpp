@@ -143,51 +143,99 @@ void detect(const CRForest &forest, CConfig conf){
 
   std::fstream result("detectionResult.txt", std::ios::out);
 
-  std::vector<double> detectionResult;
-  
-  //conf.imagePerTree = 10;//読み込む画像ファイルの大まかな数
+  //std::vector<double> detectionResult;
+
+  //read image file here
 
 
   int classNum = forest.classDatabase.vNode.size();
 
-  detectionResult.resize(classNum);
-  
-  for(int i = 0; i < classNum; ++i)
-    detectionResult.at(i) = 0.0;
-  
-  loadTestFile(conf, dataSet);
-  for(int i = 0; i < dataSet.size(); ++i)
-   dataSet.at(i).showDataset();
 
-  result << dataSet.size() << std::endl;
+
+  //set dataset
+  dataSet.clear();
+  CDataset tempDataSet;
+
+
+
+  tempDataSet.rgbImageName = "rgb2.png"; // image name here
+  tempDataSet.depthImageName = "depth.png"; // depth file name here
+  tempDataSet.bBox = cv::Rect(0,0,640,480); // set bounding box
+  tempDataSet.className = "unknown";
+
+  tempDataSet.imageFilePath = conf.testPath + PATH_SEP +  conf.testData;
+
+  dataSet.push_back(tempDataSet);
+
+    cv::Mat rgb = cv::imread("./rgb2.png",CV_LOAD_IMAGE_ANYCOLOR);
+    cv::Mat depth = cv::imread("./depth3.png",CV_LOAD_IMAGE_ANYDEPTH);
+
+
+
+  //load image
+  //cv::Mat *rgb, *depth;
+
+  // load RGB image
+  //*rgb = cv::imread("./rgb.png",
+  //          CV_LOAD_IMAGE_ANYCOLOR);
+
+
+
+
+  // load Depth image
+  //*depth = cv::imread("./depth.png",
+  //            CV_LOAD_IMAGE_ANYDEPTH);
+
+
+
+
+
+  //cv::vector<cv::vector<cv::Mat*> > image;
+  //cv::vector<cv::Mat*> tempImage;
+
+  image.push_back(&rgb);
+  image.push_back(&depth);
+
+  //image.push_back(tempImage);
+
+  //detectionResult.resize(classNum);
+  
+  //for(int i = 0; i < classNum; ++i)
+  //  detectionResult.at(i) = 0.0;
+  
+  //loadTestFile(conf, dataSet);
+  //for(int i = 0; i < dataSet.size(); ++i)
+  // dataSet.at(i).showDataset();
+
+  //result << dataSet.size() << std::endl;
 
   //loadImage(dataSet.at(0), image);
-  for(int m = 0; m < dataSet.size(); ++m){
-    image.clear();               
-    loadImage(dataSet.at(m), image);
 
-    int detectClass;
+  //for(int m = 0; m < dataSet.size(); ++m){
+  //  image.clear();
+  //  loadImage(dataSet.at(m), image);
+
+  //  int detectClass;
     
     //for(int i = 0; i < conf.scales.size(); ++i){
     boost::timer t;
-    forest.detection(dataSet.at(m), image, detectionResult, detectClass);
+    forest.detection(dataSet.at(0), image);//, detectionResult, detectClass);
     double time = t.elapsed();
     std::cout << time << " sec" << std::endl;
 
-    int grandTruth = forest.classDatabase.search(dataSet.at(m).className);
 
-    result << "testNum " << m <<" grandTruth " << grandTruth << " " << dataSet.at(m).className << " prediction " << detectClass << " " << forest.classDatabase.vNode.at(detectClass).name << " " << time << std::endl;
+    //int grandTruth = forest.classDatabase.search(dataSet.at(m).className);
+
+    //result << "testNum " << m <<" grandTruth " << grandTruth << " " << dataSet.at(m).className << " prediction " << detectClass << " " << forest.classDatabase.vNode.at(detectClass).name << " " << time << std::endl;
       //}
-  }
+  //}
   
-  //std::cout << dataSet.className << std::endl; //std::cout << "detection result" << std::endl; // for(int i = 0; i < classNum; ++i){//  std::cout << forest.classDatabase.vNode.at(i).name << " : " << detectionResult.at(i) << std::endl;
-  // }
-  // std::cout << std::endl;
-
-  std::cout << "detection result:" << (detectionResult.at(0) / (detectionResult.at(0) + detectionResult.at(1))) * 100 << "%" << std::endl;
+  //std::cout << "detection result:" << (detectionResult.at(0) / (detectionResult.at(0) + detectionResult.at(1))) * 100 << "%" << std::endl;
 
   result.close();
 }
+
+
 
 int main(int argc, char* argv[]){
 
