@@ -167,7 +167,7 @@ void detect(const CRForest &forest, CConfig conf){
 
   dataSet.push_back(tempDataSet);
 
-    cv::Mat rgb = cv::imread("./rgb2.png",CV_LOAD_IMAGE_ANYCOLOR);
+    cv::Mat rgb = cv::imread("./rgb7.png",CV_LOAD_IMAGE_ANYCOLOR);
     cv::Mat depth = cv::imread("./depth3.png",CV_LOAD_IMAGE_ANYDEPTH);
 
 

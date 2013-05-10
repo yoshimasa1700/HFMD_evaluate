@@ -331,8 +331,6 @@ void CRForest::extractAllPatches(const CDataset &dataSet, const cv::vector<cv::M
 	
 	tPatch.setPatch(temp, image, dataSet, classNum);
 
-
-
 	tPatch.setPosition(j,k);
 	patches.push_back(tPatch);
     }
@@ -372,8 +370,8 @@ void CRForest::detection(const CDataset &dataSet,
     std::vector<int> patchPerClass(classNum, 0);
 
     // create output image
-    cv::Mat outputImage = image.at(0)->clone();
-    cv::Mat outputImageColorOnly = cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_8UC3);
+    cv::vector<cv::Mat> outputImage(classNum, image.at(0)->clone());
+    cv::vector<cv::Mat> outputImageColorOnly(classNum, cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_8UC3));
 
     // set offset of patch
     int xoffset = conf.p_width / 2;
@@ -387,12 +385,8 @@ void CRForest::detection(const CDataset &dataSet,
     features.push_back(image.at(1));
     //delete image.at(0);
 
-    std::cout << "kokomade" << std::endl;
-
     // extract patches from features
     extractAllPatches(dataSet, features, patches);
-
-    std::cout << "patch set!" << std::endl;
 
     std::cout << "patch num: " << patches.size() << std::endl;
 
@@ -428,28 +422,32 @@ void CRForest::detection(const CDataset &dataSet,
             }
         }
 
-        std::cout << "patch: " << j << " position: " << patches.at(j).position << " score " << detectedScore / result.size() << " detected class: " << detectedClass << std::endl;
+        //std::cout << "patch: " << j << " position: " << patches.at(j).position << " score " << detectedScore / result.size() << " detected class: " << detectedClass << std::endl;
 
         float score = detectedScore / result.size();
 
-        if(score > 25 && detectedClass == 0){
-//            for(int u = 0;u < 1;++u){//(*itL)->vCenter.size();u++å)
-//                int posy = patches.at(j).position.y;
-//                int posx = patches.at(j).position.x;
+        for(int c = 0; c < classNum; c++){
+            // vote for all trees (leafs)
+            for(std::vector<const LeafNode*>::const_iterator itL = result.begin();
+                itL!=result.end(); ++itL) {
 
-//                if(posy > 0 && posx > 0 &&
-//                posy <= image.at(1)->rows &&
-//                posx <= image.at(1)->cols){
+                //for(int l = 0; l < (*itL)->pfg.size(); ++l){
 
-//                    cv::Vec<ushort,3> &p
-//                            = outputImage.at<cv::Vec<ushort,3> >(posy,posx);
-//                    p[1] = 200;
-//                    p[2] = 200;
-//                }
-//            }
-            cv::Point patchSize(conf.p_height/2,conf.p_width/2);
-            cv::circle(outputImage,patches.at(j).position + patchSize,2,cv::Scalar(0,0,3* detectedScore / result.size()));
-            cv::circle(outputImageColorOnly,patches.at(j).position + patchSize,2,cv::Scalar(0,0,3 * detectedScore / result.size()));
+                    // voting weight for leaf
+                    //if((*itL)->pfg.at(c) > 0.5)
+                    //    detectionScore.at(c) += (*itL)->pfg.at(c) * (*itL)->vCenter.at(c).size();
+                    if(!(*itL)->vCenter.at(c).empty()){
+                        for(int l = 0; l < (*itL)->vCenter.at(c).size(); ++l){
+                            cv::Point patchSize(conf.p_height/2,conf.p_width/2);
+                            cv::circle(outputImage.at(c),patches.at(j).position + patchSize + (*itL)->vCenter.at(c).at(l),1,cv::Scalar(0,0,100 * (*itL)->pfg.at(c)));
+                            cv::circle(outputImageColorOnly.at(c),patches.at(j).position + patchSize + (*itL)->vCenter.at(c).at(l),1,cv::Scalar(0,0,100 * (*itL)->pfg.at(c)));
+                            //classification_result.at(maxClass) += (double) w;
+                        }
+                    }
+                //}
+            } // for every leaf
+
+
         }
 
         patches.at(j).detectedClass = maxClass;
@@ -457,88 +455,36 @@ void CRForest::detection(const CDataset &dataSet,
 
     } // for every patch
 
+    for(int c = 0; c < classNum; ++c){
+        cv::namedWindow("test");
+        cv::imshow("test",outputImage.at(c));
 
-      cv::namedWindow("test");
-      cv::imshow("test",outputImage);
+        cv::namedWindow("test2");
+        cv::imshow("test2",outputImageColorOnly.at(c));
 
-      cv::namedWindow("test2");
-      cv::imshow("test2",outputImageColorOnly);
+        cv::waitKey(0);
+        cv::destroyWindow("test");
 
-      cv::waitKey(0);
-      cv::destroyWindow("test");
+        std::stringstream cToString;
 
-      cv::imwrite("output.png",outputImage);
-      cv::imwrite("output2.png",outputImageColorOnly);
+        cToString << c;
 
-  std::cout << "detection result outputed" << std::endl;
+        std::string outputName = "output" + cToString.str() + ".png";
+        std::string outputName2 = "outputColorOnly" + cToString.str() + ".png";
 
-  //cv::imwrite(dataSet.imageFilePath + "_result.png",outputImage);
-
-//  std::cout << dataSet.className << std::endl;
-//  std::cout << "result" << std::endl;
-//  for(int i = 0; i < classNum; ++i){
-//   std::cout << classDatabase.vNode.at(i).name << " : " << classification_result.at(i) << std::endl;
-//  }
-//  std::cout << std::endl;
-
-  //int maxResult = 0;
-  //double maxResultTemp = 0;
-
-//  for(int i = 0; i < classification_result.size(); ++i){
-//    if(classification_result.at(i) > maxResultTemp){
-//      maxResult = i;
-//      maxResultTemp = classification_result.at(i);
-//    }
-//  }
-
-  //detectClass = maxResult;
-
-//  for(int pN = 0; pN < patches.size(); ++pN){
-//      if(patches.at(pN).detectedClass == detectClass){
-//      cv::Vec<ushort,3> &p = outputImage.at<cv::Vec<ushort,3> >(patches.at(pN).position.y + yoffset, patches.at(pN).position.x + xoffset);
-//      p[0] = 200;
-//        }
-//    }
-//  cv::namedWindow("test");
-//  cv::imshow("test",outputImage);
-//  cv::waitKey(0);
-//  cv::destroyWindow("test");
-  
-  //for(int i = 0; i < classNum; ++i){
-  //if(dataSet.className == classDatabase.vNode.at(maxResult).name){
-  //    detectionResult.at(0) += 1;// += classification_result.at(i);
-  //    std::cout << "correct !" << std::endl;
-  //}else{
-  //  std::cout << "hazure !" << std::endl;
-  //  std::cout << classDatabase.vNode.at(maxResult).name << std::endl;
-    //}
-  //  detectionResult.at(1) += 1;
-  //}
-  // this is for debug
-  // for(int c = 0; c < classSum.size(); ++c){
-  //   std::cout << "class1: ";
-  //   std::cout << leafPerClass.at(c) << " ";
-  //   std::cout << (float)classification_result.at(c) /  (float)patchPerClass.at(c) << std::endl;
-  // }
-
-  // std::vector<CPatch> patches;
-  // cv::vector<cv::Mat> features;
-
-
-
-
-  for(int i = 0; i < features.size(); ++i){
-      //astd::cout << i << std::endl;
-      delete features.at(i);
+        cv::imwrite(outputName.c_str(),outputImage.at(c));
+        cv::imwrite(outputName2.c_str(),outputImageColorOnly.at(c));
     }
 
-  std::cout << "detection end!" << std::endl;
+    std::cout << "detection result outputed" << std::endl;
+
+    for(int i = 0; i < features.size() - 1; ++i){
+//        std::cout << i << std::endl;
+        delete features.at(i);
+    }
   
   //patches.clear();
   features.clear();
-
-
-  std::cout << "detection end!" << std::endl;
 }
 
 // Regression 

@@ -35,8 +35,11 @@ class CPatch
     //std::cout << patch.size() << std::endl;
     //p_image.push_back(&(image->at(i)));
     cv::Point tempPoint;
-    center.x =  0;//dataset.centerPoint.at(0).x - roi.x - (roi.width/2);
-    center.y =  0;//dataset.centerPoint.at(0).y - roi.y - (roi.height/2);
+
+    if(!dataset.centerPoint.empty()){
+        center.x =  dataset.centerPoint.at(0).x - roi.x - (roi.width/2);
+        center.y =  dataset.centerPoint.at(0).y - roi.y - (roi.height/2);
+    }
 
     //angle = dataset.angle;
     detectedClass = -1;
