@@ -359,35 +359,8 @@ void CRTree::makeLeaf(const std::vector<std::vector<CPatch> > &TrainSet, float p
   treetable[node*11] = num_leaf;
   LeafNode* ptL = &leaf[num_leaf];
 
-  // for(int i = 0; i < TrainSet.at(0).size(); ++i){
-  //   cv::namedWindow("test");cv::imshow("test",TrainSet.at(0).at(i).patch.at(0));
-  //   cv::waitKey(0);
-  //   cv::destroyWindow("test");
-
-
-  // }
-
-  //std::vector<int> reachedClass(nclass,0);
-  // std::vector<int> maxflag;
-
-  // for(int i = 0; i < TrainSet.at(0).size(); ++i)
-  //   reachedClass.at(TrainSet.at(0).at(i).classNum) += 1;
-
-  // maxflag.clear();
-
-  // int maxnum = 0;
-  // for(int c = 0; c < nclass; ++c){
-  //   if(reachedClass.at(c) > maxnum){
-  //     maxflag.clear();
-  //     maxflag.push_back(c);
-  //     maxnum = reachedClass.at(c);
-  //   }else if(reachedClass.at(c) == maxnum){
-  //     maxflag.push_back(c);
-  //   }
-  // }
-  patchPerClass.clear();
-
   // divide reached patch to each class
+  patchPerClass.clear();
   patchPerClass.resize(nclass);
   for(int c = 0; c < nclass; ++c)
     patchPerClass.at(c).clear();
@@ -397,23 +370,13 @@ void CRTree::makeLeaf(const std::vector<std::vector<CPatch> > &TrainSet, float p
     patchPerClass.at(TrainSet.at(0).at(i).classNum).push_back(TrainSet.at(0).at(i));
   }
 
-  // for(int i = 0; i < nclass; ++i){
-  //   for(int j = 0; j < patchPerClass.at(i).size(); ++j){
-  //     std::cout << "class: " << i  << " patch: " << j << " center:" << patchPerClass.at(i).at(j).center << std::endl;
-  //   }
-  // }
-
-
-  //int dummy;
-  //std::cin >> dummy;
-
   // calc total default patch num
   int totalPatchNum = 0;
   for(int c = 0; c < nclass; ++c)
     totalPatchNum += defaultClass.at(c);
 
   ptL->pfg.resize(nclass);
-  for(int k = 0; k < patchPerClass.size(); ++k){
+  for(int k = 0; k < nclass; ++k){
     if(patchPerClass.at(k).size() != 0){
       //int totalnum = reachedClass.at(k);
     
@@ -426,29 +389,18 @@ void CRTree::makeLeaf(const std::vector<std::vector<CPatch> > &TrainSet, float p
       ptL->pfg.at(k) = 0;
     }
   }
-
-  // ptL->vCenter.resize( TrainSet[0].size() );
-  // ptL->vClass.resize( TrainSet[0].size() );
-  // for(unsigned int i = 0; i<TrainSet[0].size(); ++i) {
-  //   ptL->vCenter[i] = TrainSet[0][i].center;
-  //   ptL->vClass[i] = TrainSet[0][i].classNum;
-  // }
-				  
-      
+				     
+  // set each center point
   ptL->vCenter.resize(nclass);
-  
-  int count = 0;
-
- 
   for(int i = 0; i < nclass; ++i){
     ptL->vCenter.at(i).clear();
-
     for(int j = 0; j < patchPerClass.at(i).size(); ++j)
       ptL->vCenter.at(i).push_back(patchPerClass.at(i).at(j).center);
+
+    if(!patchPerClass.at(i).empty())
+        std::cout << patchPerClass.at(i).at(0).center << std::endl;
   }
 
-  patchPerClass.clear();
-  //std::cout << "happa tukutta" << std::endl;
   // Increase leaf counter
   ++num_leaf;
 }
