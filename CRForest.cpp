@@ -459,9 +459,11 @@ void CRForest::detection(const CDataset &dataSet,
 
 
 
-                        if(pos.x > 0 && pos.y > 0 && pos.x < outputImage.cols && pos.y < outputImage.rows && outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] + weight * 1000 < 256){
-                            outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += weight * 1000;
-                            outputImageColorOnly.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += weight * 1000;
+                        if(pos.x > 0 && pos.y > 0 && pos.x < outputImage.at(c).cols && pos.y < outputImage.at(c).rows && (outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] + weight * 100) < 256){
+                            if((*itL)->pfg.at(c) > 0.9){
+                            outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += 1;//+= weight * 500;
+                            outputImageColorOnly.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += 1;//weight * 500;
+                            }
                         }
 
                         //cv::circle(outputImage.at(c),patches.at(j).position + patchSize +  (*itL)->vCenter.at(c).at(l),1,cv::Scalar(0,0,200 * weight));
