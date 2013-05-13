@@ -230,6 +230,8 @@ void detect(const CRForest &forest, CConfig conf){
       //}
   //}
   
+
+
   //std::cout << "detection result:" << (detectionResult.at(0) / (detectionResult.at(0) + detectionResult.at(1))) * 100 << "%" << std::endl;
 
   result.close();

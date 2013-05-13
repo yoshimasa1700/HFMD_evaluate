@@ -50,6 +50,8 @@ class CRForest {
   void minFilter(cv::Mat* src, cv::Mat* des, int fWind) const;
   void maxFilter(cv::Mat* src, cv::Mat* des, int fWind) const;
 
+  //void voteResult(int classNumber, )
+
   CClassDatabase classDatabase;
 
  private:

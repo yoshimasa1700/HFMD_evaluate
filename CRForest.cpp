@@ -365,18 +365,12 @@ void CRForest::detection(const CDataset &dataSet,
     std::vector<int> classSum(classNum,0);
     //std::vector<double> classification_result(classNum, 0);
 
-
+    cv::vector<cv::Mat> outputImage(classNum);//, image.at(0)->clone());
+    cv::vector<cv::Mat> outputImageColorOnly(classNum);//,cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_8UC3));
 
     //this is for debug
     std::vector<int> leafPerClass(classNum, 0);
     std::vector<int> patchPerClass(classNum, 0);
-
-    // create output image
-    cv::vector<cv::Mat> outputImage(classNum);//, image.at(0)->clone());
-    cv::vector<cv::Mat> outputImageColorOnly(classNum);//,cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_8UC3));
-
-
-    std::cout << "kokomade " << std::endl;
 
     for(int i = 0; i < classNum; ++i){
         outputImage.at(i) = image.at(0)->clone();
@@ -426,6 +420,8 @@ void CRForest::detection(const CDataset &dataSet,
 
     std::cout << "patch num: " << patches.size() << std::endl;
 
+    boost::timer t;
+
     // regression for every patch
     for(int j = 0; j < patches.size(); ++j){
         int maxClass = 0;
@@ -433,6 +429,8 @@ void CRForest::detection(const CDataset &dataSet,
 
         result.clear();
         this->regression(result, patches.at(j));
+
+
 
         // vote for all trees (leafs)
         for(std::vector<const LeafNode*>::const_iterator itL = result.begin();
@@ -450,7 +448,10 @@ void CRForest::detection(const CDataset &dataSet,
             for(int c = 0; c < classNum; c++){
                 //std::cout << "class: " << c << " " << (*itL)->vCenter.at(c).size() << std::endl;
                 if(!(*itL)->vCenter.at(c).empty()){
+                    if((*itL)->pfg.at(c) > 0.9  ){
                     float weight =  (*itL)->pfg.at(c) / float((*itL)->vCenter.at(c).size() * result.size());
+
+
                     for(int l = 0; l < (*itL)->vCenter.at(c).size(); ++l){
                         cv::Point patchSize(conf.p_height/2,conf.p_width/2);
                         //std::cout << weight << std::endl;
@@ -460,21 +461,22 @@ void CRForest::detection(const CDataset &dataSet,
 
 
                         if(pos.x > 0 && pos.y > 0 && pos.x < outputImage.at(c).cols && pos.y < outputImage.at(c).rows && (outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] + weight * 100) < 256){
-                            if((*itL)->pfg.at(c) > 0.9){
-                            outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += 1;//+= weight * 500;
-                            outputImageColorOnly.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += 1;//weight * 500;
-                            }
-                        }
 
-                        //cv::circle(outputImage.at(c),patches.at(j).position + patchSize +  (*itL)->vCenter.at(c).at(l),1,cv::Scalar(0,0,200 * weight));
-                        //cv::circle(outputImageColorOnly.at(c),patches.at(j).position + patchSize + (*itL)->vCenter.at(c).at(l),1,cv::Scalar(0,0,200 * weight));
-                        //classification_result.at(maxClass) += (double) w;
+                            outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += 2;//+= weight * 500;
+                            outputImageColorOnly.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += 2;//weight * 500;
+
+                        }
                     }
                 }
+                    }
+
+
             }
 
 
         } // for every leaf
+
+
 
         int detectedClass = -1;
         float detectedScore = -1;
@@ -494,6 +496,9 @@ void CRForest::detection(const CDataset &dataSet,
         //cv::circle(outputImage,patches.at(j).position,5,cv::Scalar(0,0,200));
 
     } // for every patch
+
+    double time = t.elapsed();
+    std::cout << time << "sec" << std::endl;
 
     for(int c = 0; c < classNum; ++c){
         cv::namedWindow("test");

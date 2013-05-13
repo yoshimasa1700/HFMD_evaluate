@@ -389,7 +389,7 @@ void CRTree::makeLeaf(const std::vector<std::vector<CPatch> > &TrainSet, float p
       ptL->pfg.at(k) = 0;
     }
   }
-				     
+
   // set each center point
   ptL->vCenter.resize(nclass);
   for(int i = 0; i < nclass; ++i){
