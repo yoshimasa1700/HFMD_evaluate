@@ -510,6 +510,10 @@ void CRForest::detection(const CDataset &dataSet,
         cv::waitKey(0);
         cv::destroyWindow("test");
 
+        std::string outputName = "detectionResult" + classDatabase.vNode.at(c).name + ".png";
+
+        cv::imwrite(outputName.c_str(),outputImage.at(c));
+
         std::cout << maxLoc << std::endl;
 
     }
