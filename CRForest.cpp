@@ -358,52 +358,22 @@ void CRForest::detection(const CDataset &dataSet,
     // 変数の宣言
     //contain class number
     int classNum = classDatabase.vNode.size();
-    cv::vector<cv::Mat> scaledImage;
     std::vector<CPatch> patches;
     cv::vector<cv::Mat*> features;
     std::vector<const LeafNode*> result;
-    std::vector<int> classSum(classNum,0);
     //std::vector<double> classification_result(classNum, 0);
 
     cv::vector<cv::Mat> outputImage(classNum);//, image.at(0)->clone());
     cv::vector<cv::Mat> outputImageColorOnly(classNum);//,cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_8UC3));
 
-    //this is for debug
-    std::vector<int> leafPerClass(classNum, 0);
-    std::vector<int> patchPerClass(classNum, 0);
-
     for(int i = 0; i < classNum; ++i){
         outputImage.at(i) = image.at(0)->clone();
-        outputImageColorOnly.at(i) = cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_8UC3);
+        outputImageColorOnly.at(i) = cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_8UC1);
 //        outImage.at(i) = image.at(0)->clone();
 //        outputImageColorOnly.at(i) = new cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_8UC3);
     }
 
-
-//    cv::circle(outputImageColorOnly.at(0),cv::Point(10,10),10,cv::Scalar(0,0,200));
-
-//    for(int c = 0; c < classNum; ++c){
-//        cv::namedWindow("test");
-//        cv::imshow("test",outputImage.at(c));
-
-//        cv::namedWindow("test2");
-//        cv::imshow("test2",outputImageColorOnly.at(c));
-
-//        cv::waitKey(0);
-//        cv::destroyWindow("test");
-
-//        std::stringstream cToString;
-
-//        cToString << c;
-
-//        std::string outputName = "output" + cToString.str() + ".png";
-//        std::string outputName2 = "outputColorOnly" + cToString.str() + ".png";
-
-//        cv::imwrite(outputName.c_str(),outputImage.at(c));
-//        cv::imwrite(outputName2.c_str(),outputImageColorOnly.at(c));
-//    }
-
-    // set offset of patch
+    // set offset of patchcv::waitKey(0);
     int xoffset = conf.p_width / 2;
     int yoffset = conf.p_height / 2;
 
@@ -449,56 +419,35 @@ void CRForest::detection(const CDataset &dataSet,
                 //std::cout << "class: " << c << " " << (*itL)->vCenter.at(c).size() << std::endl;
                 if(!(*itL)->vCenter.at(c).empty()){
                     if((*itL)->pfg.at(c) > 0.9  ){
-                    float weight =  (*itL)->pfg.at(c) / float((*itL)->vCenter.at(c).size() * result.size());
+                        float weight =  (*itL)->pfg.at(c) / float((*itL)->vCenter.at(c).size() * result.size());
 
+                        for(int l = 0; l < (*itL)->vCenter.at(c).size(); ++l){
+                            cv::Point patchSize(conf.p_height/2,conf.p_width/2);
+                            //std::cout << weight << std::endl;
 
-                    for(int l = 0; l < (*itL)->vCenter.at(c).size(); ++l){
-                        cv::Point patchSize(conf.p_height/2,conf.p_width/2);
-                        //std::cout << weight << std::endl;
+                            cv::Point pos = patches.at(j).position + patchSize +  (*itL)->vCenter.at(c).at(l);
 
-                        cv::Point pos = patches.at(j).position + patchSize +  (*itL)->vCenter.at(c).at(l);
+                            if(pos.x > 0 && pos.y > 0 &&
+                                    pos.x < outputImage.at(c).cols && pos.y < outputImage.at(c).rows &&
+                                    (outputImage.at(c).at<uchar>(pos.y,pos.x) + weight * 100) < 254){
 
+                                outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += ((*itL)->pfg.at(c) - 0.9) * 100;//+= weight * 500;
+                                outputImageColorOnly.at(c).at<uchar>(pos.y,pos.x) += ((*itL)->pfg.at(c) - 0.9) * 100;//weight * 500;
 
-
-                        if(pos.x > 0 && pos.y > 0 && pos.x < outputImage.at(c).cols && pos.y < outputImage.at(c).rows && (outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] + weight * 100) < 256){
-
-                            outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += 2;//+= weight * 500;
-                            outputImageColorOnly.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += 2;//weight * 500;
-
+                            }
                         }
                     }
                 }
-                    }
-
-
             }
 
 
         } // for every leaf
-
-
-
-        int detectedClass = -1;
-        float detectedScore = -1;
-
-        for(int p = 0; p < classNum; p++){
-            if(detectionScore.at(p) > detectedScore){
-                detectedClass = p;
-                detectedScore = detectionScore.at(p);
-            }
-        }
-
-        float score = detectedScore / result.size();
-
-
-
-        patches.at(j).detectedClass = maxClass;
-        //cv::circle(outputImage,patches.at(j).position,5,cv::Scalar(0,0,200));
-
-    } // for every patch
+    } // for every patch28512
 
     double time = t.elapsed();
     std::cout << time << "sec" << std::endl;
+
+    std::cout << 1 / (time / classNum) << "Hz" << std::endl;
 
     for(int c = 0; c < classNum; ++c){
         cv::namedWindow("test");
@@ -523,8 +472,34 @@ void CRForest::detection(const CDataset &dataSet,
 
     std::cout << "detection result outputed" << std::endl;
 
+
+//    cv::cvtColor(outputImageColorOnly.at(0),outputImageC1,CV_8UC1);
+
+//    cv::namedWindow("test");
+//    cv::imshow("test",outputImageC1);
+//    cv::waitKey(0);
+//    cv::destroyWindow("test");
+
+    for(int c = 0; c < classNum; ++c){
+
+        double min,max;
+
+        cv::Point minLoc,maxLoc;
+
+        cv::minMaxLoc(outputImageColorOnly.at(c),&min,&max,&minLoc,&maxLoc);
+
+        cv::circle(outputImage.at(c),maxLoc,20,cv::Scalar(200,0,0),3);
+
+        cv::namedWindow("test");
+        cv::imshow("test",outputImage.at(c));
+        cv::waitKey(0);
+        cv::destroyWindow("test");
+
+        std::cout << maxLoc << std::endl;
+
+    }
+
     for(int i = 0; i < features.size() - 1; ++i){
-//        std::cout << i << std::endl;
         delete features.at(i);
     }
   
