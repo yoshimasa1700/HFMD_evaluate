@@ -382,7 +382,12 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
       //read class name
       trainDataList >> temp.className;
       
-      database.add(temp.className);
+      cv::Mat tempImage = cv::imread(temp.imageFilePath
+                                       + temp.rgbImageName,3);
+
+      cv::Size tempSize = cv::Size(tempImage.cols, tempImage.rows);
+
+      database.add(temp.className, tempSize, 0);
 
       //read angle grand truth
       trainDataList >> temp.angle;
@@ -424,14 +429,14 @@ void pBar(int p,int maxNum, int width){
   std::cout << "]" << (int)((double)(p + 1)/(double)maxNum*100) << "%"  << "\r" << std::flush;
 }
 
-void CClassDatabase::add(std::string str){
+void CClassDatabase::add(std::string str, cv::Size size, uchar depth){
   for(int i = 0; i < vNode.size(); ++i){
     if(str == vNode.at(i).name){
       vNode.at(i).instances++;
       return;
     }
   }
-  vNode.push_back(databaseNode(str));
+  vNode.push_back(databaseNode(str,size,depth));
   return;
 }
 
@@ -444,7 +449,10 @@ void CClassDatabase::write(const char* str){
   }
   
   for(int i = 0; i < vNode.size(); ++i){
-    out << i << " " << vNode.at(i).name << std::endl;
+      out << i << " " << vNode.at(i).name
+          << " " << vNode.at(i).classSize.width << " " << vNode.at(i).classSize.height
+          << " " << vNode.at(i).classDepth
+          << std::endl;
   }
   out.close();
 
@@ -456,6 +464,9 @@ void CClassDatabase::read(const char* str){
   std::stringstream tempStream;
   int tempClassNum;
   std::string tempClassName;
+  cv::Size tempSize;
+  uchar tempDepth;
+
 
   std::ifstream in(str);
   if(!in.is_open()){
@@ -470,9 +481,12 @@ void CClassDatabase::read(const char* str){
   do{
     in >> tempClassNum;
     in >> tempClassName;
+    in >> tempSize.width;
+    in >> tempSize.height;
+    in >> tempDepth;
     in.ignore();
     if(!in.eof())
-      vNode.push_back(databaseNode(tempClassName));
+      vNode.push_back(databaseNode(tempClassName,tempSize,tempDepth));
   }while(!in.eof());
 
   in.close();

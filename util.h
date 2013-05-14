@@ -130,10 +130,13 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet);//, boost::mt19
 
 class databaseNode{
  public:
- databaseNode(std::string className)
-   : name(className), instances(1){}
+ databaseNode(std::string className,cv::Size size, uchar depth)
+     : name(className), instances(1), classSize(size),classDepth(depth){}
   
   std::string name;
+  cv::Size classSize;
+  uchar classDepth;
+
   int instances;
 };
 
@@ -143,7 +146,7 @@ class CClassDatabase{
     vNode.clear();
   }
 
-  void add(std::string str);
+  void add(std::string str, cv::Size size, uchar depth);
   void write(const char* str);
   void read(const char* str);
 

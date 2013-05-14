@@ -26,6 +26,10 @@ util.h
 HoG.h
 /home/masahiko/Program/OPE/HoG.h
 
+/home/masahiko/Program/OPE/CRTree.cpp
+CRTree.h
+/home/masahiko/Program/OPE/CRTree.h
+
 /home/masahiko/Program/OPE/CRTree.h
 CPatch.h
 /home/masahiko/Program/OPE/CPatch.h
@@ -41,6 +45,12 @@ opencv2/opencv.hpp
 -
 vector
 -
+
+/home/masahiko/Program/OPE/learning.cpp
+CRForest.h
+/home/masahiko/Program/OPE/CRForest.h
+util.h
+/home/masahiko/Program/OPE/util.h
 
 /home/masahiko/Program/OPE/util.h
 iostream

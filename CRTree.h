@@ -158,7 +158,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 
 
   config.learningMode = 2;
-  std::cout << "learning mode : " << config.learningMode << std::endl;
+  //std::cout << "learning mode : " << config.learningMode << std::endl;
 
   switch(config.learningMode){
   case 0:
