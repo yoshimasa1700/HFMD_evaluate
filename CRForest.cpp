@@ -416,7 +416,7 @@ void CRForest::detection(const CDataset &dataSet,
         for(std::vector<const LeafNode*>::const_iterator itL = result.begin();
             itL!=result.end(); ++itL) {
 
-            for(int l = 0; l < (*itL)->pfg.size(); ++l){
+            for(int l = 0;l < (*itL)->pfg.size(); ++l){
 
                 // voting weight for leaf
                 if((*itL)->pfg.at(l) > 0.5)
@@ -498,7 +498,12 @@ void CRForest::detection(const CDataset &dataSet,
 
         cv::minMaxLoc(outputImageColorOnly.at(c),&min,&max,&minLoc,&maxLoc);
 
-        cv::circle(outputImage.at(c),maxLoc,20,cv::Scalar(200,0,0),3);
+        //cv::circle(outputImage.at(c),maxLoc,20,cv::Scalar(200,0,0),3);
+
+        cv::Size tempSize = classDatabase.vNode.at(c).classSize;
+        cv::Rect_<int> outRect(maxLoc.x - tempSize.width / 2,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
+        cv::rectangle(outputImage.at(c),outRect,cv::Scalar(0,200,0),3);
+
 
         cv::namedWindow("test");
         cv::imshow("test",outputImage.at(c));
