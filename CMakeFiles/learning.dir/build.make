@@ -164,13 +164,37 @@ CMakeFiles/learning.dir/HoG.cpp.o.provides: CMakeFiles/learning.dir/HoG.cpp.o.re
 
 CMakeFiles/learning.dir/HoG.cpp.o.provides.build: CMakeFiles/learning.dir/HoG.cpp.o
 
+CMakeFiles/learning.dir/detectionresult.cpp.o: CMakeFiles/learning.dir/flags.make
+CMakeFiles/learning.dir/detectionresult.cpp.o: detectionresult.cpp
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Program/OPE/CMakeFiles $(CMAKE_PROGRESS_6)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/learning.dir/detectionresult.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/detectionresult.cpp.o -c /home/masahiko/Program/OPE/detectionresult.cpp
+
+CMakeFiles/learning.dir/detectionresult.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/learning.dir/detectionresult.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Program/OPE/detectionresult.cpp > CMakeFiles/learning.dir/detectionresult.cpp.i
+
+CMakeFiles/learning.dir/detectionresult.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/learning.dir/detectionresult.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Program/OPE/detectionresult.cpp -o CMakeFiles/learning.dir/detectionresult.cpp.s
+
+CMakeFiles/learning.dir/detectionresult.cpp.o.requires:
+.PHONY : CMakeFiles/learning.dir/detectionresult.cpp.o.requires
+
+CMakeFiles/learning.dir/detectionresult.cpp.o.provides: CMakeFiles/learning.dir/detectionresult.cpp.o.requires
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/detectionresult.cpp.o.provides.build
+.PHONY : CMakeFiles/learning.dir/detectionresult.cpp.o.provides
+
+CMakeFiles/learning.dir/detectionresult.cpp.o.provides.build: CMakeFiles/learning.dir/detectionresult.cpp.o
+
 # Object files for target learning
 learning_OBJECTS = \
 "CMakeFiles/learning.dir/learning.cpp.o" \
 "CMakeFiles/learning.dir/CRForest.cpp.o" \
 "CMakeFiles/learning.dir/util.cpp.o" \
 "CMakeFiles/learning.dir/CRTree.cpp.o" \
-"CMakeFiles/learning.dir/HoG.cpp.o"
+"CMakeFiles/learning.dir/HoG.cpp.o" \
+"CMakeFiles/learning.dir/detectionresult.cpp.o"
 
 # External object files for target learning
 learning_EXTERNAL_OBJECTS =
@@ -180,6 +204,7 @@ learning-1.0.0: CMakeFiles/learning.dir/CRForest.cpp.o
 learning-1.0.0: CMakeFiles/learning.dir/util.cpp.o
 learning-1.0.0: CMakeFiles/learning.dir/CRTree.cpp.o
 learning-1.0.0: CMakeFiles/learning.dir/HoG.cpp.o
+learning-1.0.0: CMakeFiles/learning.dir/detectionresult.cpp.o
 learning-1.0.0: CMakeFiles/learning.dir/build.make
 learning-1.0.0: /usr/local/lib/libopencv_calib3d.so
 learning-1.0.0: /usr/local/lib/libopencv_contrib.so
@@ -214,6 +239,7 @@ CMakeFiles/learning.dir/requires: CMakeFiles/learning.dir/CRForest.cpp.o.require
 CMakeFiles/learning.dir/requires: CMakeFiles/learning.dir/util.cpp.o.requires
 CMakeFiles/learning.dir/requires: CMakeFiles/learning.dir/CRTree.cpp.o.requires
 CMakeFiles/learning.dir/requires: CMakeFiles/learning.dir/HoG.cpp.o.requires
+CMakeFiles/learning.dir/requires: CMakeFiles/learning.dir/detectionresult.cpp.o.requires
 .PHONY : CMakeFiles/learning.dir/requires
 
 CMakeFiles/learning.dir/clean:

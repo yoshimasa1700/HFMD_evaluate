@@ -205,6 +205,33 @@ HoG.cpp.s:
 	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/HoG.cpp.s
 .PHONY : HoG.cpp.s
 
+detectionresult.o: detectionresult.cpp.o
+.PHONY : detectionresult.o
+
+# target to build an object file
+detectionresult.cpp.o:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/detectionresult.cpp.o
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/detectionresult.cpp.o
+.PHONY : detectionresult.cpp.o
+
+detectionresult.i: detectionresult.cpp.i
+.PHONY : detectionresult.i
+
+# target to preprocess a source file
+detectionresult.cpp.i:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/detectionresult.cpp.i
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/detectionresult.cpp.i
+.PHONY : detectionresult.cpp.i
+
+detectionresult.s: detectionresult.cpp.s
+.PHONY : detectionresult.s
+
+# target to generate assembly for a file
+detectionresult.cpp.s:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/detectionresult.cpp.s
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/detectionresult.cpp.s
+.PHONY : detectionresult.cpp.s
+
 learning.o: learning.cpp.o
 .PHONY : learning.o
 
@@ -299,6 +326,9 @@ help:
 	@echo "... HoG.o"
 	@echo "... HoG.i"
 	@echo "... HoG.s"
+	@echo "... detectionresult.o"
+	@echo "... detectionresult.i"
+	@echo "... detectionresult.s"
 	@echo "... learning.o"
 	@echo "... learning.i"
 	@echo "... learning.s"

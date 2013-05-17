@@ -157,13 +157,13 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
     boost::uniform_real<> > rand2( gen, dst2 );
 
 
-  config.learningMode = 2;
+  //config.learningMode = 2;
   //std::cout << "learning mode : " << config.learningMode << std::endl;
 
   switch(config.learningMode){
   case 0:
     // rgbd
-    if((1 - exp(-1 * (double)depth / lamda)) > rand2()){
+    if((1 - exp(-1 * (double)depth / (lamda/2))) > rand2()){
 
       // rgb
       test[0] = rand() % max_w;

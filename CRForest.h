@@ -7,6 +7,8 @@
 #include "util.h"
 #include "HoG.h"
 
+#include "detectionresult.h"
+
 static HoG hog;
 
 class CRForest {

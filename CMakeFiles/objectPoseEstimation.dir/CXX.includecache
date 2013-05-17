@@ -25,6 +25,8 @@ util.h
 /home/masahiko/Program/OPE/util.h
 HoG.h
 /home/masahiko/Program/OPE/HoG.h
+detectionresult.h
+/home/masahiko/Program/OPE/detectionresult.h
 
 /home/masahiko/Program/OPE/CRTree.h
 CPatch.h
@@ -40,6 +42,12 @@ cmath
 opencv2/opencv.hpp
 -
 vector
+-
+
+/home/masahiko/Program/OPE/detectionresult.h
+string
+-
+opencv2/opencv.hpp
 -
 
 /home/masahiko/Program/OPE/util.h

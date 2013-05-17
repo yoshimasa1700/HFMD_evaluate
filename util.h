@@ -22,13 +22,13 @@
 class CDataset {
  public:
   CDataset();
-  ~CDataset(){};
+  ~CDataset(){}
 
-  std::string rgbImageName, depthImageName, maskImageName, className, imageFilePath;
+  std::string rgbImageName, depthImageName, maskImageName, imageFilePath;
   cv::Rect bBox;
+  std::vector<std::string> className;
   std::vector<cv::Point> centerPoint;
-
-  double angle;
+  std::vector<double> angles;
 
   void showDataset();
 };
@@ -101,6 +101,9 @@ class CConfig
   std::string testPath;
   // test data file
   std::string testData;
+  // test mode
+  int testMode;
+  double detectThreshold;
 
   std::string classDatabaseName;
 

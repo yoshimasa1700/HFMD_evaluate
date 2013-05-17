@@ -4,6 +4,7 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/learning.dir/util.cpp.o"
   "CMakeFiles/learning.dir/CRTree.cpp.o"
   "CMakeFiles/learning.dir/HoG.cpp.o"
+  "CMakeFiles/learning.dir/detectionresult.cpp.o"
   "learning.pdb"
   "learning"
   "learning-1.0.0"
