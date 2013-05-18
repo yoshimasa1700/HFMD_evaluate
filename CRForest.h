@@ -132,60 +132,58 @@ inline void CRForest::extractFeatureChannels(const cv::Mat* img, cv::vector<cv::
   for(int c = 0; c < 16; ++c)
     minFilter(vImg[c], vImg[c + 16], 5);
 
+  for(int i = 0; i < 32; ++i){
+      cv::namedWindow("test");
+      cv::imshow("test",*vImg.at(i));
+      cv::waitKey(0);
+      cv::destroyWindow("test");
+  }
+
   for(int c = 0; c < 16; ++c)
     maxFilter(vImg[c], vImg[c], 5);
 
-  /* cv::namedWindow("test"); */
-  /* cv::imshow("test",*img); */
-  /* cv::waitKey(0); */
-  /* cv::destroyWindow("test"); */
+
  
   /* std::cout << "extructing feature 2 " << std::endl; */
   
 }
 
 inline void CRForest::minFilter(cv::Mat* src, cv::Mat* des, int fWind) const{
-  int d = (fWind - 1) / 2;
-  cv::Rect roi;
-  cv::Mat desTemp(src->rows, src->cols, CV_8U), vTemp;
+    int d = (fWind - 1) / 2;
+    cv::Rect roi;
+    cv::Mat desTemp(src->rows, src->cols, CV_8U), vTemp;
 
     for(int y = 0; y < src->rows - fWind; ++y){ //for image height
-      if(y < fWind)
-	roi = cv::Rect(0, 0, src->cols, fWind - y);
-      else
-	roi = cv::Rect(0, y, src->cols, fWind);
+        if(y < fWind)
+            roi = cv::Rect(0, 0, src->cols, fWind - y);
+        else
+            roi = cv::Rect(0, y, src->cols, fWind);
 
-      cv::reduce((*src)(roi), vTemp, 0, CV_REDUCE_MIN);
-      
-      roi = cv::Rect(0, y + d, src->cols, 1);
-      cv::Mat roiDesTemp(desTemp, roi);
-      vTemp.copyTo(roiDesTemp);
+        cv::reduce((*src)(roi), vTemp, 0, CV_REDUCE_MIN);
+
+        roi = cv::Rect(0, y + d, src->cols, 1);
+        //cv::Mat roiDesTemp(desTemp, roi);
+        vTemp.copyTo(desTemp(roi));
     }// For image height
 
-  for(int x = 0; x < src->cols - fWind; ++x){ // for image width
-    if(x < d)
-      roi = cv::Rect(0, 0, fWind - x, src->rows);
-    else
-      roi = cv::Rect(x, 0, fWind, src->rows);
+    for(int x = 0; x < src->cols - fWind; ++x){ // for image width
+        if(x < d)
+            roi = cv::Rect(0, 0, fWind - x, src->rows);
+        else
+            roi = cv::Rect(x, 0, fWind, src->rows);
 
-    cv::reduce(desTemp(roi), vTemp, 1, CV_REDUCE_MIN);
-      
-    roi = cv::Rect(x + d, 0, 1, src->rows);
-    cv::Mat roiDesTemp((*des), roi);
-    vTemp.copyTo((*des)(roi));// = vTemp.clone();//copyTo((*des)(roi));
-  } // for image width
+        cv::reduce(desTemp(roi), vTemp, 1, CV_REDUCE_MIN);
+
+        roi = cv::Rect(x + d, 0, 1, src->rows);
+        cv::Mat roiDesTemp((*des), roi);
+        vTemp.copyTo((*des)(roi));// = vTemp.clone();//copyTo((*des)(roi));
+    } // for image width
 }
 
 inline void CRForest::maxFilter(cv::Mat* src, cv::Mat* des, int fWind) const{
   int d = (fWind - 1) / 2;
   cv::Rect roi;
   cv::Mat desTemp(src->rows, src->cols, CV_8U), vTemp;
-
-
-  /* cv::namedWindow("test"); */
-  /* cv::imshow("test",*des); */
-  /* cv::waitKey(0); */
-  /* cv::destroyWindow("test"); */
 
     for(int y = 0; y < src->rows - fWind; ++y){ //for image height
       if(y < fWind)

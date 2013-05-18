@@ -381,6 +381,10 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
         trainDataList >> n_files;
 
         for(int j = 0;j < n_files; ++j){
+            temp.className.clear();
+            temp.angles.clear();
+            temp.centerPoint.clear();
+
             //read file names
             trainDataList >> temp.rgbImageName;
             trainDataList >> temp.depthImageName;
@@ -410,6 +414,7 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
 
             cv::Size tempSize = cv::Size(tempImage.cols, tempImage.rows);
 
+            //std::cout << temp.className.at(0) << std::endl;
             database.add(temp.className.at(0), tempSize, 0);
 
             //read angle grand truth

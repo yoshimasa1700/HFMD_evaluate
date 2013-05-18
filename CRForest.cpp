@@ -86,6 +86,7 @@ void CRForest::growATree(const int treeNum){
         features.push_back(tempFeature);
     }
 
+
     std::cout << "feature extructed!" << std::endl;
 
     for(int i = 0; i < images.size(); ++i){
