@@ -51,14 +51,14 @@ void HoG::extractOBin(const cv::Mat* Iorient,const cv::Mat* Imagn, std::vector<c
         }
     }
 
-    std::cout << "output hog image" << std::endl;
-    for(int i = off; i < bins + off; ++i){
-        cv::namedWindow("test");
-        cv::imshow("test",*out.at(i));
-        cv::waitKey(0);
-        cv::destroyWindow("test");
-    }
-    std::cout << "hog image output end" << std::endl;
+//    std::cout << "output hog image" << std::endl;
+//    for(int i = off; i < bins + off; ++i){
+//        cv::namedWindow("test");
+//        cv::imshow("test",*out.at(i));
+//        cv::waitKey(0);
+//        cv::destroyWindow("test");
+//    }
+//    std::cout << "hog image output end" << std::endl;
 }
 
 void HoG::calcHoGBin(const cv::Mat* IOri, const cv::Mat* IMag, std::vector<cv::Mat*>& out, int offX, int offY){

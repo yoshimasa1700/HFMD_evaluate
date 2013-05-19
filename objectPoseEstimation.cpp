@@ -8,17 +8,17 @@
 using namespace std;
 
 void loadImage(CDataset &dataSet, std::vector<cv::Mat*> &image){
-    cv::Mat* rgb, *depth, *mask;
+    cv::Mat* rgb, *depth;//, *mask;
 
     rgb = new cv::Mat();
     depth = new cv::Mat();
-    mask = new cv::Mat();
+    //mask = new cv::Mat();
 
     //std::vector<cv::Mat> rgbSplited;
 
-    *mask = cv::imread(dataSet.imageFilePath
-                       + dataSet.maskImageName,
-                       CV_LOAD_IMAGE_ANYCOLOR).clone();
+//    *mask = cv::imread(dataSet.imageFilePath
+//                       + dataSet.maskImageName,
+//                       CV_LOAD_IMAGE_ANYCOLOR).clone();
 
     // load RGB image
     *rgb = cv::imread(dataSet.imageFilePath
@@ -30,11 +30,11 @@ void loadImage(CDataset &dataSet, std::vector<cv::Mat*> &image){
                         + dataSet.depthImageName,
                         CV_LOAD_IMAGE_ANYDEPTH).clone();
 
-    cv::Point tempPoint;
-    tempPoint.x = (*rgb).cols / 2;
-    tempPoint.y = (*rgb).rows / 2;
+//    cv::Point tempPoint;
+//    tempPoint.x = (*rgb).cols / 2;
+//    tempPoint.y = (*rgb).rows / 2;
 
-    dataSet.centerPoint.push_back(tempPoint);
+    //dataSet.centerPoint.push_back(tempPoint);
 
     // masking image
     // for(int k = 0;k < rgb->cols; ++k)
@@ -54,7 +54,7 @@ void loadImage(CDataset &dataSet, std::vector<cv::Mat*> &image){
     image.push_back(rgb);//rgbSplited.at(i));
     image.push_back(depth);
 
-    delete mask;
+    //delete mask;
 }
 
 void loadTestFile(CConfig conf, std::vector<CDataset> &dataSet){
@@ -235,8 +235,16 @@ void detect(const CRForest &forest, CConfig conf){
     dataSet.clear();
     loadTestFileMultiObject(conf,dataSet);
 
+
     for(int i = 0; i < dataSet.size(); ++i){
+        dataSet.at(i).showDataset();
+
+        image.clear();
         loadImage(dataSet.at(i),image);
+//         cv::namedWindow("test");
+//         cv::imshow("test",*(image.at(0)));
+//         cv::waitKey(0);
+//         cv::destroyWindow("test");
         forest.detection(dataSet.at(i),image);
     }
 
@@ -292,7 +300,7 @@ void detect(const CRForest &forest, CConfig conf){
 
     //loadTestFile(conf, dataSet);
     //for(int i = 0; i < dataSet.size(); ++i)
-    // dataSet.at(i).showDataset();
+    // dataSet.at(i).showDataset(std::cout << "output hog image" << std::endl;
 
     //result << dataSet.size() << std::endl;
 

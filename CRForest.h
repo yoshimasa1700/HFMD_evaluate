@@ -130,12 +130,12 @@ inline void CRForest::extractFeatureChannels(const cv::Mat* img, cv::vector<cv::
   for(int c = 0; c < 16; ++c)
     minFilter(vImg[c], vImg[c + 16], 5);
 
-  for(int i = 0; i < 32; ++i){
-      cv::namedWindow("test");
-      cv::imshow("test",*vImg.at(i));
-      cv::waitKey(0);
-      cv::destroyWindow("test");
-  }
+//  for(int i = 0; i < 32; ++i){
+//      cv::namedWindow("test");
+//      cv::imshow("test",*vImg.at(i));
+//      cv::waitKey(0);
+//      cv::destroyWindow("test");
+//  }
 
   for(int c = 0; c < 16; ++c)
     maxFilter(vImg[c], vImg[c], 5);

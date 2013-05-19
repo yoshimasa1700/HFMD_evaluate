@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/Users/masahiko/Programs/HFMD_evaluate/HoG.cpp
+/home/masahiko/Program/OPE/HoG.cpp
 vector
 -
 iostream
 -
 HoG.h
-/Users/masahiko/Programs/HFMD_evaluate/HoG.h
+/home/masahiko/Program/OPE/HoG.h
 
-/Users/masahiko/Programs/HFMD_evaluate/HoG.h
+/home/masahiko/Program/OPE/HoG.h
 opencv2/opencv.hpp
 -
 vector
