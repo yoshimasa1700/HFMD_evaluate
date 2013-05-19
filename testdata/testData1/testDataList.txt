@@ -1,2 +1,5 @@
-1
+4
 rgb7.png depth.png nodata bottle 0 0 0 koaramarch 0 0 0 can 0 0 0 pack 0 0 0 pakuncho 0 0 0 cup 0 0 0 EOL
+rgb.png depth.png nodata bottle 0 0 0 koaramarch 0 0 0 can 0 0 0 pack 0 0 0 pakuncho 0 0 0 cup 0 0 0 EOL
+rgb2.png depth.png nodata bottle 0 0 0 koaramarch 0 0 0 can 0 0 0 pack 0 0 0 pakuncho 0 0 0 cup 0 0 0 EOL
+rgb3.png depth.png nodata bottle 0 0 0 koaramarch 0 0 0 can 0 0 0 pack 0 0 0 pakuncho 0 0 0 cup 0 0 0 EOL

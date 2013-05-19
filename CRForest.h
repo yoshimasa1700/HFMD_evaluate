@@ -71,7 +71,7 @@ inline void CRForest::extractFeatureChannels(const cv::Mat* img, cv::vector<cv::
 
   //std::cout << img->channels() << std::endl;
   
-  cv::cvtColor(*img, *(vImg.at(0)), CV_BGR2GRAY);
+  cv::cvtColor(*img, *(vImg.at(0)), CV_RGB2GRAY);
 
 
   cv::Mat I_x(img->rows, img->cols, CV_16SC1);
@@ -101,8 +101,6 @@ inline void CRForest::extractFeatureChannels(const cv::Mat* img, cv::vector<cv::
       //std::cout << "scaling" << std::endl;
       vImg.at(2)->at<uchar>(y, x) = (uchar)sqrt((float)I_x.at<short>(y, x)* (float)I_x.at<short>(y, x) + (float)I_y.at<short>(y, x) * (float)I_y.at<short>(y, x));
     }
-  
-  //std::cout << "kokomade" << std::endl;
   
   // Magunitude of gradients
   for(int y = 0; y < img->rows; y++)
