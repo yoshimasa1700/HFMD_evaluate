@@ -389,40 +389,6 @@ void CRForest::detection(const CDataset &dataSet,
 
     std::cout << "patch num: " << patches.size() << std::endl;
 
-//    // regression for every patch
-//    for(int j = 0; j < patches.size(); ++j){
-//        result.clear();
-//        this->regression(result, patches.at(j));
-
-//        // vote for all trees (leafs)
-//        for(std::vector<const LeafNode*>::const_iterator itL = result.begin();
-//            itL!=result.end(); ++itL) {
-//            for(int c = 0; c < classNum; c++){
-//                //std::cout << "class: " << c << " " << (*itL)->vCenter.at(c).size() << std::endl;
-//                if(!(*itL)->vCenter.at(c).empty() && (*itL)->pfg.at(c) > 0.9){
-//                    float weight =  (*itL)->pfg.at(c) / float((*itL)->vCenter.at(c).size() * result.size());
-
-//                    for(int l = 0; l < (*itL)->vCenter.at(c).size(); ++l){
-//                        cv::Point patchSize(conf.p_height/2,conf.p_width/2);
-//                        //std::cout << weight << std::endl;
-
-//                        cv::Point pos = patches.at(j).position + patchSize +  (*itL)->vCenter.at(c).at(l);
-
-//                        if(pos.x > 0 && pos.y > 0 &&
-//                                pos.x < outputImage.at(c).cols && pos.y < outputImage.at(c).rows &&
-//                                (outputImage.at(c).at<uchar>(pos.y,pos.x) + weight * 100) < 254){
-
-//                            outputImage.at(c).at<cv::Vec3b>(pos.y,pos.x)[2] += ((*itL)->pfg.at(c) - 0.9) * 100;//+= weight * 500;
-//                            outputImageColorOnly.at(c).at<uchar>(pos.y,pos.x) += ((*itL)->pfg.at(c) - 0.9) * 100;//weight * 500;
-//                            totalVote.at(c) += 1;
-
-//                        }
-//                    }
-//                }
-//            }
-//        } // for every leaf
-//    } // for every patch
-
     // regression for every patch
     for(int j = 0; j < patches.size(); ++j){
         std::vector<float> detectionScore(classNum,0);
@@ -531,7 +497,7 @@ void CRForest::detection(const CDataset &dataSet,
 
         cv::minMaxLoc(outputImageColorOnly.at(c),&min,&max,&minLoc,&maxLoc);
 
-        double score  = (double)((double)outputImageColorOnly.at(c).at<uchar>(maxLoc.y,maxLoc.x) / (double)totalVote.at(c)) * 10000;
+        double score  = (double)((double)outputImageColorOnly.at(c).at<uchar>(maxLoc.y,maxLoc.x) / (double)( conf.stride * conf.stride * outputImage.at(c).cols * outputImage.at(c).rows)) * 100000000;
 
         //cv::circle(outputImage.at(c),maxLoc,20,cv::Scalar(200,0,0),3);
 
@@ -545,9 +511,26 @@ void CRForest::detection(const CDataset &dataSet,
             //        cv::destroyWindow("test");
             cv::Size tempSize = classDatabase.vNode.at(c).classSize;
             cv::Rect_<int> outRect(maxLoc.x - tempSize.width / 2,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
-            cv::rectangle(outputImage.at(c),outRect,cv::Scalar(0,200,0),3);
+            cv::rectangle(outputImage.at(c),outRect,cv::Scalar(0,0,200),3);
+            cv::putText(outputImage.at(c),classDatabase.vNode.at(c).name,cv::Point(outRect.x,outRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,200), 2, CV_AA);
+
             std::cout << maxLoc << std::endl;
         }
+
+        // display grand truth
+        if(conf.showGT){
+            for(int i = 0; i < dataSet.centerPoint.size(); ++i){
+                int tempClassNum = classDatabase.search(dataSet.className.at(i));
+                if(tempClassNum != -1){
+                    cv::Size tempSize = classDatabase.vNode.at(tempClassNum).classSize;
+                    cv::Rect_<int> outRect(dataSet.centerPoint.at(i).x - tempSize.width / 2,dataSet.centerPoint.at(i).y - tempSize.height / 2 , tempSize.width,tempSize.height);
+                    cv::rectangle(outputImage.at(tempClassNum),outRect,cv::Scalar(200,0,0),3);
+                    cv::putText(outputImage.at(tempClassNum),classDatabase.vNode.at(c).name,cv::Point(dataSet.centerPoint.at(i).x, dataSet.centerPoint.at(i).y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(200,0,0), 2, CV_AA);
+                }
+            }
+        }
+
+
         std::cout << "vote " << c << " " << (double)((double)outputImageColorOnly.at(c).at<uchar>(maxLoc.y,maxLoc.x) / (double)totalVote.at(c)) * 10000 << std::endl;
 
         std::string outputName = opath + PATH_SEP + "detectionResult" + "_" + classDatabase.vNode.at(c).name + ".png";

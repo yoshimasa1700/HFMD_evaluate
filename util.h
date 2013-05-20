@@ -105,6 +105,8 @@ class CConfig
   int testMode;
   double detectThreshold;
 
+  int showGT;
+
   std::string classDatabaseName;
 
   int learningMode;

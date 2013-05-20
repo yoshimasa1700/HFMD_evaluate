@@ -55,4 +55,5 @@
   <detectthreshold>3.0</detectthreshold>
   <traindatalistname>dataList1.txt</traindatalistname>
   <testdatalistname>testDataList.txt</testdatalistname>
+  <showgrandtruth>1</showgrandtruth>
 </root>

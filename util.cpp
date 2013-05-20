@@ -13,9 +13,10 @@ void CDataset::showDataset(){
     std::cout << "bouding box: " << bBox << std::endl;
 
     for(int i = 0; i < centerPoint.size(); ++i){
-        std::cout << "center point: " << centerPoint.at(i) << std::endl;
         std::cout << "class: " << className.at(i) << std::endl;
-        std::cout << "angle grand truth:" << angles.at(i) << std::endl;
+        std::cout << "\t" << "center point: " << centerPoint.at(i) << std::endl;
+
+        std::cout << "\t" << "angle grand truth:" << angles.at(i) << std::endl;
     }
 }
 
@@ -318,6 +319,16 @@ int CConfig::loadConfig(const char* filename)
     }
     else {
       std::cout << "root.str is nothing" << std::endl;
+    }
+
+    // load offset of tree name
+    if (boost::optional<int> integer
+            = pt.get_optional<int>("root.showgrandtruth")) {
+        std::cout << integer << std::endl;
+        showGT = *integer;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
     }
 
     return 0;
