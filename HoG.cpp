@@ -57,6 +57,10 @@ void HoG::extractOBin(const cv::Mat* Iorient,const cv::Mat* Imagn, std::vector<c
 //        cv::imshow("test",*out.at(i));
 //        cv::waitKey(0);
 //        cv::destroyWindow("test");
+//        std::stringstream ss;
+//        ss << i;
+//        std::string filename = "HOG" + ss.str() + ".png";
+//        cv::imwrite(filename,*out.at(i));
 //    }
 //    std::cout << "hog image output end" << std::endl;
 }
@@ -71,9 +75,7 @@ void HoG::calcHoGBin(const cv::Mat* IOri, const cv::Mat* IMag, std::vector<cv::M
             xx = x + offX;
 
             float v = (float)IOri->at<uchar>(yy, xx) / binsize;
-            //std::cout << "v is " << v << std::endl;
-            float w = (float)IMag->at<uchar>(yy, xx) * ptGauss[i];//Gauss.at<float>(y, x);
-            //std::cout << "w is " << w << std::endl;
+            float w = (float)IMag->at<uchar>(yy, xx) * ptGauss[i];
             int bin1 = int(v);
             int bin2;
             float delta = v - bin1 - 0.5f;
@@ -86,8 +88,6 @@ void HoG::calcHoGBin(const cv::Mat* IOri, const cv::Mat* IMag, std::vector<cv::M
             out.at(bin2 + 7)->at<uchar>(yy, xx) += delta * w;
         }
     }
-
-    //std::cout << "kokomade kitayonn" << std::endl;
 }
 
 
