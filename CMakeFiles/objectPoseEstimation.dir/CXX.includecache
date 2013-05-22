@@ -28,10 +28,6 @@ HoG.h
 detectionresult.h
 /home/masahiko/Program/HFMD_evaluate/detectionresult.h
 
-/home/masahiko/Program/HFMD_evaluate/CRTree.cpp
-CRTree.h
-/home/masahiko/Program/HFMD_evaluate/CRTree.h
-
 /home/masahiko/Program/HFMD_evaluate/CRTree.h
 CPatch.h
 /home/masahiko/Program/HFMD_evaluate/CPatch.h
@@ -53,20 +49,6 @@ string
 -
 opencv2/opencv.hpp
 -
-
-/home/masahiko/Program/HFMD_evaluate/objectPoseEstimation.cpp
-CRForest.h
-/home/masahiko/Program/HFMD_evaluate/CRForest.h
-opencv2/opencv.hpp
--
-boost/timer.hpp
--
-util.h
-/home/masahiko/Program/HFMD_evaluate/util.h
-
-/home/masahiko/Program/HFMD_evaluate/util.cpp
-util.h
-/home/masahiko/Program/HFMD_evaluate/util.h
 
 /home/masahiko/Program/HFMD_evaluate/util.h
 iostream

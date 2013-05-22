@@ -46,6 +46,10 @@ void CRForest::growATree(const int treeNum){
             negFeatures.push_back(tempFeature);
             delete negImages.at(i).at(0);
         }
+        cv::namedWindow("test");
+        cv::imshow("test", *(negImages.at(0).at(1)));
+        cv::waitKey(0);
+        cv::destroyWindow("test");
     }
 
 //    for(int i = 0; i < negImages.size(); ++i){
@@ -120,13 +124,15 @@ void CRForest::growATree(const int treeNum){
     //std::cout << "images" << images.size() << std::endl;
 
     if(conf.negMode){
-
+        extractPatches(vPatches, dataSets, features, negFeatures, conf);
     }else{
         // extract patch from image
         //std::cout << "extruction patch from features" << std::endl;
         extractPatches(vPatches, dataSets, features, conf);
         //std::cout << "patch extracted!" << std::endl;
     }
+
+    std::cout << "extracted pathes" << std::endl;
     std::vector<int> patchClassNum(classDatabase.vNode.size(), 0);
 
     for(int j = 0; j < vPatches.at(0).size(); ++j)
@@ -433,8 +439,8 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
     negPatchNum = posPatch.size() * conf.pnRatio;
     std::cout << "pos patch num : " << posPatch.size() << " neg patch num : " << negPatchNum << std::endl;
 
-    if(negPatchNum > tNegPatch.size()){
-        std::set<int> chosenPatch = nck.generate(tNegPatch, negPatchNum);//totalPatchNum * conf.patchRatio);
+    if(negPatchNum < tNegPatch.size()){
+        std::set<int> chosenPatch = nck.generate(tNegPatch.size(), negPatchNum);//totalPatchNum * conf.patchRatio);
         std::set<int>::iterator ite = chosenPatch.begin();
 
         while(ite != chosenPatch.end()){
@@ -442,6 +448,7 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
             ite++;
         }
     }else{
+        std::cout << "only " << tNegPatch.size() << " pathes extracted from negative images" << std::endl;
         std::cout << "can't extract enogh negative patch please set pnratio more low!" << std::endl;
         exit(-1);
     }
@@ -449,8 +456,6 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
     patches.push_back(posPatch);
     patches.push_back(negPatch);
 }
-
-
 
 void CRForest::extractAllPatches(const CDataset &dataSet, const cv::vector<cv::Mat*> &image, std::vector<CPatch> &patches) const{
 

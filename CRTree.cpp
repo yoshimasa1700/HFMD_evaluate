@@ -556,29 +556,35 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
   for(unsigned int l = 0; l < TrainSet.size(); ++l) {
     valSet[l].resize(TrainSet[l].size());
     for(unsigned int i=0;i<TrainSet[l].size();++i) {
-      // pointer to channel
-      cv::Mat ptC = (*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
-      if(test[8] == 32){
-	//std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;
-	//int dummy;
-	//std::cin >> dummy;
-	p1 = 0;
-	p2 = 0;
-	for(int j = 0;j < test[2]; ++j){
-	  for(int k = 0; k < test[3]; ++k)
-	    p1 += (int)ptC.at<uchar>(k + test[1],j +  test[0]);
-	}
-	
-	for(int j = 0;j < test[6]; ++j){
-	  for(int k = 0; k < test[7]; ++k)
-	    p2 += (int)ptC.at<uchar>(k + test[5],j +  test[4]);
-	}
-	
-      }else{
-	// get pixel values 
-	p1 = (int)ptC.at<uchar>(test[1], test[0]);
-	p2 = (int)ptC.at<uchar>(test[5], test[4]);
-      }
+        // pointer to channel
+        std::cout << l << " " << i << " " << TrainSet[l][i].patchRoi << " " << test[8] << std::endl;
+//        cv::namedWindow("test");
+//        cv::imshow("test", *(TrainSet[l][i]).patch[test[8]]);
+//        cv::waitKey(0);
+//        cv::destroyWindow("test");
+
+        cv::Mat ptC = (*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
+        if(test[8] == 32){
+            //std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;
+            //int dummy;
+            //std::cin >> dummy;
+            p1 = 0;
+            p2 = 0;
+            for(int j = 0;j < test[2]; ++j){
+                for(int k = 0; k < test[3]; ++k)
+                    p1 += (int)ptC.at<uchar>(k + test[1],j +  test[0]);
+            }
+
+            for(int j = 0;j < test[6]; ++j){
+                for(int k = 0; k < test[7]; ++k)
+                    p2 += (int)ptC.at<uchar>(k + test[5],j +  test[4]);
+            }
+
+        }else{
+            // get pixel values
+            p1 = (int)ptC.at<uchar>(test[1], test[0]);
+            p2 = (int)ptC.at<uchar>(test[5], test[4]);
+        }
       valSet[l][i].val = p1 - p2;
       valSet[l][i].index = i;
     }

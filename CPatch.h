@@ -53,6 +53,8 @@ class CPatch
     patchRoi = roi;
     classNum = -2;
 
+    //std::cout << patchRoi << std::endl;
+
     for(int i = 0; i < image.size(); ++i)
       patch.push_back(image.at(i));
 
