@@ -105,6 +105,8 @@ class CConfig
   int testMode;
   double detectThreshold;
 
+  std::string negDataPath,negDataList;
+
   int showGT;
 
   std::string classDatabaseName;
@@ -113,11 +115,16 @@ class CConfig
 
   std::string traindatalist;
   std::string testdatalist;
+  int negMode;
+
+  double pnRatio;
 
  private:
   boost::property_tree::ptree pt;
 
 };
+
+void loadTrainNegFile(CConfig conf, std::vector<CDataset> &dataSet);
 
 void pBar(int p,int maxNum, int width);
 

@@ -45,6 +45,21 @@ class CPatch
     detectedClass = -1;
   }
 
+  void setPatch(cv::Rect roi,const cv::vector<cv::Mat*> &image){
+    patch.clear();
+    //vCenter.clear();
+    //xstd::cout << image->size() << std::endl;
+
+    patchRoi = roi;
+    classNum = -2;
+
+    for(int i = 0; i < image.size(); ++i)
+      patch.push_back(image.at(i));
+
+    //angle = dataset.angle;
+    detectedClass = -1;
+  }
+
   void setPosition(int x, int y){
     position.x = x;
     position.y = y;

@@ -12,26 +12,49 @@ void CRForest::learning(){
 
 void CRForest::growATree(const int treeNum){
     std::vector<CDataset> dataSets(0);
+    std::vector<CDataset> negDataSets(0);
     cv::vector<cv::vector<cv::Mat *> > images;
+    cv::vector<cv::vector<cv::Mat *> > negImages;
     cv::vector<cv::vector<cv::Mat *> > features;
+    cv::vector<cv::vector<cv::Mat *> > negFeatures;
     std::vector<std::vector<CPatch> > vPatches;
     cv::vector<cv::Mat *> tempFeature;
 
     char buffer[256];
 
-    // reserve memory
-    //dataSet.reserve(conf.imagePerTree + 10);
-    //images.reserve((conf.imagePerTree + 10) * 3);
-
     std::cout << "tree number " << treeNum << std::endl;
+
     // initialize random seed
-    //std::cout << "time is " << time(NULL) << std::endl;
     boost::mt19937    gen( treeNum * static_cast<unsigned long>(time(NULL)) );
 
     boost::timer t;
 
     loadTrainFile(conf, dataSets);//, gen);
     std::cout << "dataset loaded" << std::endl;
+
+    if(conf.negMode){
+        loadTrainNegFile(conf,negDataSets);
+        std::cout << "negative dataset loaded" << std::endl;
+        loadImages(negImages,negDataSets);
+        std::cout << "nagative image loaded" << std::endl;
+        negFeatures.clear();
+
+        for(int i = 0; i <negImages.size(); ++i){
+            tempFeature.clear();
+            extractFeatureChannels(negImages.at(i).at(0), tempFeature);
+            tempFeature.push_back(negImages.at(i).at(1));
+            negFeatures.push_back(tempFeature);
+            delete negImages.at(i).at(0);
+        }
+    }
+
+//    for(int i = 0; i < negImages.size(); ++i){
+//        std::cout << i << std::endl;
+//        cv::namedWindow("test");
+//        cv::imshow("test",*(negImages.at(i).at(0)));
+//        cv::waitKey(0);
+//        cv::destroyWindow("test");
+//    }
 
     //for(int k = 0; k < dataSets.size(); ++k)
     //  dataSets.at(k).showDataset();
@@ -60,7 +83,6 @@ void CRForest::growATree(const int treeNum){
     CRTree *tree = new CRTree(conf.min_sample, conf.max_depth, dataSets.at(0).centerPoint.size(),gen);
     std::cout << "tree created" << std::endl;
     
-
     // load images to mamory
     loadImages(images, dataSets);
 
@@ -97,11 +119,14 @@ void CRForest::growATree(const int treeNum){
     //images.clear();
     //std::cout << "images" << images.size() << std::endl;
 
-    // extract patch from image
-    //std::cout << "extruction patch from features" << std::endl;
-    extractPatches(vPatches, dataSets, features, conf);
-    //std::cout << "patch extracted!" << std::endl;
+    if(conf.negMode){
 
+    }else{
+        // extract patch from image
+        //std::cout << "extruction patch from features" << std::endl;
+        extractPatches(vPatches, dataSets, features, conf);
+        //std::cout << "patch extracted!" << std::endl;
+    }
     std::vector<int> patchClassNum(classDatabase.vNode.size(), 0);
 
     for(int j = 0; j < vPatches.at(0).size(); ++j)
@@ -173,7 +198,10 @@ void CRForest::growATree(const int treeNum){
 }
 
 // extract patch from images
-void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,const std::vector<CDataset> dataSet,const cv::vector<cv::vector<cv::Mat*> > &image,  CConfig conf){
+void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
+                              const std::vector<CDataset> dataSet,
+                              const cv::vector<cv::vector<cv::Mat*> > &image,
+                              CConfig conf){
     cv::Rect temp;
     CPatch tPatch;
 
@@ -220,12 +248,8 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,const s
                     }
                 }
 
+                // set patch class
                 classNum = classDatabase.search(dataSet.at(l).className.at(0));
-
-
-
-                //std::cout << classNum << std::endl;
-
                 if(classNum == -1){
                     std::cout << "class not found!" << std::endl;
                     exit(-1);
@@ -273,6 +297,7 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,const s
     //   cv::destroyWindow("test");
     // }
 
+    // choose patch from each image
     for(int i = 0; i < patchPerClass.size(); ++i){
         if(patchPerClass.at(i).size() > conf.patchRatio){
 
@@ -287,18 +312,14 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,const s
             //cv::waitKey(0);
             //cv::destroyWindow("test");w
 
-
             //std::cout << "patch torimasu" << std::endl;
-
             //std::cout << "tPosPatch num is " << tPosPatch.size() << std::endl;
-
 
             while(ite != chosenPatch.end()){
                 //std::cout << "this is for debug ite is " << tPosPatch.at(*ite).center << std::endl;
                 posPatch.push_back(patchPerClass.at(i).at(*ite));
                 ite++;
             }
-
         }else{
             std::cout << "can't extruct enough patch" << std::endl;
         }
@@ -310,6 +331,123 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,const s
     patches.push_back(negPatch);
 
     std::cout << std::endl;
+}
+
+// extract patch from images
+// !!!!!!coution!!!!!!!
+// this function is use for negatime mode!!!!!
+void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
+                              const std::vector<CDataset> dataSet,
+                              const cv::vector<cv::vector<cv::Mat*> > &image,
+                              const cv::vector<cv::vector<cv::Mat*> > &negImage,
+                              CConfig conf){
+    cv::Rect temp;
+    CPatch tPatch;
+
+    std::vector<CPatch> tPosPatch, posPatch, tNegPatch,negPatch;
+    std::vector<std::vector<CPatch> > patchPerClass(classDatabase.vNode.size());
+    int pixNum;
+    nCk nck;
+    int classNum = 0;
+    int negPatchNum;
+
+
+    temp.width  = conf.p_width;
+    temp.height = conf.p_height;
+
+    patches.clear();
+
+    tPosPatch.clear();
+    posPatch.clear();
+    tNegPatch.clear();
+    negPatch.clear();
+
+    std::cout << "image num is " << image.size();
+
+    std::cout << "extracting patch from image" << std::endl;
+    std::cout << image.at(0).size() << std::endl;
+    for(int l = 0;l < image.size(); ++l){
+        //tPosPatch.clear();
+        for(int j = 0; j < image.at(l).at(0)->cols - conf.p_width; j += conf.stride){
+            for(int k = 0; k < image.at(l).at(0)->rows - conf.p_height; k += conf.stride){
+                temp.x = j;
+                temp.y = k;
+                pixNum = 0;
+
+                // detect negative patch
+                for(int m = j; m < j + conf.p_width; ++m){
+                    for(int n = k; n < k + conf.p_height; ++n){
+                        pixNum += (int)(image.at(l).at(image.at(l).size() - 1)->at<ushort>(n, m));
+                    }
+                }
+
+                // set patch class
+                classNum = classDatabase.search(dataSet.at(l).className.at(0));
+                if(classNum == -1){
+                    std::cout << "class not found!" << std::endl;
+                    exit(-1);
+                }
+
+                tPatch.setPatch(temp, image.at(l), dataSet.at(l), classNum);
+                if (pixNum > 0){
+                    tPosPatch.push_back(tPatch);
+                    patchPerClass.at(classNum).push_back(tPatch);
+                } // if
+            }//x
+        }//y
+    }//allimages
+
+    // choose patch from each image
+    for(int i = 0; i < patchPerClass.size(); ++i){
+        if(patchPerClass.at(i).size() > conf.patchRatio){
+
+            std::set<int> chosenPatch = nck.generate(patchPerClass.at(i).size(), conf.patchRatio);//totalPatchNum * conf.patchRatio);
+            std::set<int>::iterator ite = chosenPatch.begin();
+
+            while(ite != chosenPatch.end()){
+                //std::cout << "this is for debug ite is " << tPosPatch.at(*ite).center << std::endl;
+                posPatch.push_back(patchPerClass.at(i).at(*ite));
+                ite++;
+            }
+        }else{
+            std::cout << "can't extruct enough patch" << std::endl;
+        }
+    }
+
+    // extract negative patch
+    for(int i = 0; i < negImage.size(); ++i){
+        for(int j = 0; j < negImage.at(i).at(0)->cols - conf.p_width; j += conf.stride){
+            for(int k = 0; k < negImage.at(i).at(0)->rows - conf.p_height; k += conf.stride){
+
+                temp.x = j;
+                temp.y = k;
+
+                pixNum = 0;
+                tPatch.setPatch(temp, image.at(i));
+                tNegPatch.push_back(tPatch);
+            }//x
+        }//y
+    } // every image
+
+    // choose negative patch randamly
+    negPatchNum = posPatch.size() * conf.pnRatio;
+    std::cout << "pos patch num : " << posPatch.size() << " neg patch num : " << negPatchNum << std::endl;
+
+    if(negPatchNum > tNegPatch.size()){
+        std::set<int> chosenPatch = nck.generate(tNegPatch, negPatchNum);//totalPatchNum * conf.patchRatio);
+        std::set<int>::iterator ite = chosenPatch.begin();
+
+        while(ite != chosenPatch.end()){
+            negPatch.push_back(tNegPatch.at(*ite));
+            ite++;
+        }
+    }else{
+        std::cout << "can't extract enogh negative patch please set pnratio more low!" << std::endl;
+        exit(-1);
+    }
+
+    patches.push_back(posPatch);
+    patches.push_back(negPatch);
 }
 
 
@@ -557,7 +695,7 @@ void CRForest::regression(std::vector<const LeafNode*>& result, CPatch &patch) c
 void CRForest::loadImages(cv::vector<cv::vector<cv::Mat *> > &img, std::vector<CDataset> &dataSet){
     img.resize(0);
 
-    cv::Mat* rgb,*depth, *mask;
+    cv::Mat* rgb,*depth;//, *mask;
     cv::vector<cv::Mat*> planes;
     cv::vector<cv::Mat*> allImages;
     //cv::vector<cv::Mat> rgbSplited;
@@ -565,12 +703,12 @@ void CRForest::loadImages(cv::vector<cv::vector<cv::Mat *> > &img, std::vector<C
     for(int i = 0;i < dataSet.size(); ++i){
         rgb = new cv::Mat();
         depth = new cv::Mat();
-        mask = new cv::Mat();
+        //mask = new cv::Mat();
 
         // load Mask image
 
-        *mask = cv::imread(dataSet.at(i).imageFilePath
-                           + dataSet.at(i).maskImageName,3).clone();
+        //*mask = cv::imread(dataSet.at(i).imageFilePath
+        //                   + dataSet.at(i).maskImageName,3).clone();
 
         // load RGB image
         *rgb = cv::imread(dataSet.at(i).imageFilePath
@@ -587,10 +725,10 @@ void CRForest::loadImages(cv::vector<cv::vector<cv::Mat *> > &img, std::vector<C
 
         dataSet.at(i).centerPoint.push_back(tempPoint);
 
-        //cv::namedWindow("test");
-        //cv::imshow("test",*rgb);
-        //cv::waitKey(0);
-        //cv::destroyWindow("test");
+//        cv::namedWindow("test");
+//        cv::imshow("test",*rgb);
+//        cv::waitKey(0);
+//        cv::destroyWindow("test");
 
 
 
@@ -616,7 +754,7 @@ void CRForest::loadImages(cv::vector<cv::vector<cv::Mat *> > &img, std::vector<C
         allImages.push_back(depth);
         img.push_back(allImages);
 
-        delete mask;
+        //delete mask;
     }
 
     

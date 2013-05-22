@@ -331,6 +331,48 @@ int CConfig::loadConfig(const char* filename)
         std::cout << "root.str is nothing" << std::endl;
     }
 
+    // load training image folder
+    if (boost::optional<std::string> str
+            = pt.get_optional<std::string>("root.negativedatapath")) {
+        std::cout << str.get() << std::endl;
+        negDataPath = *str;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
+    }
+
+    // load training image folder
+    if (boost::optional<std::string> str
+            = pt.get_optional<std::string>("root.negativedatalist")) {
+        std::cout << str.get() << std::endl;
+        negDataList = *str;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
+    }
+
+    // load offset of tree name
+    if (boost::optional<int> integer
+            = pt.get_optional<int>("root.negativemode")) {
+        std::cout << integer << std::endl;
+        negMode = *integer;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
+    }
+
+    // load testing image name list
+    if (boost::optional<double> dou
+        = pt.get_optional<double>("root.posnegpatchratio")) {
+      std::cout << dou.get() << std::endl;
+      pnRatio = *dou;
+    }
+    else {
+      std::cout << "root.str is nothing" << std::endl;
+    }
+
+
+
     return 0;
 }
 
@@ -438,8 +480,10 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
 
             tempDataSet.push_back(temp);
         }
+
         trainDataList.close();
     }
+
     dataSetNum = tempDataSet.size();
     int dataOffset = 0;
     database.show();
@@ -455,7 +499,57 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
         dataOffset += database.vNode.at(j).instances;
     }
 
+
+//    std::cout << "show chosen dataset" << std::endl;
+//    for(int i = 0; i < dataSet.size(); ++i){
+//        dataSet.at(i).showDataset();
+//    }
+
     //in.close();
+}
+
+void loadTrainNegFile(CConfig conf, std::vector<CDataset> &dataSet)
+{
+    //std::string traindatafilepath
+    int n_files;
+    CDataset temp;
+    std::string trainDataListPath = conf.negDataPath + PATH_SEP +  conf.negDataList;
+    int dataSetNum;
+    CClassDatabase database;
+    cv::Point tempPoint;
+    nCk nck;
+
+
+    //read train data folder list
+    std::ifstream in(trainDataListPath.c_str());
+    if(!in.is_open()){
+        std::cout << "train negative data floder list is not found!" << std::endl;
+        exit(1);
+    }
+
+    in >> n_files;
+
+    dataSet.clear();
+
+    for(int i = 0; i < n_files; ++i){
+        temp.className.clear();
+        temp.angles.clear();
+        temp.centerPoint.clear();
+
+        temp.imageFilePath = conf.negDataPath + PATH_SEP;
+        std::string negName = "neg";
+        temp.className.push_back(negName);
+
+        in >> temp.rgbImageName;
+        in >> temp.depthImageName;
+
+        dataSet.push_back(temp);
+    }
+
+    in.close();
+
+    for(int i = 0; i < dataSet.size(); ++i)
+        dataSet.at(i).showDataset();
 }
 
 void pBar(int p,int maxNum, int width){

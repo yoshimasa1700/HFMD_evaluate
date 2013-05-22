@@ -42,23 +42,11 @@ ctime
 cmath
 -
 
-/home/masahiko/Program/HFMD_evaluate/HoG.cpp
-vector
--
-iostream
--
-HoG.h
-/home/masahiko/Program/HFMD_evaluate/HoG.h
-
 /home/masahiko/Program/HFMD_evaluate/HoG.h
 opencv2/opencv.hpp
 -
 vector
 -
-
-/home/masahiko/Program/HFMD_evaluate/detectionresult.cpp
-detectionresult.h
-/home/masahiko/Program/HFMD_evaluate/detectionresult.h
 
 /home/masahiko/Program/HFMD_evaluate/detectionresult.h
 string
