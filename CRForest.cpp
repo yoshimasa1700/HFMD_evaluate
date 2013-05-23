@@ -46,10 +46,10 @@ void CRForest::growATree(const int treeNum){
             negFeatures.push_back(tempFeature);
             delete negImages.at(i).at(0);
         }
-        cv::namedWindow("test");
-        cv::imshow("test", *(negImages.at(0).at(1)));
-        cv::waitKey(0);
-        cv::destroyWindow("test");
+//        cv::namedWindow("test");
+//        cv::imshow("test", *(negImages.at(0).at(1)));
+//        cv::waitKey(0);
+//        cv::destroyWindow("test");
     }
 
 //    for(int i = 0; i < negImages.size(); ++i){
@@ -428,8 +428,7 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
                 temp.x = j;
                 temp.y = k;
 
-                pixNum = 0;
-                tPatch.setPatch(temp, image.at(i));
+                tPatch.setPatch(temp, negImage.at(i));
                 tNegPatch.push_back(tPatch);
             }//x
         }//y

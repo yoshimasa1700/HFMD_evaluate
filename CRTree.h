@@ -94,7 +94,7 @@ public:
     void split(std::vector<std::vector<CPatch> >& SetA, std::vector<std::vector<CPatch> >& SetB, const std::vector<std::vector<CPatch> >& TrainSet, const std::vector<std::vector<IntIndex> >& valSet, int t);
     double distMean(const std::vector<CPatch>& SetA, const std::vector<CPatch>& SetB);
     double InfGain(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB);
-    double calcEntropy(const std::vector<CPatch> &set, int maxClass);
+    double calcEntropy(const std::vector<CPatch> &set, int negSize,int maxClass);
     double measureSet(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB, unsigned int depth) {
         double lamda = 1;
         return InfGain(SetA, SetB);// + (1 - exp((double)depth / lamda)) * distMean(SetA.at(0), SetB.at(0)) * -1;

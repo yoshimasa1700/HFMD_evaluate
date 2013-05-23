@@ -40,7 +40,7 @@
   <!-- feature channel number-->
   <featurechannel>2</featurechannel>
   <!-- extract patch ratio-->
-  <patchratio>10</patchratio>
+  <patchratio>100</patchratio>
   <!-- Stride -->
   <stride>1</stride>
   <!-- Offset of tree-->
