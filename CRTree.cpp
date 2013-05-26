@@ -280,7 +280,7 @@ void CRTree::growTree(vector<vector<CPatch> > &TrainSet, int node , int depth, f
         unsigned int measure_mode = 1;
         //if( float(TrainSet[1].size()) / float(TrainSet[0].size()+TrainSet[1].size()) >= 0.05 &&
         if(depth < max_depth-2 )
-            measure_mode = rand();
+            measure_moOde = rand();
 
         //cout << "MeasureMode " << measure_mode << "depth " << depth << "Pos patches " << TrainSet[0].size() << " Neg Patches " << TrainSet[1].size() << " pnratio " << pnratio  <<endl;
 
@@ -299,7 +299,7 @@ void CRTree::growTree(vector<vector<CPatch> > &TrainSet, int node , int depth, f
         //for(int i = 0; i < nclass; ++i)
 
         // Find optimal test
-        if( optimizeTest(SetA, SetB, TrainSet, test, 10000, measure_mode, depth) ) {
+        if( optimizeTest(SetA, SetB, TrainSet, test, 1000, measure_mode, depth) ) {
 
             // Store binary test for current node
             int* ptT = &treetable[node*11];
