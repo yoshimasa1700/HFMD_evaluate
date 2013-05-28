@@ -3,11 +3,11 @@
   <!-- Path to trees -->
   <treepath>trees/treetable</treepath>
   <!-- Number of trees -->
-  <ntree>40</ntree>
+  <ntree>20</ntree>
   <!-- Patch width -->
-  <pwidth>30</pwidth>
+  <pwidth>20</pwidth>
   <!-- Patch height -->
-  <pheight>30</pheight>
+  <pheight>20</pheight>
   <!-- Path to images-->
   <!--<imgpath>example/testimage</imgpath>-->
   <!-- Image name list -->
@@ -40,9 +40,9 @@
   <!-- feature channel number-->
   <featurechannel>2</featurechannel>
   <!-- extract patch ratio-->
-  <patchratio>1000</patchratio>
+  <patchratio>100</patchratio>
   <!-- Stride -->
-  <stride>1</stride>
+  <stride>10</stride>
   <!-- Offset of tree-->
   <offTree>0</offTree>
   <!-- test data path -->

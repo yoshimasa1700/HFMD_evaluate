@@ -280,13 +280,13 @@ void CRTree::growTree(vector<vector<CPatch> > &TrainSet, int node , int depth, f
         unsigned int measure_mode = 1;
         //if( float(TrainSet[1].size()) / float(TrainSet[0].size()+TrainSet[1].size()) >= 0.05 &&
         if(depth < max_depth-2 )
-            measure_moOde = rand();
+            measure_mode = rand();
 
         //cout << "MeasureMode " << measure_mode << "depth " << depth << "Pos patches " << TrainSet[0].size() << " Neg Patches " << TrainSet[1].size() << " pnratio " << pnratio  <<endl;
 
         cout << "Node num: " << node << endl;
         for(int i = 0; i < nclass; ++i){
-            std::cout << "class" << i << ": " << containClass.at(i) << endl;
+            std::cout << "class" << i << " : " << containClass.at(i) << endl;
         }
 
         //containClass.clear();
