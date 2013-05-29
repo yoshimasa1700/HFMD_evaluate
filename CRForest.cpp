@@ -26,7 +26,6 @@ void CRForest::growATree(const int treeNum){
 
     // initialize random seed
     boost::mt19937    gen( treeNum * static_cast<unsigned long>(time(NULL)) );
-
     boost::timer t;
 
     loadTrainFile(conf, dataSets);//, gen);
@@ -516,7 +515,7 @@ void CRForest::detection(const CDataset &dataSet,
 
     for(int i = 0; i < classNum; ++i){
         outputImage.at(i) = image.at(0)->clone();
-        outputImageColorOnly.at(i) = cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_32SC1);
+        outputImageColorOnly.at(i) = cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_32FC1);
     }
 
     // extract feature from test image
@@ -569,7 +568,7 @@ void CRForest::detection(const CDataset &dataSet,
                                     pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){// &&
                                 //(outputImageColorOnly.at(c).at<uchar>(pos.y,pos.x) + weight * 100) < 254){
 
-                                outputImageColorOnly.at(c).at<int>(pos.y,pos.x) += ((*itL)->pfg.at(c) - 0.9) * 100;//weight * 500;
+                                outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += ((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
                                 image.at(0)->at<cv::Vec3b>(pos.y,pos.x)[2] += ((*itL)->pfg.at(c) - 0.9) * 100;//weight * 500;
 
                                 totalVote.at(c) += 1;
@@ -588,16 +587,17 @@ void CRForest::detection(const CDataset &dataSet,
 
     // clustaring by mean shift
     for(int i = 0; i < classNum; ++i){
-        cv::Mat hsv,hue;
+        cv::Mat hsv,hue,rgb;
         int bins = 25;
 
-        cv::cvtColor(outputImageColorOnly.at(i), hsv, CV_BGR2HSV);
+        //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
+        //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
 
-        hue.create( hsv.size(), hsv.depth() );
+        hue.create( outputImageColorOnly.at(i).size(), outputImageColorOnly.at(i).depth() );
         int ch[] = { 0, 0 };
-        mixChannels( &hsv, 1, &hue, 1, ch, 1 );
+        mixChannels( &outputImageColorOnly.at(i), 1, &hue, 1, ch, 1 );
 
-        cv::MatND hist;
+        cv::Mat hist;
         int histSize = MAX( bins, 2 );
         float hue_range[] = { 0, 180 };
         const float* ranges = { hue_range };
@@ -606,11 +606,19 @@ void CRForest::detection(const CDataset &dataSet,
         calcHist( &hue, 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
         normalize( hist, hist, 0, 255, cv::NORM_MINMAX, -1, cv::Mat() );
 
+        cv::namedWindow("test");
+        cv::imshow("test",hue);
+        cv::waitKey(0);
+        cv::destroyWindow("test");
+
         /// Get Backprojection
-        cv::MatND backproj;
+        cv::Mat backproj;
         calcBackProject( &hue, 1, 0, hist, backproj, &ranges, 1, true );
 
-        cv::Rect tempRect = cv::Rect(0,0,outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
+
+
+
+        cv::Rect tempRect = cv::Rect(0,0,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
         cv::TermCriteria terminator;
         terminator.maxCount = 1000;
         terminator.epsilon  = 10;
@@ -695,7 +703,6 @@ void CRForest::detection(const CDataset &dataSet,
                 }
             }
         }
-
 
         std::cout << c << "\tClass Name : " << classDatabase.vNode.at(c).name << "\tvote : " << outputImageColorOnly.at(c).at<int>(maxLoc.y,maxLoc.x) << "\tCenterPoint : " << maxLoc << "\tscore : " << score << std::endl;
 
