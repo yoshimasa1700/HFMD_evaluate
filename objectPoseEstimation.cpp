@@ -92,6 +92,7 @@ void loadTestFile(CConfig conf, std::vector<CDataset> &dataSet){
         //std::cout << trainDataListPath << std::endl;
         std::ifstream testDataList(testDataListPath.c_str());
         if(testDataList.is_open()){
+
             testDataList >> n_files;
             //std::cout << "number of file: " << n_files << std::endl;
             for(int j = 0;j < n_files; ++j){
@@ -122,6 +123,7 @@ void loadTestFile(CConfig conf, std::vector<CDataset> &dataSet){
                 //read angle grand truth
                 double tempAngle;
                 testDataList >> tempAngle;
+
                 temp.angles.push_back(tempAngle);
 
                 //show read data *for debug
@@ -213,6 +215,8 @@ void loadTestFileMultiObject(CConfig conf, std::vector<CDataset> &dataSet){
                 }while(tempClassName != "EOL");
 
                 tempDataSet.push_back(temp);
+                temp.centerPoint.clear();
+                temp.className.clear();
             }
             testDataList.close();
         }
@@ -228,8 +232,6 @@ void detect(const CRForest &forest, CConfig conf){
     vector<cv::Mat*> image;
 
     std::fstream result("detectionResult.txt", std::ios::out);
-
-
 
     //set dataset
     dataSet.clear();

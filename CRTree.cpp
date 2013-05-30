@@ -730,13 +730,13 @@ double CRTree::InfGain(const std::vector<std::vector<CPatch> >& SetA, const std:
     double entoropyB = 0;
     double entoropy = 0;
 
-//    int maxClass = 0;
-//    int maxClassNum = 0;
-//    for(int i = 0; i < nclass; ++i)
-//        if(maxClassNum < containClass.at(i)){
-//            maxClassNum = containClass.at(i);
-//            maxClass = i;
-//        }
+    //    int maxClass = 0;
+    //    int maxClassNum = 0;
+    //    for(int i = 0; i < nclass; ++i)
+    //        if(maxClassNum < containClass.at(i)){
+    //            maxClassNum = containClass.at(i);
+    //            maxClass = i;
+    //        }
 
     for(int i = 0; i < SetA.at(0).size(); ++i)
         set.push_back(SetA.at(0).at(i));
@@ -754,8 +754,6 @@ double CRTree::InfGain(const std::vector<std::vector<CPatch> >& SetA, const std:
 
     //calc negative entropy
     for(int i = 0; i < SetA.size(); ++i){
-
-
         double pA = (double)SetA.at(i).size() / (double)(SetA.at(0).size() + SetA.at(1).size());
         double pB = (double)SetB.at(i).size() / (double)(SetB.at(0).size() + SetB.at(1).size());
         double pT = (double)(SetA.at(i).size() + SetB.at(i).size()) / (double)(set.size() + SetA.at(1).size() + SetB.at(1).size());
@@ -772,11 +770,11 @@ double CRTree::InfGain(const std::vector<std::vector<CPatch> >& SetA, const std:
     double wa = (double)(SetA.at(0).size() + SetA.at(1).size()) / (set.size() + SetA.at(1).size());
     double wb = (double)(SetB.at(0).size() + SetB.at(1).size()) / (set.size() + SetB.at(1).size());
 
-//    std::cout << "SetA pos " << SetA.at(0).size() << " neg " << SetA.at(1).size() << " entropy A " << entoropyA << std::endl;
+//    std::cout << std::endl << "SetA pos " << SetA.at(0).size() << " neg " << SetA.at(1).size() << " entropy A " << entoropyA << std::endl;
 //    std::cout << "SetB pos " << SetB.at(0).size() << " neg " << SetB.at(1).size() << " entropy B " << entoropyB << std::endl;
 //    std::cout << "entropy " << entoropy << " IG " << entoropy - (wa * entoropyA + wb * entoropyB) << std::endl;
 
-//    std::cout << "owattayo" << std::endl;
+    //    std::cout << "owattayo" << std::endl;
 
     return entoropy - (wa * entoropyA + wb * entoropyB);
 }

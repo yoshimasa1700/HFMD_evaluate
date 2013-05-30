@@ -568,7 +568,7 @@ void CRForest::detection(const CDataset &dataSet,
                                     pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){// &&
                                 //(outputImageColorOnly.at(c).at<uchar>(pos.y,pos.x) + weight * 100) < 254){
 
-                                outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += ((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
+                                outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 10.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
                                 image.at(0)->at<cv::Vec3b>(pos.y,pos.x)[2] += ((*itL)->pfg.at(c) - 0.9) * 100;//weight * 500;
 
                                 totalVote.at(c) += 1;
@@ -630,7 +630,7 @@ void CRForest::detection(const CDataset &dataSet,
         hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);//?1./max_val:0.,0);
         for(int j=0; j<hist_size; ++j) {
             int bin_w = cv::saturate_cast<int>((double)ch_width/hist_size);
-            std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
+            //std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
             cv::rectangle(hist_img,
                           cv::Point( j*bin_w, hist_img.rows),
                           cv::Point((j+1)*bin_w, hist_img.rows-cv::saturate_cast<int>(hist.at<float>(j))),
@@ -639,12 +639,12 @@ void CRForest::detection(const CDataset &dataSet,
 
 
         //show and write histgram
-        cv::imwrite("test.png",hist_img);
+//        cv::imwrite("test.png",hist_img);
 
-        cv::namedWindow("test");
-        cv::imshow("test",hist_img);
-        cv::waitKey(0);
-        cv::destroyWindow("test");
+//        cv::namedWindow("test");
+//        cv::imshow("test",hist_img);
+//        cv::waitKey(0);
+//        cv::destroyWindow("test");
 
         /// Get Backprojection
         cv::Mat backproj;
@@ -705,6 +705,16 @@ void CRForest::detection(const CDataset &dataSet,
 
     std::vector<detectionResult*> dResult(0);
 
+
+
+
+    std::cout << "show grand truth" << std::endl;
+//    std::cout << dataSet.className.size() << std::endl;
+//    std::cout << dataSet.centerPoint.size() << std::endl;
+    for(int i = 0; i < dataSet.className.size(); ++i){
+        std::cout << dataSet.className.at(i) << std::endl;
+        std::cout << " " << dataSet.centerPoint.at(i) << std::endl;
+    }
 
 
     for(int c = 0; c < classNum; ++c){
