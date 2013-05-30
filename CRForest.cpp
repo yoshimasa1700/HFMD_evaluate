@@ -572,7 +572,6 @@ void CRForest::detection(const CDataset &dataSet,
                                 image.at(0)->at<cv::Vec3b>(pos.y,pos.x)[2] += ((*itL)->pfg.at(c) - 0.9) * 100;//weight * 500;
 
                                 totalVote.at(c) += 1;
-
                             }
                         }
                     }
@@ -639,12 +638,12 @@ void CRForest::detection(const CDataset &dataSet,
 
 
         //show and write histgram
-//        cv::imwrite("test.png",hist_img);
+        //        cv::imwrite("test.png",hist_img);
 
-//        cv::namedWindow("test");
-//        cv::imshow("test",hist_img);
-//        cv::waitKey(0);
-//        cv::destroyWindow("test");
+        //        cv::namedWindow("test");
+        //        cv::imshow("test",hist_img);
+        //        cv::waitKey(0);
+        //        cv::destroyWindow("test");
 
         /// Get Backprojection
         cv::Mat backproj;
@@ -709,8 +708,8 @@ void CRForest::detection(const CDataset &dataSet,
 
 
     std::cout << "show grand truth" << std::endl;
-//    std::cout << dataSet.className.size() << std::endl;
-//    std::cout << dataSet.centerPoint.size() << std::endl;
+    //    std::cout << dataSet.className.size() << std::endl;
+    //    std::cout << dataSet.centerPoint.size() << std::endl;
     for(int i = 0; i < dataSet.className.size(); ++i){
         std::cout << dataSet.className.at(i) << std::endl;
         std::cout << " " << dataSet.centerPoint.at(i) << std::endl;
