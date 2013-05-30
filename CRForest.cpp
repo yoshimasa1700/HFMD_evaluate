@@ -588,7 +588,11 @@ void CRForest::detection(const CDataset &dataSet,
     // clustaring by mean shift
     for(int i = 0; i < classNum; ++i){
         cv::Mat hsv,hue,rgb;
-        int bins = 25;
+        int bins = 256;
+
+        double min,max;
+        cv::Point minLoc,maxLoc;
+        cv::minMaxLoc(outputImageColorOnly.at(i),&min,&max,&minLoc,&maxLoc);
 
         //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
         //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
@@ -597,17 +601,48 @@ void CRForest::detection(const CDataset &dataSet,
         int ch[] = { 0, 0 };
         mixChannels( &outputImageColorOnly.at(i), 1, &hue, 1, ch, 1 );
 
+
+        const int ch_width = 400;
         cv::Mat hist;
+        cv::Mat hist_img(cv::Size(ch_width, 200), CV_8UC3, cv::Scalar::all(255));;
         int histSize = MAX( bins, 2 );
-        float hue_range[] = { 0, 180 };
+        float hue_range[] = { 0, 1 };
         const float* ranges = { hue_range };
+        const int hist_size = 256;
+        double max_val = .0;
+        double second_val = .0;
 
         /// Get the Histogram and normalize it
-        calcHist( &hue, 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
-        normalize( hist, hist, 0, 255, cv::NORM_MINMAX, -1, cv::Mat() );
+        cv::calcHist( &outputImageColorOnly.at(i) , 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
+        cv::normalize( hist, hist, 0., 256., cv::NORM_MINMAX, -1, cv::Mat() );
+
+        cv::minMaxLoc(hist, 0, &max_val);
+        hist.at<float>(0) = 0;
+        cv::minMaxLoc(hist, 0, &second_val);
+
+        hist.at<float>(0) = max_val;
+
+        // (4)scale and draw the histogram(s)
+        cv::Scalar color = cv::Scalar::all(100);
+        //for(int i=0; i<sch; i++) {
+        //  if(sch==3)
+        //    color = Scalar((0xaa<<i*8)&0x0000ff,(0xaa<<i*8)&0x00ff00,(0xaa<<i*8)&0xff0000, 0);
+        hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);//?1./max_val:0.,0);
+        for(int j=0; j<hist_size; ++j) {
+            int bin_w = cv::saturate_cast<int>((double)ch_width/hist_size);
+            std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
+            cv::rectangle(hist_img,
+                          cv::Point( j*bin_w, hist_img.rows),
+                          cv::Point((j+1)*bin_w, hist_img.rows-cv::saturate_cast<int>(hist.at<float>(j))),
+                          color, -1);
+        }
+
+
+        //show and write histgram
+        cv::imwrite("test.png",hist_img);
 
         cv::namedWindow("test");
-        cv::imshow("test",hue);
+        cv::imshow("test",hist_img);
         cv::waitKey(0);
         cv::destroyWindow("test");
 
@@ -615,10 +650,7 @@ void CRForest::detection(const CDataset &dataSet,
         cv::Mat backproj;
         calcBackProject( &hue, 1, 0, hist, backproj, &ranges, 1, true );
 
-
-
-
-        cv::Rect tempRect = cv::Rect(0,0,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
+        cv::Rect tempRect = cv::Rect(maxLoc.x,maxLoc.y,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
         cv::TermCriteria terminator;
         terminator.maxCount = 1000;
         terminator.epsilon  = 10;
@@ -654,7 +686,11 @@ void CRForest::detection(const CDataset &dataSet,
         std::string outputName2 = opath + PATH_SEP + "vote_" + classDatabase.vNode.at(c).name + ".png";
         //cv::imwrite(outputName.c_str(),outputImage.at(c));
         //cv::cvtColor(outputImageColorOnly)
-        cv::imwrite(outputName2.c_str(),outputImageColorOnly.at(c));
+
+        cv::Mat writeImage;
+        //hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);
+        outputImageColorOnly.at(c).convertTo(writeImage, CV_8UC1, 254);
+        cv::imwrite(outputName2.c_str(),writeImage);
     }
 
     std::cout << "detection result outputed" << std::endl;
