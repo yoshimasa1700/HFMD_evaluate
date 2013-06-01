@@ -20,6 +20,8 @@ void CRForest::growATree(const int treeNum){
     std::vector<std::vector<CPatch> > vPatches;
     cv::vector<cv::Mat *> tempFeature;
 
+
+
     char buffer[256];
 
     std::cout << "tree number " << treeNum << std::endl;
@@ -140,6 +142,7 @@ void CRForest::growATree(const int treeNum){
     //for(int c = 0; c < classDatabase.vNode.size(); ++c)
     //std::cout << patchClassNum.at(c) << std::endl;
     
+
 
     // grow tree
     //vTrees.at(treeNum)->growTree(vPatches, 0,0, (float)(vPatches.at(0).size()) / ((float)(vPatches.at(0).size()) + (float)(vPatches.at(1).size())), conf, gen, patchClassNum);
@@ -534,7 +537,7 @@ void CRForest::detection(const CDataset &dataSet,
 
     // regression and vote for every patch
     for(int j = 0; j < patches.size(); ++j){
-        std::vector<float> detectionScore(classNum,0);
+        //std::vector<float> detectionScore(classNum,0);
 
         result.clear();
         this->regression(result, patches.at(j));
@@ -544,20 +547,20 @@ void CRForest::detection(const CDataset &dataSet,
             itL!=result.end(); ++itL) {
 
 
-            for(int l = 0;l < (*itL)->pfg.size(); ++l){
+//            for(int l = 0;l < (*itL)->pfg.size(); ++l){
 
-                // voting weight for leaf
-                if((*itL)->pfg.at(l) > 0.5)
-                    detectionScore.at(l) += (*itL)->pfg.at(l) * (*itL)->vCenter.at(l).size();
+//                // voting weight for leaf
+//                if((*itL)->pfg.at(l) > 0.5)
+//                    detectionScore.at(l) += (*itL)->pfg.at(l) * (*itL)->vCenter.at(l).size();
 
-                //classification_result.at(maxClass) += (double) w;
-            }
+//                //classification_result.at(maxClass) += (double) w;
+//            }
 
             for(int c = 0; c < classNum; c++){
                 //std::cout << "class: " << c << " " << (*itL)->vCenter.at(c).size() << std::endl;
                 if(!(*itL)->vCenter.at(c).empty()){
                     if((*itL)->pfg.at(c) > 0.9  ){
-                        float weight =  (*itL)->pfg.at(c) / float((*itL)->vCenter.at(c).size() * result.size());
+                        //float weight =  (*itL)->pfg.at(c) / float((*itL)->vCenter.at(c).size() * result.size());
 
                         for(int l = 0; l < (*itL)->vCenter.at(c).size(); ++l){
                             cv::Point patchSize(conf.p_height/2,conf.p_width/2);
@@ -569,14 +572,13 @@ void CRForest::detection(const CDataset &dataSet,
                                 //(outputImageColorOnly.at(c).at<uchar>(pos.y,pos.x) + weight * 100) < 254){
 
                                 outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 10.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
-                                image.at(0)->at<cv::Vec3b>(pos.y,pos.x)[2] += ((*itL)->pfg.at(c) - 0.9) * 100;//weight * 500;
-
                                 totalVote.at(c) += 1;
                             }
                         }
                     }
                 }
             }
+
 
 
         } // for every leaf
@@ -704,28 +706,23 @@ void CRForest::detection(const CDataset &dataSet,
 
     std::vector<detectionResult*> dResult(0);
 
-
-
-
     std::cout << "show grand truth" << std::endl;
     //    std::cout << dataSet.className.size() << std::endl;
     //    std::cout << dataSet.centerPoint.size() << std::endl;
     for(int i = 0; i < dataSet.className.size(); ++i){
-        std::cout << dataSet.className.at(i) << std::endl;
-        std::cout << " " << dataSet.centerPoint.at(i) << std::endl;
+        std::cout << dataSet.className.at(i) << " " << dataSet.centerPoint.at(i) << std::endl;
     }
-
 
     for(int c = 0; c < classNum; ++c){
 
         double min,max;
         cv::Point minLoc,maxLoc;
         cv::minMaxLoc(outputImageColorOnly.at(c),&min,&max,&minLoc,&maxLoc);
-        double score  = (double)(outputImageColorOnly.at(c).at<int>(maxLoc.y,maxLoc.x) / (double)( conf.stride * conf.stride * outputImage.at(c).cols * outputImage.at(c).rows)) * 1000000;
+        //double score  = (double)(outputImageColorOnly.at(c).at<int>(maxLoc.y,maxLoc.x) / (double)( conf.stride * conf.stride * outputImage.at(c).cols * outputImage.at(c).rows)) * 1000000;
 
         //cv::circle(outputImage.at(c),maxLoc,20,cv::Scalar(200,0,0),3);
 
-        if(score > conf.detectThreshold){
+        //if(score > conf.detectThreshold){
             //        cv::namedWindow("test");
             //        cv::imshow("test",outputImage.at(c));
             //        cv::waitKey(0);
@@ -734,7 +731,7 @@ void CRForest::detection(const CDataset &dataSet,
             cv::Rect_<int> outRect(maxLoc.x - tempSize.width / 2,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
             cv::rectangle(outputImage.at(c),outRect,cv::Scalar(0,0,200),3);
             cv::putText(outputImage.at(c),classDatabase.vNode.at(c).name,cv::Point(outRect.x,outRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,200), 2, CV_AA);
-        }
+        //}
 
         // display grand truth
         if(conf.showGT){
@@ -749,7 +746,7 @@ void CRForest::detection(const CDataset &dataSet,
             }
         }
 
-        std::cout << c << "\tClass Name : " << classDatabase.vNode.at(c).name << "\tvote : " << outputImageColorOnly.at(c).at<int>(maxLoc.y,maxLoc.x) << "\tCenterPoint : " << maxLoc << "\tscore : " << score << std::endl;
+        std::cout << c << "\tName : " << classDatabase.vNode.at(c).name << "\tvote : " << totalVote.at(c) << "\tScore : " << outputImageColorOnly.at(c).at<float>(maxLoc.y, maxLoc.x) << "\tCenterPoint : " << maxLoc << std::endl;//"\tscore : " << score << std::endl;
 
         std::string outputName = opath + PATH_SEP + "detectionResult" + "_" + classDatabase.vNode.at(c).name + ".png";
 

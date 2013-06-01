@@ -274,7 +274,7 @@ int CConfig::loadConfig(const char* filename)
     // load offset of tree name
     if (boost::optional<int> integer
             = pt.get_optional<int>("root.learningmode")) {
-        std::cout << integer << std::endl;
+        std::cout << "learning mode is " << integer << std::endl;
         learningMode = *integer;
     }
     else {

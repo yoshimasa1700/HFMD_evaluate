@@ -1,10 +1,11 @@
 6
+pack/pack_1
+pack/pack_2
 koaramarch/koaramarch_1
 koaramarch/koaramarch_2
 bottle/bottle_1
 bottle/bottle_2
-pack/pack_1
-pack/pack_2
+
 
 can/can_1
 can/can_2

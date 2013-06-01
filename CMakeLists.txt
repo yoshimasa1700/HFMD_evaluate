@@ -26,7 +26,7 @@ FIND_PACKAGE(OpenCV)
 FIND_PACKAGE(Boost)
 
 # バージョン番号
-SET(serial "1.0.0")
+# SET(serial "1.0.0")
 
 # ビルドするためにインクルードするヘッダーファイルの場所
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}")
@@ -48,5 +48,5 @@ TARGET_LINK_LIBRARIES(objectPoseEstimation ${OpenCV_LIBRARIES} ${Boost_LIBRARIES
 TARGET_LINK_LIBRARIES(learning ${OpenCV_LIBRARIES} ${Boost_LIBRARIES})
 
 # バージョン番号の適用
-SET_TARGET_PROPERTIES(objectPoseEstimation PROPERTIES VERSION ${serial})
-SET_TARGET_PROPERTIES(learning PROPERTIES VERSION ${serial})
+# SET_TARGET_PROPERTIES(objectPoseEstimation PROPERTIES VERSION ${serial})
+# SET_TARGET_PROPERTIES(learning PROPERTIES VERSION ${serial})

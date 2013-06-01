@@ -47,10 +47,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/masahiko/Program/HFMD_evaluate
+CMAKE_SOURCE_DIR = /home/masahiko/Programs/HFMD_evaluate
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/masahiko/Program/HFMD_evaluate
+CMAKE_BINARY_DIR = /home/masahiko/Programs/HFMD_evaluate
 
 #=============================================================================
 # Target rules for target CMakeFiles/learning.dir
@@ -59,7 +59,7 @@ CMAKE_BINARY_DIR = /home/masahiko/Program/HFMD_evaluate
 CMakeFiles/learning.dir/all:
 	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/depend
 	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Program/HFMD_evaluate/CMakeFiles  1 2 3 4 5 6
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Programs/HFMD_evaluate/CMakeFiles  1 2 3 4 5 6
 	@echo "Built target learning"
 .PHONY : CMakeFiles/learning.dir/all
 
@@ -69,9 +69,9 @@ all: CMakeFiles/learning.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/learning.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/masahiko/Program/HFMD_evaluate/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/masahiko/Programs/HFMD_evaluate/CMakeFiles 6
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/learning.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/masahiko/Program/HFMD_evaluate/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/masahiko/Programs/HFMD_evaluate/CMakeFiles 0
 .PHONY : CMakeFiles/learning.dir/rule
 
 # Convenience name for target.
@@ -94,7 +94,7 @@ clean: CMakeFiles/learning.dir/clean
 CMakeFiles/objectPoseEstimation.dir/all:
 	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/depend
 	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Program/HFMD_evaluate/CMakeFiles  7 8 9 10 11 12
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Programs/HFMD_evaluate/CMakeFiles  7 8 9 10 11 12
 	@echo "Built target objectPoseEstimation"
 .PHONY : CMakeFiles/objectPoseEstimation.dir/all
 
@@ -104,9 +104,9 @@ all: CMakeFiles/objectPoseEstimation.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/objectPoseEstimation.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/masahiko/Program/HFMD_evaluate/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/masahiko/Programs/HFMD_evaluate/CMakeFiles 6
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/objectPoseEstimation.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/masahiko/Program/HFMD_evaluate/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/masahiko/Programs/HFMD_evaluate/CMakeFiles 0
 .PHONY : CMakeFiles/objectPoseEstimation.dir/rule
 
 # Convenience name for target.

@@ -42,7 +42,7 @@
   <!-- extract patch ratio-->
   <patchratio>1000</patchratio>
   <!-- Stride -->
-  <stride>10</stride>
+  <stride>1</stride>
   <!-- Offset of tree-->
   <offTree>0</offTree>
   <!-- test data path -->
@@ -50,7 +50,7 @@
   <testdataname>testData.txt</testdataname>
   <classdatabasename>classDatabase</classdatabasename>
   <!--learning mode 1:depth 2:rgb 0:rgbd-->
-  <learningmode>0</learningmode>
+  <learningmode>2</learningmode>
   <testmode>1</testmode>
   <detectthreshold>3.0</detectthreshold>
   <traindatalistname>dataList1.txt</traindatalistname>

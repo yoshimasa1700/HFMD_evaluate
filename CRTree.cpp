@@ -89,6 +89,10 @@ CRTree::CRTree(const char* filename) {
             }
         }
 
+        // this is for debug
+        std::vector<double> pfgSum(3,0.);
+        std::vector<int> voteSum(3,0);
+
         // read tree leafs
         LeafNode* ptLN = &leaf[0];
         for(unsigned int l=0; l<num_leaf; ++l, ++ptLN) {
@@ -107,8 +111,13 @@ CRTree::CRTree(const char* filename) {
             int containPoints;
             for(int i = 0; i < containClassNum; ++i){
                 in >> cNum;
+                std::cout << cNum;// << std::endl;
                 in >> ptLN->pfg.at(cNum);
                 in >> containPoints;
+                std::cout << " " << ptLN->pfg.at(cNum) << " " << containPoints << std::endl;
+
+                pfgSum.at(cNum) += ptLN->pfg.at(cNum);
+                voteSum.at(cNum) += containPoints;
 
                 ptLN->vCenter.at(cNum).resize(containPoints);
 
@@ -137,14 +146,19 @@ CRTree::CRTree(const char* filename) {
             // 	in >> ptLN->vCenter[i].y;
             // }
 
-            for(int i = 0; i < ptLN->pfg.size(); ++i)
-                std::cout << ptLN->pfg.at(i) << std::endl;
+//            for(int i = 0; i < ptLN->pfg.size(); ++i)
+//                std::cout << ptLN->pfg.at(i) << std::endl;
 
-            for(int i = 0; i < ptLN->vCenter.size(); ++i){
-                for(int j = 0; j < ptLN->vCenter.at(i).size(); ++j)
-                    std::cout << ptLN->vCenter.at(i).at(j).x << " ";
-                std::cout << std::endl;
-            }
+//            for(int i = 0; i < ptLN->vCenter.size(); ++i){
+//                for(int j = 0; j < ptLN->vCenter.at(i).size(); ++j)
+//                    std::cout << ptLN->vCenter.at(i).at(j).x << " ";
+//                std::cout << std::endl;
+//            }
+        }
+
+
+        for(int i = 0; i < 3; i++){
+            std::cout << pfgSum.at(i) << " " << voteSum.at(i) << std::endl;
         }
 
     } else {
@@ -205,6 +219,7 @@ bool CRTree::saveTree(const char* filename) const {
 
             for(int j = 0; j < ptLN->pfg.size(); ++j){
                 if(ptLN->pfg.at(j) != 0){
+                    std::cout << j << std::endl;
                     out << j << " " << ptLN->pfg.at(j) << " " << ptLN->vCenter.at(j).size() << " ";
                     for(int i = 0; i < ptLN->vCenter.at(j).size(); ++i)
                         out << ptLN->vCenter.at(j).at(i).x << " " << ptLN->vCenter.at(j).at(i).y
@@ -229,6 +244,7 @@ void CRTree::growTree(vector<vector<CPatch> > &TrainSet, int node , int depth, f
     // }]]
 
     config = conf;
+    std::cout << "learning mode is " << conf.learningMode << std::endl;
 
     // int dummy;
     // std::cin >> dummy;
@@ -261,13 +277,26 @@ void CRTree::growTree(vector<vector<CPatch> > &TrainSet, int node , int depth, f
         }
     }
 
-    float classRatio = (float)maxClassNum / (float)totalClassNum;
-    std::cout << classRatio << std::endl;
+    float classRatio  = 0;
+    if(maxClassNum != 0 && totalClassNum !=0){
+        classRatio = (float)maxClassNum / (float)totalClassNum;
+        std::cout << "classRatio is " << classRatio << std::endl;
+    }
+
+
+
 
     float negratio = (float)TrainSet.at(1).size() / (float)(TrainSet.at(0).size() + TrainSet.at(1).size());
     std::cout << "pos patch " << TrainSet.at(0).size() << " neg patch " << TrainSet.at(1).size() << " neg ratio " << negratio <<std::endl;
 
-    if(depth < max_depth && remainClass > 1 && classRatio < 0.9 && negratio < 0.9) {
+    int measureMode = 1;
+    if(classRatio > 0.95)
+        measureMode = 0;
+
+    std::cout << "measure mode " << measureMode << std::endl;
+
+
+    if(depth < max_depth && negratio < 0.95 && TrainSet.at(0).size() > conf.min_sample) {
 
         //if(depth < max_depth && TrainSet[0].size() > 0) {
 
@@ -299,11 +328,13 @@ void CRTree::growTree(vector<vector<CPatch> > &TrainSet, int node , int depth, f
         //for(int i = 0; i < nclass; ++i)
 
         // Find optimal test
-        if( optimizeTest(SetA, SetB, TrainSet, test, 1000, measure_mode, depth) ) {
+        if( optimizeTest(SetA, SetB, TrainSet, test, 1000, measureMode, depth) ) {
 
             // Store binary test for current node
             int* ptT = &treetable[node*11];
-            ptT[0] = -1; ++ptT;
+            std::cout << node << std::endl;
+            ptT[0] = -1;
+            ++ptT;
             for(int t=0; t<10; ++t)
                 ptT[t] = test[t];
 
@@ -400,8 +431,8 @@ void CRTree::makeLeaf(const std::vector<std::vector<CPatch> > &TrainSet, float p
         for(int j = 0; j < patchPerClass.at(i).size(); ++j)
             ptL->vCenter.at(i).push_back(patchPerClass.at(i).at(j).center);
 
-        if(!patchPerClass.at(i).empty())
-            std::cout << patchPerClass.at(i).at(0).center << std::endl;
+        //if(!patchPerClass.at(i).empty())
+            //std::cout << patchPerClass.at(i).at(0).center << std::endl;
     }
 
     // Increase leaf counter
@@ -509,7 +540,7 @@ bool CRTree::optimizeTest(std::vector<std::vector<CPatch> > &SetA, std::vector<s
 
                     // Measure quality of split with measure_mode 0 - classification, 1 - regression
 
-                    tmpDist = measureSet(tmpA, tmpB, depth);
+                    tmpDist = measureSet(tmpA, tmpB, depth, measure_mode);
 
                     // Take binary test with best split
                     if(tmpDist>bestDist) {
@@ -653,6 +684,8 @@ void CRTree::split(vector<vector<CPatch> >& SetA, vector<vector<CPatch> >& SetB,
 }
 
 double CRTree::distMean(const std::vector<CPatch>& SetA, const std::vector<CPatch>& SetB) {
+    //std::cout << "callde distMean !!!" << std::endl;
+
     std::vector<double> meanAx(nclass,0);
     std::vector<double> meanAy(nclass,0);
     //for(std::vector<CPatch>::const_iterator it = SetA.begin(); it != SetA.end(); ++it) {
@@ -750,7 +783,19 @@ double CRTree::InfGain(const std::vector<std::vector<CPatch> >& SetA, const std:
         entoropy += calcEntropy(set, SetA.at(1).size() + SetB.at(1).size(), i);
     }
 
-    //std::cout << "positive entoropy is caliculated" << std::endl;
+    std::cout << entoropyA << " ";
+
+    double wa = (double)(SetA.at(0).size() + SetA.at(1).size()) / (set.size() + SetA.at(1).size());
+    double wb = (double)(SetB.at(0).size() + SetB.at(1).size()) / (set.size() + SetB.at(1).size());
+
+
+//    std::cout << std::endl << "SetA pos " << SetA.at(0).size() << " neg " << SetA.at(1).size() << " entropy A " << entoropyA << std::endl;
+//    std::cout << "SetB pos " << SetB.at(0).size() << " neg " << SetB.at(1).size() << " entropy B " << entoropyB << std::endl;
+//    std::cout << "entropy " << entoropy << " IG " << entoropy - (wa * entoropyA + wb * entoropyB) << std::endl;
+
+
+
+//    std::cout << "positive entoropy is caliculated" << std::endl;
 
     //calc negative entropy
     for(int i = 0; i < SetA.size(); ++i){
@@ -767,8 +812,8 @@ double CRTree::InfGain(const std::vector<std::vector<CPatch> >& SetA, const std:
         }
     }
 
-    double wa = (double)(SetA.at(0).size() + SetA.at(1).size()) / (set.size() + SetA.at(1).size());
-    double wb = (double)(SetB.at(0).size() + SetB.at(1).size()) / (set.size() + SetB.at(1).size());
+    std::cout << entoropyA << std::endl;
+
 
 //    std::cout << std::endl << "SetA pos " << SetA.at(0).size() << " neg " << SetA.at(1).size() << " entropy A " << entoropyA << std::endl;
 //    std::cout << "SetB pos " << SetB.at(0).size() << " neg " << SetB.at(1).size() << " entropy B " << entoropyB << std::endl;
@@ -788,7 +833,7 @@ double CRTree::calcEntropy(const std::vector<CPatch> &set, int negSize, int maxC
     for(int i = 0; i < set.size(); ++i)
         if(set.at(i).classNum == maxClass)
             maxClassNum++;
-    if(maxClassNum > 0){
+    if(maxClassNum > 0 && maxClassNum != set.size()){
         //std::cout << maxClassNum << std::endl;
 
         otherClass = set.size() - maxClassNum;

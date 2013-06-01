@@ -7,7 +7,6 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/learning.dir/detectionresult.cpp.o"
   "learning.pdb"
   "learning"
-  "learning-1.0.0"
 )
 
 # Per-language clean rules from dependency scanning.

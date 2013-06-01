@@ -95,9 +95,12 @@ public:
     double distMean(const std::vector<CPatch>& SetA, const std::vector<CPatch>& SetB);
     double InfGain(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB);
     double calcEntropy(const std::vector<CPatch> &set, int negSize,int maxClass);
-    double measureSet(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB, unsigned int depth) {
+    double measureSet(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB, unsigned int depth,int mode) {
         double lamda = 1;
-        return InfGain(SetA, SetB);// + (1 - exp((double)depth / lamda)) * distMean(SetA.at(0), SetB.at(0)) * -1;
+        if(mode == 1)
+            return InfGain(SetA, SetB);
+        else
+            return distMean(SetA.at(0), SetB.at(0)) * -1;
     };
 
 

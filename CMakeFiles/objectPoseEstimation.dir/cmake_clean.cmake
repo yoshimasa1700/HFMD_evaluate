@@ -7,7 +7,6 @@ FILE(REMOVE_RECURSE
   "CMakeFiles/objectPoseEstimation.dir/detectionresult.cpp.o"
   "objectPoseEstimation.pdb"
   "objectPoseEstimation"
-  "objectPoseEstimation-1.0.0"
 )
 
 # Per-language clean rules from dependency scanning.
