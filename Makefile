@@ -124,188 +124,161 @@ objectPoseEstimation/fast:
 	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/build
 .PHONY : objectPoseEstimation/fast
 
-CRForest.o: CRForest.cpp.o
-.PHONY : CRForest.o
+source/CRForest.o: source/CRForest.cpp.o
+.PHONY : source/CRForest.o
 
 # target to build an object file
-CRForest.cpp.o:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/CRForest.cpp.o
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/CRForest.cpp.o
-.PHONY : CRForest.cpp.o
+source/CRForest.cpp.o:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/CRForest.cpp.o
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/CRForest.cpp.o
+.PHONY : source/CRForest.cpp.o
 
-CRForest.i: CRForest.cpp.i
-.PHONY : CRForest.i
+source/CRForest.i: source/CRForest.cpp.i
+.PHONY : source/CRForest.i
 
 # target to preprocess a source file
-CRForest.cpp.i:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/CRForest.cpp.i
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/CRForest.cpp.i
-.PHONY : CRForest.cpp.i
+source/CRForest.cpp.i:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/CRForest.cpp.i
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/CRForest.cpp.i
+.PHONY : source/CRForest.cpp.i
 
-CRForest.s: CRForest.cpp.s
-.PHONY : CRForest.s
+source/CRForest.s: source/CRForest.cpp.s
+.PHONY : source/CRForest.s
 
 # target to generate assembly for a file
-CRForest.cpp.s:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/CRForest.cpp.s
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/CRForest.cpp.s
-.PHONY : CRForest.cpp.s
+source/CRForest.cpp.s:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/CRForest.cpp.s
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/CRForest.cpp.s
+.PHONY : source/CRForest.cpp.s
 
-CRTree.o: CRTree.cpp.o
-.PHONY : CRTree.o
+source/CRTree.o: source/CRTree.cpp.o
+.PHONY : source/CRTree.o
 
 # target to build an object file
-CRTree.cpp.o:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/CRTree.cpp.o
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/CRTree.cpp.o
-.PHONY : CRTree.cpp.o
+source/CRTree.cpp.o:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/CRTree.cpp.o
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/CRTree.cpp.o
+.PHONY : source/CRTree.cpp.o
 
-CRTree.i: CRTree.cpp.i
-.PHONY : CRTree.i
+source/CRTree.i: source/CRTree.cpp.i
+.PHONY : source/CRTree.i
 
 # target to preprocess a source file
-CRTree.cpp.i:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/CRTree.cpp.i
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/CRTree.cpp.i
-.PHONY : CRTree.cpp.i
+source/CRTree.cpp.i:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/CRTree.cpp.i
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/CRTree.cpp.i
+.PHONY : source/CRTree.cpp.i
 
-CRTree.s: CRTree.cpp.s
-.PHONY : CRTree.s
+source/CRTree.s: source/CRTree.cpp.s
+.PHONY : source/CRTree.s
 
 # target to generate assembly for a file
-CRTree.cpp.s:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/CRTree.cpp.s
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/CRTree.cpp.s
-.PHONY : CRTree.cpp.s
+source/CRTree.cpp.s:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/CRTree.cpp.s
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/CRTree.cpp.s
+.PHONY : source/CRTree.cpp.s
 
-HoG.o: HoG.cpp.o
-.PHONY : HoG.o
+source/HoG.o: source/HoG.cpp.o
+.PHONY : source/HoG.o
 
 # target to build an object file
-HoG.cpp.o:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/HoG.cpp.o
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/HoG.cpp.o
-.PHONY : HoG.cpp.o
+source/HoG.cpp.o:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/HoG.cpp.o
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/HoG.cpp.o
+.PHONY : source/HoG.cpp.o
 
-HoG.i: HoG.cpp.i
-.PHONY : HoG.i
+source/HoG.i: source/HoG.cpp.i
+.PHONY : source/HoG.i
 
 # target to preprocess a source file
-HoG.cpp.i:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/HoG.cpp.i
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/HoG.cpp.i
-.PHONY : HoG.cpp.i
+source/HoG.cpp.i:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/HoG.cpp.i
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/HoG.cpp.i
+.PHONY : source/HoG.cpp.i
 
-HoG.s: HoG.cpp.s
-.PHONY : HoG.s
+source/HoG.s: source/HoG.cpp.s
+.PHONY : source/HoG.s
 
 # target to generate assembly for a file
-HoG.cpp.s:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/HoG.cpp.s
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/HoG.cpp.s
-.PHONY : HoG.cpp.s
+source/HoG.cpp.s:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/HoG.cpp.s
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/HoG.cpp.s
+.PHONY : source/HoG.cpp.s
 
-detectionresult.o: detectionresult.cpp.o
-.PHONY : detectionresult.o
+source/learning.o: source/learning.cpp.o
+.PHONY : source/learning.o
 
 # target to build an object file
-detectionresult.cpp.o:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/detectionresult.cpp.o
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/detectionresult.cpp.o
-.PHONY : detectionresult.cpp.o
+source/learning.cpp.o:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/learning.cpp.o
+.PHONY : source/learning.cpp.o
 
-detectionresult.i: detectionresult.cpp.i
-.PHONY : detectionresult.i
+source/learning.i: source/learning.cpp.i
+.PHONY : source/learning.i
 
 # target to preprocess a source file
-detectionresult.cpp.i:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/detectionresult.cpp.i
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/detectionresult.cpp.i
-.PHONY : detectionresult.cpp.i
+source/learning.cpp.i:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/learning.cpp.i
+.PHONY : source/learning.cpp.i
 
-detectionresult.s: detectionresult.cpp.s
-.PHONY : detectionresult.s
+source/learning.s: source/learning.cpp.s
+.PHONY : source/learning.s
 
 # target to generate assembly for a file
-detectionresult.cpp.s:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/detectionresult.cpp.s
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/detectionresult.cpp.s
-.PHONY : detectionresult.cpp.s
+source/learning.cpp.s:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/learning.cpp.s
+.PHONY : source/learning.cpp.s
 
-learning.o: learning.cpp.o
-.PHONY : learning.o
+source/objectPoseEstimation.o: source/objectPoseEstimation.cpp.o
+.PHONY : source/objectPoseEstimation.o
 
 # target to build an object file
-learning.cpp.o:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/learning.cpp.o
-.PHONY : learning.cpp.o
+source/objectPoseEstimation.cpp.o:
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/objectPoseEstimation.cpp.o
+.PHONY : source/objectPoseEstimation.cpp.o
 
-learning.i: learning.cpp.i
-.PHONY : learning.i
+source/objectPoseEstimation.i: source/objectPoseEstimation.cpp.i
+.PHONY : source/objectPoseEstimation.i
 
 # target to preprocess a source file
-learning.cpp.i:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/learning.cpp.i
-.PHONY : learning.cpp.i
+source/objectPoseEstimation.cpp.i:
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/objectPoseEstimation.cpp.i
+.PHONY : source/objectPoseEstimation.cpp.i
 
-learning.s: learning.cpp.s
-.PHONY : learning.s
+source/objectPoseEstimation.s: source/objectPoseEstimation.cpp.s
+.PHONY : source/objectPoseEstimation.s
 
 # target to generate assembly for a file
-learning.cpp.s:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/learning.cpp.s
-.PHONY : learning.cpp.s
+source/objectPoseEstimation.cpp.s:
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/objectPoseEstimation.cpp.s
+.PHONY : source/objectPoseEstimation.cpp.s
 
-objectPoseEstimation.o: objectPoseEstimation.cpp.o
-.PHONY : objectPoseEstimation.o
+source/util.o: source/util.cpp.o
+.PHONY : source/util.o
 
 # target to build an object file
-objectPoseEstimation.cpp.o:
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/objectPoseEstimation.cpp.o
-.PHONY : objectPoseEstimation.cpp.o
+source/util.cpp.o:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/util.cpp.o
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/util.cpp.o
+.PHONY : source/util.cpp.o
 
-objectPoseEstimation.i: objectPoseEstimation.cpp.i
-.PHONY : objectPoseEstimation.i
-
-# target to preprocess a source file
-objectPoseEstimation.cpp.i:
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/objectPoseEstimation.cpp.i
-.PHONY : objectPoseEstimation.cpp.i
-
-objectPoseEstimation.s: objectPoseEstimation.cpp.s
-.PHONY : objectPoseEstimation.s
-
-# target to generate assembly for a file
-objectPoseEstimation.cpp.s:
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/objectPoseEstimation.cpp.s
-.PHONY : objectPoseEstimation.cpp.s
-
-util.o: util.cpp.o
-.PHONY : util.o
-
-# target to build an object file
-util.cpp.o:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/util.cpp.o
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/util.cpp.o
-.PHONY : util.cpp.o
-
-util.i: util.cpp.i
-.PHONY : util.i
+source/util.i: source/util.cpp.i
+.PHONY : source/util.i
 
 # target to preprocess a source file
-util.cpp.i:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/util.cpp.i
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/util.cpp.i
-.PHONY : util.cpp.i
+source/util.cpp.i:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/util.cpp.i
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/util.cpp.i
+.PHONY : source/util.cpp.i
 
-util.s: util.cpp.s
-.PHONY : util.s
+source/util.s: source/util.cpp.s
+.PHONY : source/util.s
 
 # target to generate assembly for a file
-util.cpp.s:
-	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/util.cpp.s
-	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/util.cpp.s
-.PHONY : util.cpp.s
+source/util.cpp.s:
+	$(MAKE) -f CMakeFiles/learning.dir/build.make CMakeFiles/learning.dir/source/util.cpp.s
+	$(MAKE) -f CMakeFiles/objectPoseEstimation.dir/build.make CMakeFiles/objectPoseEstimation.dir/source/util.cpp.s
+.PHONY : source/util.cpp.s
 
 # Help Target
 help:
@@ -317,27 +290,24 @@ help:
 	@echo "... learning"
 	@echo "... objectPoseEstimation"
 	@echo "... rebuild_cache"
-	@echo "... CRForest.o"
-	@echo "... CRForest.i"
-	@echo "... CRForest.s"
-	@echo "... CRTree.o"
-	@echo "... CRTree.i"
-	@echo "... CRTree.s"
-	@echo "... HoG.o"
-	@echo "... HoG.i"
-	@echo "... HoG.s"
-	@echo "... detectionresult.o"
-	@echo "... detectionresult.i"
-	@echo "... detectionresult.s"
-	@echo "... learning.o"
-	@echo "... learning.i"
-	@echo "... learning.s"
-	@echo "... objectPoseEstimation.o"
-	@echo "... objectPoseEstimation.i"
-	@echo "... objectPoseEstimation.s"
-	@echo "... util.o"
-	@echo "... util.i"
-	@echo "... util.s"
+	@echo "... source/CRForest.o"
+	@echo "... source/CRForest.i"
+	@echo "... source/CRForest.s"
+	@echo "... source/CRTree.o"
+	@echo "... source/CRTree.i"
+	@echo "... source/CRTree.s"
+	@echo "... source/HoG.o"
+	@echo "... source/HoG.i"
+	@echo "... source/HoG.s"
+	@echo "... source/learning.o"
+	@echo "... source/learning.i"
+	@echo "... source/learning.s"
+	@echo "... source/objectPoseEstimation.o"
+	@echo "... source/objectPoseEstimation.i"
+	@echo "... source/objectPoseEstimation.s"
+	@echo "... source/util.o"
+	@echo "... source/util.i"
+	@echo "... source/util.s"
 .PHONY : help
 
 
