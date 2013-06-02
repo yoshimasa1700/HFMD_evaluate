@@ -1,2 +1,0 @@
-/home/masahiko/Programs/HFMD_evaluate/CMakeFiles/learning.dir
-/home/masahiko/Programs/HFMD_evaluate/CMakeFiles/objectPoseEstimation.dir
