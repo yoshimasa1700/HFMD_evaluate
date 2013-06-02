@@ -783,7 +783,7 @@ double CRTree::InfGain(const std::vector<std::vector<CPatch> >& SetA, const std:
         entoropy += calcEntropy(set, SetA.at(1).size() + SetB.at(1).size(), i);
     }
 
-    std::cout << entoropyA << " ";
+    //std::cout << entoropyA << " ";
 
     double wa = (double)(SetA.at(0).size() + SetA.at(1).size()) / (set.size() + SetA.at(1).size());
     double wb = (double)(SetB.at(0).size() + SetB.at(1).size()) / (set.size() + SetB.at(1).size());
@@ -812,7 +812,7 @@ double CRTree::InfGain(const std::vector<std::vector<CPatch> >& SetA, const std:
         }
     }
 
-    std::cout << entoropyA << std::endl;
+    //std::cout << entoropyA << std::endl;
 
 
 //    std::cout << std::endl << "SetA pos " << SetA.at(0).size() << " neg " << SetA.at(1).size() << " entropy A " << entoropyA << std::endl;

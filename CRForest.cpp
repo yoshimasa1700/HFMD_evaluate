@@ -125,7 +125,7 @@ void CRForest::growATree(const int treeNum){
     //std::cout << "images" << images.size() << std::endl;
 
     if(conf.negMode){
-        extractPatches(vPatches, dataSets, features, negFeatures, conf);
+        extractPatches(vPatches, dataSets, features, negFeatures, conf, treeNum);
     }else{
         // extract patch from image
         //std::cout << "extruction patch from features" << std::endl;
@@ -348,7 +348,8 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
                               const std::vector<CDataset> dataSet,
                               const cv::vector<cv::vector<cv::Mat*> > &image,
                               const cv::vector<cv::vector<cv::Mat*> > &negImage,
-                              CConfig conf){
+                              CConfig conf,
+                              const int treeNum){
     cv::Rect temp;
     CPatch tPatch;
 
@@ -405,11 +406,20 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
         }//y
     }//allimages
 
+    std::vector<int> patchNum(patchPerClass.size(),conf.patchRatio);
+
+    for(int i = 0; i < patchPerClass.size(); ++i){
+        if(i == treeNum % patchPerClass.size())
+            patchNum.at(i) = conf.patchRatio;
+        else
+            patchNum.at(i) = conf.patchRatio * 0.2;
+    }
+
     // choose patch from each image
     for(int i = 0; i < patchPerClass.size(); ++i){
         if(patchPerClass.at(i).size() > conf.patchRatio){
 
-            std::set<int> chosenPatch = nck.generate(patchPerClass.at(i).size(), conf.patchRatio);//totalPatchNum * conf.patchRatio);
+            std::set<int> chosenPatch = nck.generate(patchPerClass.at(i).size(),patchNum.at(i));// conf.patchRatio);//totalPatchNum * conf.patchRatio);
             std::set<int>::iterator ite = chosenPatch.begin();
 
             while(ite != chosenPatch.end()){
@@ -457,6 +467,8 @@ void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
     patches.push_back(posPatch);
     patches.push_back(negPatch);
 }
+
+
 
 void CRForest::extractAllPatches(const CDataset &dataSet, const cv::vector<cv::Mat*> &image, std::vector<CPatch> &patches) const{
 
@@ -586,6 +598,8 @@ void CRForest::detection(const CDataset &dataSet,
 
     // vote end
 
+
+
     // clustaring by mean shift
     for(int i = 0; i < classNum; ++i){
         cv::Mat hsv,hue,rgb;
@@ -594,6 +608,8 @@ void CRForest::detection(const CDataset &dataSet,
         double min,max;
         cv::Point minLoc,maxLoc;
         cv::minMaxLoc(outputImageColorOnly.at(i),&min,&max,&minLoc,&maxLoc);
+
+        cv::GaussianBlur(outputImageColorOnly.at(i),outputImageColorOnly.at(i), cv::Size(21,21),0);
 
         //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
         //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
@@ -640,12 +656,12 @@ void CRForest::detection(const CDataset &dataSet,
 
 
         //show and write histgram
-        //        cv::imwrite("test.png",hist_img);
+                cv::imwrite("test.png",hist_img);
 
-        //        cv::namedWindow("test");
-        //        cv::imshow("test",hist_img);
-        //        cv::waitKey(0);
-        //        cv::destroyWindow("test");
+                cv::namedWindow("test");
+                cv::imshow("test",hist_img);
+                cv::waitKey(0);
+                cv::destroyWindow("test");
 
         /// Get Backprojection
         cv::Mat backproj;

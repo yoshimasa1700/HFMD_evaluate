@@ -53,15 +53,15 @@ CMakeFiles/learning.dir/learning.cpp.o: CMakeFiles/learning.dir/flags.make
 CMakeFiles/learning.dir/learning.cpp.o: learning.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Programs/HFMD_evaluate/CMakeFiles $(CMAKE_PROGRESS_1)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/learning.dir/learning.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/learning.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/learning.cpp
+	/usr/bin/clang++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/learning.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/learning.cpp
 
 CMakeFiles/learning.dir/learning.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/learning.dir/learning.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/learning.cpp > CMakeFiles/learning.dir/learning.cpp.i
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/learning.cpp > CMakeFiles/learning.dir/learning.cpp.i
 
 CMakeFiles/learning.dir/learning.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/learning.dir/learning.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/learning.cpp -o CMakeFiles/learning.dir/learning.cpp.s
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/learning.cpp -o CMakeFiles/learning.dir/learning.cpp.s
 
 CMakeFiles/learning.dir/learning.cpp.o.requires:
 .PHONY : CMakeFiles/learning.dir/learning.cpp.o.requires
@@ -76,15 +76,15 @@ CMakeFiles/learning.dir/CRForest.cpp.o: CMakeFiles/learning.dir/flags.make
 CMakeFiles/learning.dir/CRForest.cpp.o: CRForest.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Programs/HFMD_evaluate/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/learning.dir/CRForest.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/CRForest.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/CRForest.cpp
+	/usr/bin/clang++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/CRForest.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/CRForest.cpp
 
 CMakeFiles/learning.dir/CRForest.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/learning.dir/CRForest.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/CRForest.cpp > CMakeFiles/learning.dir/CRForest.cpp.i
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/CRForest.cpp > CMakeFiles/learning.dir/CRForest.cpp.i
 
 CMakeFiles/learning.dir/CRForest.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/learning.dir/CRForest.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/CRForest.cpp -o CMakeFiles/learning.dir/CRForest.cpp.s
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/CRForest.cpp -o CMakeFiles/learning.dir/CRForest.cpp.s
 
 CMakeFiles/learning.dir/CRForest.cpp.o.requires:
 .PHONY : CMakeFiles/learning.dir/CRForest.cpp.o.requires
@@ -99,15 +99,15 @@ CMakeFiles/learning.dir/util.cpp.o: CMakeFiles/learning.dir/flags.make
 CMakeFiles/learning.dir/util.cpp.o: util.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Programs/HFMD_evaluate/CMakeFiles $(CMAKE_PROGRESS_3)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/learning.dir/util.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/util.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/util.cpp
+	/usr/bin/clang++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/util.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/util.cpp
 
 CMakeFiles/learning.dir/util.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/learning.dir/util.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/util.cpp > CMakeFiles/learning.dir/util.cpp.i
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/util.cpp > CMakeFiles/learning.dir/util.cpp.i
 
 CMakeFiles/learning.dir/util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/learning.dir/util.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/util.cpp -o CMakeFiles/learning.dir/util.cpp.s
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/util.cpp -o CMakeFiles/learning.dir/util.cpp.s
 
 CMakeFiles/learning.dir/util.cpp.o.requires:
 .PHONY : CMakeFiles/learning.dir/util.cpp.o.requires
@@ -122,15 +122,15 @@ CMakeFiles/learning.dir/CRTree.cpp.o: CMakeFiles/learning.dir/flags.make
 CMakeFiles/learning.dir/CRTree.cpp.o: CRTree.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Programs/HFMD_evaluate/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/learning.dir/CRTree.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/CRTree.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/CRTree.cpp
+	/usr/bin/clang++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/CRTree.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/CRTree.cpp
 
 CMakeFiles/learning.dir/CRTree.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/learning.dir/CRTree.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/CRTree.cpp > CMakeFiles/learning.dir/CRTree.cpp.i
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/CRTree.cpp > CMakeFiles/learning.dir/CRTree.cpp.i
 
 CMakeFiles/learning.dir/CRTree.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/learning.dir/CRTree.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/CRTree.cpp -o CMakeFiles/learning.dir/CRTree.cpp.s
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/CRTree.cpp -o CMakeFiles/learning.dir/CRTree.cpp.s
 
 CMakeFiles/learning.dir/CRTree.cpp.o.requires:
 .PHONY : CMakeFiles/learning.dir/CRTree.cpp.o.requires
@@ -145,15 +145,15 @@ CMakeFiles/learning.dir/HoG.cpp.o: CMakeFiles/learning.dir/flags.make
 CMakeFiles/learning.dir/HoG.cpp.o: HoG.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Programs/HFMD_evaluate/CMakeFiles $(CMAKE_PROGRESS_5)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/learning.dir/HoG.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/HoG.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/HoG.cpp
+	/usr/bin/clang++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/HoG.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/HoG.cpp
 
 CMakeFiles/learning.dir/HoG.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/learning.dir/HoG.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/HoG.cpp > CMakeFiles/learning.dir/HoG.cpp.i
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/HoG.cpp > CMakeFiles/learning.dir/HoG.cpp.i
 
 CMakeFiles/learning.dir/HoG.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/learning.dir/HoG.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/HoG.cpp -o CMakeFiles/learning.dir/HoG.cpp.s
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/HoG.cpp -o CMakeFiles/learning.dir/HoG.cpp.s
 
 CMakeFiles/learning.dir/HoG.cpp.o.requires:
 .PHONY : CMakeFiles/learning.dir/HoG.cpp.o.requires
@@ -168,15 +168,15 @@ CMakeFiles/learning.dir/detectionresult.cpp.o: CMakeFiles/learning.dir/flags.mak
 CMakeFiles/learning.dir/detectionresult.cpp.o: detectionresult.cpp
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/masahiko/Programs/HFMD_evaluate/CMakeFiles $(CMAKE_PROGRESS_6)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Building CXX object CMakeFiles/learning.dir/detectionresult.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/detectionresult.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/detectionresult.cpp
+	/usr/bin/clang++   $(CXX_DEFINES) $(CXX_FLAGS) -o CMakeFiles/learning.dir/detectionresult.cpp.o -c /home/masahiko/Programs/HFMD_evaluate/detectionresult.cpp
 
 CMakeFiles/learning.dir/detectionresult.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/learning.dir/detectionresult.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/detectionresult.cpp > CMakeFiles/learning.dir/detectionresult.cpp.i
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -E /home/masahiko/Programs/HFMD_evaluate/detectionresult.cpp > CMakeFiles/learning.dir/detectionresult.cpp.i
 
 CMakeFiles/learning.dir/detectionresult.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/learning.dir/detectionresult.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/detectionresult.cpp -o CMakeFiles/learning.dir/detectionresult.cpp.s
+	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_FLAGS) -S /home/masahiko/Programs/HFMD_evaluate/detectionresult.cpp -o CMakeFiles/learning.dir/detectionresult.cpp.s
 
 CMakeFiles/learning.dir/detectionresult.cpp.o.requires:
 .PHONY : CMakeFiles/learning.dir/detectionresult.cpp.o.requires

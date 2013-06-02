@@ -11,7 +11,7 @@ SET(CMAKE_DEPENDS_CHECK_CXX
   "/home/masahiko/Programs/HFMD_evaluate/objectPoseEstimation.cpp" "/home/masahiko/Programs/HFMD_evaluate/CMakeFiles/objectPoseEstimation.dir/objectPoseEstimation.cpp.o"
   "/home/masahiko/Programs/HFMD_evaluate/util.cpp" "/home/masahiko/Programs/HFMD_evaluate/CMakeFiles/objectPoseEstimation.dir/util.cpp.o"
   )
-SET(CMAKE_CXX_COMPILER_ID "GNU")
+SET(CMAKE_CXX_COMPILER_ID "Clang")
 
 # Targets to which this target links.
 SET(CMAKE_TARGET_LINKED_INFO_FILES

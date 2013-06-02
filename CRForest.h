@@ -38,10 +38,11 @@ class CRForest {
 		      /*boost::mt19937 gen, */CConfig conf);
 
   void extractPatches(std::vector<std::vector<CPatch> > &patches,
-                                const std::vector<CDataset> dataSet,
-                                const cv::vector<cv::vector<cv::Mat*> > &image,
-                                const cv::vector<cv::vector<cv::Mat*> > &negImage,
-                                CConfig conf);
+                      const std::vector<CDataset> dataSet,
+                      const cv::vector<cv::vector<cv::Mat*> > &image,
+                      const cv::vector<cv::vector<cv::Mat*> > &negImage,
+                      CConfig conf,
+                      const int treeNum);
 
   void loadForest();
   void extractAllPatches(const CDataset &dataSet, 

@@ -1,6 +1,8 @@
 # CMakeのバージョン
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
+SET(CMAKE_CXX_COMPILER "clang++")
+
 # リリースビルド用オプション
 SET(CMAKE_C_FLAGS_RELEASE "-Wall -O3")
 
