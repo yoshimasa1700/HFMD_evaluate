@@ -10,12 +10,12 @@ public:
     virtual ~CPatch(){}
 
     void setData(CDataset *d){data = d;}
-    DATA getData(){return data;}
+    CDataset* getData(){return data;}
 
     void setRoi(cv::Rect r){roi = r;}
     cv::Rect getRoi(){return roi;}
 
-    getFeatureRoi(int featureNum){return &(*(data->feature.at(featureNum)))(roi);}
+    cv::Mat* getFeatureRoi(int featureNum){return &(*(data->feature.at(featureNum)))(roi);}
 
 private:
     cv::Rect roi;

@@ -40,15 +40,15 @@ public:
     int extractFeatures();
     int releaseFeatures();
 
+    // loaded images and features
+    std::vector<cv::Mat*> img, feature;
+
 private:
     // flag for image or features loaded on memory
     bool imgFlag, featureFlag;
 
     // image file path
     std::string rgb, depth, mask;
-
-    // loaded images and features
-    std::vector<cv::Mat*> img, feature;
 
     // min and max filter
     int minFilter(cv::Mat* src, cv::Mat* des, int fWind);
