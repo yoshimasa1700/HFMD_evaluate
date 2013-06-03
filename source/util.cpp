@@ -376,15 +376,12 @@ int CConfig::loadConfig(const char* filename)
     return 0;
 }
 
-void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
+void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet)
 {
-    dataSet.resize(0);
-
     std::string traindatafilepath = conf.trainpath + PATH_SEP +  conf.traindatafile;
     int n_folders;
     int n_files;
     std::vector<std::string> trainimagefolder;
-    CDataset temp;
     std::vector<CDataset> tempDataSet;
     std::string trainDataListPath;
     int dataSetNum;
@@ -392,6 +389,7 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
     cv::Point tempPoint;
     nCk nck;
 
+    posSet.clear();
 
     //read train data folder list
     std::ifstream in(traindatafilepath.c_str());
@@ -400,62 +398,65 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
         exit(1);
     }
 
-    //std::cout << "kokomade " << std::endl;
-
-    // read folder number
+    // read train pos folder
     in >> n_folders;
-    std::cout << "number of training data folder: "
-              << n_folders << std::endl;
+    std::cout << "number of training data folders : " << n_folders << std::endl;
     trainimagefolder.resize(n_folders);
-
-    // read train folder name
     for(int i = 0;i < n_folders; ++i)
         in >> trainimagefolder.at(i);
 
-    std::cout << "train image foloder num is " << trainimagefolder.size() << std::endl;
+    // close train pos data folder list
     in.close();
+
+    std::cout << "train folders lists : " << std::endl;
     //read train file name and grand truth from file
     tempDataSet.clear();
     for(int i = 0;i < n_folders; ++i){
         trainDataListPath
-                = conf.trainpath + PATH_SEP + trainimagefolder.at(i)
-                + PATH_SEP + conf.traindatalist;
+                = conf.trainpath + PATH_SEP + trainimagefolder.at(i) + PATH_SEP + conf.traindatalist;
 
         std::cout << trainDataListPath << std::endl;
-        temp.imageFilePath
+        std::string imageFilePath
                 = conf.trainpath + PATH_SEP + trainimagefolder.at(i) + PATH_SEP;
 
         std::ifstream trainDataList(trainDataListPath.c_str());
         if(!trainDataList.is_open()){
             std::cout << "can't read " << trainDataListPath << std::endl;
-            exit(0);
+            exit(1);
         }
 
         trainDataList >> n_files;
 
         for(int j = 0;j < n_files; ++j){
-            temp.className.clear();
-            temp.angles.clear();
-            temp.centerPoint.clear();
+            CPosDataset posTemp;
+            std::string nameTemp;
+
+
+//            posTemp.angles.clear();
+//            posTemp.centerPoint.clear();
 
             //read file names
-            trainDataList >> temp.rgbImageName;
-            trainDataList >> temp.depthImageName;
-            trainDataList >> temp.maskImageName;
+            trainDataList >> nameTemp;
+            posTemp.setRgbImagePath(nameTemp);
+
+            trainDataList >> nameTemp;
+
+
+            trainDataList >> posTemp.maskImageName;
 
             //read bounding box
-            //trainDataList >> temp.bBox.x;
-            //trainDataList >> temp.bBox.y;
-            //trainDataList >> temp.bBox.width;
-            //trainDataList >> temp.bBox.height;
+            //trainDataList >> posTemp.bBox.x;
+            //trainDataList >> posTemp.bBox.y;
+            //trainDataList >> posTemp.bBox.width;
+            //trainDataList >> posTemp.bBox.height;
 
-            temp.centerPoint.clear();
+            posTemp.centerPoint.clear();
 
             //read center point
-            //trainDataList >> tempPoint.x;//temp.centerPoint.x;
-            //trainDataList >> tempPoint.y;
+            //trainDataList >> posTempPoint.x;//posTemp.centerPoint.x;
+            //trainDataList >> posTempPoint.y;
 
-            //temp.centerPoint.push_back(tempPoint);
+            //posTemp.centerPoint.push_back(posTempPoint);
 
             //read class name
             std::string tempClassName;

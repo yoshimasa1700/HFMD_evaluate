@@ -126,7 +126,7 @@ class CImages{
 
 std::vector<cv::Mat> convertScale(const std::vector<cv::Mat> &inputImg, double scale);
 
-void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet);//, boost::mt19937 &gen);
+void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet);//, boost::mt19937 &gen);
 
 class databaseNode{
  public:

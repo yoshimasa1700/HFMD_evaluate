@@ -40,6 +40,9 @@ public:
     int extractFeatures();
     int releaseFeatures();
 
+    void setRgbImagePath(std::string rgb_path){rgb = rgb_path;}
+    void setDepthImagePath(std::string depth_path){depth = depth_path;}
+
     // loaded images and features
     std::vector<cv::Mat*> img, feature;
 
@@ -67,6 +70,11 @@ public:
     CPosDataset();
     virtual ~CPosDataset();
 
+    void setClassName(std::string name){param.setClassName(name);}
+    void setAngle(double an){param.setAngle(an);}
+    void setCenterPoint(cv::Point cp){param.setCenterPoint(cp);}
+
+private:
     CParamset param;
 };
 

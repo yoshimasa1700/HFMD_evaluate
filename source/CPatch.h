@@ -15,16 +15,11 @@ public:
     void setRoi(cv::Rect r){roi = r;}
     cv::Rect getRoi(){return roi;}
 
-    cv::Mat* getFeatureRoi(int featureNum){return &(*(data->feature.at(featureNum)))(roi);}
+    cv::Mat* getFeature(int featureNum){return data->feature.at(featureNum);}
 
 private:
     cv::Rect roi;
     CDataset *data;
-};
-
-class CPosPatch : public CPatch{
-    CPosPatch(CPosDataset *pos, cv::Rect r) : CPatch(pos, r){}
-    virtual ~CPosPatch();
 };
 
 class CPosPatch : public CPatch{
@@ -48,11 +43,11 @@ private:
 
 class CTestPatch : public CPatch{
 public:
-    CNegPatch(CNegDataset *neg, cv::Rect r) : nData(neg), CPatch(neg, r){}
-    virtual ~CNegPatch();
+    CTestPatch(CTestDataset *tes, cv::Rect r) : tData(tes), CPatch(tes, r){}
+    virtual ~CTestPatch();
 
 private:
-    CNegDataset *nData;
+    CTestDataset *tData;
 };
 
 #endif

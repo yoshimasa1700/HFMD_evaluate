@@ -11,15 +11,17 @@ void CRForest::learning(){
 }
 
 void CRForest::growATree(const int treeNum){
-    std::vector<CDataset> dataSets(0);
-    std::vector<CDataset> negDataSets(0);
-    cv::vector<cv::vector<cv::Mat *> > images;
-    cv::vector<cv::vector<cv::Mat *> > negImages;
-    cv::vector<cv::vector<cv::Mat *> > features;
-    cv::vector<cv::vector<cv::Mat *> > negFeatures;
-    std::vector<std::vector<CPatch> > vPatches;
-    cv::vector<cv::Mat *> tempFeature;
+//    std::vector<CDataset> dataSets(0);
+//    std::vector<CDataset> negDataSets(0);
+//    cv::vector<cv::vector<cv::Mat *> > images;
+//    cv::vector<cv::vector<cv::Mat *> > negImages;
+//    cv::vector<cv::vector<cv::Mat *> > features;
+//    cv::vector<cv::vector<cv::Mat *> > negFeatures;
+//    std::vector<std::vector<CPatch> > vPatches;
+//    cv::vector<cv::Mat *> tempFeature;
 
+    std::vector<CPosDataset> posSet;
+    std::vector<CNegDataset> negSet;
 
 
     char buffer[256];
