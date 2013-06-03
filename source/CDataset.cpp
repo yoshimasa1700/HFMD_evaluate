@@ -1,16 +1,28 @@
 #include "CDataset.h"
 
-class CDataset {
- public:
-  CDataset();
-  ~CDataset(){}
+CDataset::CDataset(){
+    imgFlag = 0;
+    featureFlag = 0;
+    rgb = NULL;
+    depth = NULL;
+    mask = NULL;
+    img.clear();
+    feature.clear();
+}
 
-  std::string rgbImageName, depthImageName, maskImageName, imageFilePath;
-  cv::Rect bBox;
-  std::vector<std::string> className;
-  std::vector<cv::Point> centerPoint;
-  std::vector<double> angles;
+int CDataset::loadImage(){
 
-  void showDataset();
-};
+}
+
+int CDataset::releaseImage(){
+
+}
+
+int CDataset::extractFeatures(){
+
+}
+
+int CDataset::releaseFeatures(){
+
+}
 
