@@ -656,12 +656,12 @@ void CRForest::detection(const CDataset &dataSet,
 
 
         //show and write histgram
-                cv::imwrite("test.png",hist_img);
+//                cv::imwrite("test.png",hist_img);
 
-                cv::namedWindow("test");
-                cv::imshow("test",hist_img);
-                cv::waitKey(0);
-                cv::destroyWindow("test");
+//                cv::namedWindow("test");
+//                cv::imshow("test",hist_img);
+//                cv::waitKey(0);
+//                cv::destroyWindow("test");
 
         /// Get Backprojection
         cv::Mat backproj;

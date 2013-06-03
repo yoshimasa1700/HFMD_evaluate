@@ -90,8 +90,8 @@ CRTree::CRTree(const char* filename) {
         }
 
         // this is for debug
-        std::vector<double> pfgSum(3,0.);
-        std::vector<int> voteSum(3,0);
+//        std::vector<double> pfgSum(3,0.);
+//        std::vector<int> voteSum(3,0);
 
         // read tree leafs
         LeafNode* ptLN = &leaf[0];
@@ -116,8 +116,8 @@ CRTree::CRTree(const char* filename) {
                 in >> containPoints;
                 std::cout << " " << ptLN->pfg.at(cNum) << " " << containPoints << std::endl;
 
-                pfgSum.at(cNum) += ptLN->pfg.at(cNum);
-                voteSum.at(cNum) += containPoints;
+//                pfgSum.at(cNum) += ptLN->pfg.at(cNum);
+//                voteSum.at(cNum) += containPoints;
 
                 ptLN->vCenter.at(cNum).resize(containPoints);
 
@@ -157,9 +157,9 @@ CRTree::CRTree(const char* filename) {
         }
 
 
-        for(int i = 0; i < 3; i++){
-            std::cout << pfgSum.at(i) << " " << voteSum.at(i) << std::endl;
-        }
+//        for(int i = 0; i < 3; i++){
+//            std::cout << pfgSum.at(i) << " " << voteSum.at(i) << std::endl;
+//        }
 
     } else {
         cerr << "Could not read tree: " << filename << endl;

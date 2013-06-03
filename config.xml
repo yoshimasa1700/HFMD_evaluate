@@ -9,7 +9,7 @@
   <!-- Patch height -->
   <pheight>20</pheight>
   <!-- Path to images-->
-  <!--<imgpath>example/testimage</imgpath>-->
+  <imgpath>example/testimage</imgpath>
   <!-- Image name list -->
   <imgnamelist>example/test.txt</imgnamelist>
   <!-- Extract features -->
