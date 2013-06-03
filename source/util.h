@@ -19,6 +19,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/random.hpp>
 
+#include "CDataset.h"
+
 class CConfig
 {
  public:

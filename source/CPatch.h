@@ -3,81 +3,56 @@
 
 #include "util.h"
 
-class CPatch 
+class CPatch
 {
- public:
- CPatch(cv::Rect roi, cv::Mat* image)
-   : patchRoi(roi)
-    {
-      //patch = image(cv::Rect(roi));
-    }
-  
-  CPatch(){}
-  ~CPatch(){
-    patch.clear();
-  }
+public:
+    CPatch(CDataset *d, cv::Rect r) : data(d), roi(r){}
+    virtual ~CPatch(){}
 
-  void setPatch(int x, int y, int w, int h, cv::Mat image){
-    //patch = image(cv::Rect(x, y, w, h));
-  }
+    void setData(CDataset *d){data = d;}
+    DATA getData(){return data;}
 
-  void setPatch(cv::Rect roi,const cv::vector<cv::Mat*> &image, CDataset dataset, int cn){
-    patch.clear();
-    //vCenter.clear();
-    //xstd::cout << image->size() << std::endl;
-    
-    patchRoi = roi;
-    classNum = cn;
-    //image(roi);
-    //vCenter = center;
-    for(int i = 0; i < image.size(); ++i)
-      patch.push_back(image.at(i));
-    //std::cout << patch.size() << std::endl;
-    //p_image.push_back(&(image->at(i)));
-    cv::Point tempPoint;
+    void setRoi(cv::Rect r){roi = r;}
+    cv::Rect getRoi(){return roi;}
 
-    if(!dataset.centerPoint.empty()){
-        center.x =  dataset.centerPoint.at(0).x - roi.x - (roi.width/2);
-        center.y =  dataset.centerPoint.at(0).y - roi.y - (roi.height/2);
-    }
+    getFeatureRoi(int featureNum){return &(*(data->feature.at(featureNum)))(roi);}
 
-    //angle = dataset.angle;
-    detectedClass = -1;
-  }
+private:
+    cv::Rect roi;
+    CDataset *data;
+};
 
-  void setPatch(cv::Rect roi,const cv::vector<cv::Mat*> &image){
-    patch.clear();
-    //vCenter.clear();
-    //xstd::cout << image->size() << std::endl;
+class CPosPatch : public CPatch{
+    CPosPatch(CPosDataset *pos, cv::Rect r) : CPatch(pos, r){}
+    virtual ~CPosPatch();
+};
 
-    patchRoi = roi;
-    classNum = -2;
+class CPosPatch : public CPatch{
+public:
+    CPosPatch(CPosDataset *pos, cv::Rect r) : pData(pos), CPatch(pos, r){}
+    virtual ~CPosPatch();
 
-    //std::cout << patchRoi << std::endl;
+    std::string getClassName(){return pData->param.getClassName();}
+private:
+    CPosDataset *pData;
+};
 
-    for(int i = 0; i < image.size(); ++i)
-      patch.push_back(image.at(i));
+class CNegPatch : public CPatch{
+public:
+    CNegPatch(CNegDataset *neg, cv::Rect r) : nData(neg), CPatch(neg, r){}
+    virtual ~CNegPatch();
 
-    //angle = dataset.angle;
-    detectedClass = -1;
-  }
+private:
+    CNegDataset *nData;
+};
 
-  void setPosition(int x, int y){
-    position.x = x;
-    position.y = y;
-  }
+class CTestPatch : public CPatch{
+public:
+    CNegPatch(CNegDataset *neg, cv::Rect r) : nData(neg), CPatch(neg, r){}
+    virtual ~CNegPatch();
 
-
-  cv::Rect patchRoi;
-  cv::Point position;
-  cv::Point center;
-  cv::vector<cv::Mat*> patch;
-  int classNum;
-  double angle;
-  int detectedClass;
-  //std::vector<cv::Mat *> p_image;
-
-  //HoG hog;
+private:
+    CNegDataset *nData;
 };
 
 #endif
