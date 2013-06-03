@@ -19,20 +19,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/random.hpp>
 
-class CDataset {
- public:
-  CDataset();
-  ~CDataset(){}
-
-  std::string rgbImageName, depthImageName, maskImageName, imageFilePath;
-  cv::Rect bBox;
-  std::vector<std::string> className;
-  std::vector<cv::Point> centerPoint;
-  std::vector<double> angles;
-
-  void showDataset();
-};
-
 class CConfig
 {
  public:
