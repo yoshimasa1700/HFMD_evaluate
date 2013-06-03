@@ -3,4 +3,5 @@ CMakeFiles/
 CMakeCache.txt
 *.cmake
 Makefile
-
+.DS_Store
+*.swp
