@@ -231,7 +231,7 @@ void detect(const CRForest &forest, CConfig conf){
     std::vector<CDataset> dataSet;
     vector<cv::Mat*> image;
 
-    std::fstream result("detectionResult.txt", std::ios::out);
+    //std::fstream result("detectionResult.txt", std::ios::out);
 
     //set dataset
     dataSet.clear();
@@ -250,7 +250,7 @@ void detect(const CRForest &forest, CConfig conf){
         forest.detection(dataSet.at(i),image);
     }
 
-    result.close();
+    //result.close();
 }
 
 
