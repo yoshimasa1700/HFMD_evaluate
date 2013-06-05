@@ -20,6 +20,7 @@
 #include <boost/random.hpp>
 
 #include "CDataset.h"
+#include "CPatch.h"
 
 class CConfig
 {
@@ -112,7 +113,14 @@ class CConfig
 
 };
 
-void loadTrainNegFile(CConfig conf, std::vector<CDataset> &dataSet);
+void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet);//, boost::mt19937 &gen);
+void loadTrainNegFile(CConfig conf, std::vector<CNegDataset> &negSet);
+
+void extractPosPatches(const std::vector<CPosDataset> &posSet,std::vector<CPosPatch> &posPatch,
+                       CConfig conf,
+                       const int treeNum);
+void extractNegPatches(const std::vector<CNegDataset> &negSet,std::vector<CNegPatch> &negPatch,
+                       CConfig conf);
 
 void pBar(int p,int maxNum, int width);
 
@@ -126,7 +134,6 @@ class CImages{
 
 std::vector<cv::Mat> convertScale(const std::vector<cv::Mat> &inputImg, double scale);
 
-void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet);//, boost::mt19937 &gen);
 
 class databaseNode{
  public:

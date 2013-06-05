@@ -1,7 +1,7 @@
 #ifndef CDATASET_H
 #define CDATASET_H
 
-#include "util.h"
+//#include "util.h"
 #include "HoG.h"
 
 class CParamset{
@@ -73,6 +73,8 @@ public:
     void setClassName(std::string name){param.setClassName(name);}
     void setAngle(double an){param.setAngle(an);}
     void setCenterPoint(cv::Point cp){param.setCenterPoint(cp);}
+
+    CParamset* getParam(){return &param;}
 
 private:
     CParamset param;

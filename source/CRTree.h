@@ -76,7 +76,8 @@ public:
     const LeafNode* regression(CPatch &patch) const;
 
     // Training
-    void growTree(std::vector<std::vector<CPatch> > &TrData, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
+    //void growTree(std::vector<std::vector<CPatch> > &TrData, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
+    void growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &negPatch, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
 
     bool optimizeTest(std::vector<std::vector<CPatch> > &SetA,
                       std::vector<std::vector<CPatch> > &SetB,

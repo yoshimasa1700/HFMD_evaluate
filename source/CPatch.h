@@ -1,7 +1,8 @@
 #ifndef __CPATCH__
 #define __CPATCH__
 
-#include "util.h"
+//#include "util.h"
+#include "CDataset.h"
 
 class CPatch
 {
@@ -27,7 +28,7 @@ public:
     CPosPatch(CPosDataset *pos, cv::Rect r) : pData(pos), CPatch(pos, r){}
     virtual ~CPosPatch();
 
-    std::string getClassName(){return pData->param.getClassName();}
+    std::string getClassName(){return pData->getParam()->getClassName();}
 private:
     CPosDataset *pData;
 };
