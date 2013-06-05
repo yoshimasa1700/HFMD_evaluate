@@ -12,12 +12,12 @@ void CRForest::learning(){
 
 void CRForest::growATree(const int treeNum){
     // positive, negative dataset
-    std::vector<CPosDataset> posSet;
-    std::vector<CNegDataset> negSet;
+    std::vector<CPosDataset> posSet(0);
+    std::vector<CNegDataset> negSet(0);
 
     // positive, negative patch
-    std::vector<CPosPatch> posPatch;
-    std::vector<CNegPatch> negPatch;
+    std::vector<CPosPatch> posPatch(0);
+    std::vector<CNegPatch> negPatch(0);
 
     char buffer[256];
 
@@ -37,10 +37,15 @@ void CRForest::growATree(const int treeNum){
 
     // extract pos features and register classDatabase
     for(int i = 0; i < posSet.size(); ++i){
+        //std::cout << i << std::endl;
+
         posSet.at(i).loadImage();
         posSet.at(i).extractFeatures();
-        posSet.at(i).releaseImage();
-        classDatabase.add(posSet.at(i).getParam()->getClassName(),posSet.at(i).img.at(i)->size(),0);
+
+
+        //std::cout << posSet.size() << std::endl;
+
+        classDatabase.add(posSet.at(i).getParam()->getClassName(),posSet.at(i).img.at(0)->size(),0);
     }
 
     classDatabase.show();
@@ -49,10 +54,9 @@ void CRForest::growATree(const int treeNum){
     for(int i = 0; i < negSet.size(); ++i){
         negSet.at(i).loadImage();
         negSet.at(i).extractFeatures();
-        negSet.at(i).releaseImage();
     }
 
-    CRTree *tree = new CRTree(conf.min_sample, conf.max_depth, classDatabase.vNode.size(), gen);
+    CRTree *tree = new CRTree(conf.min_sample, conf.max_depth, classDatabase.vNode.size(),this->classDatabase, gen);
     std::cout << "tree created" << std::endl;
 
 //    if(conf.negMode){
@@ -64,7 +68,7 @@ void CRForest::growATree(const int treeNum){
 //        //std::cout << "patch extracted!" << std::endl;
 //    }
 
-    extractPosPatches(posSet,posPatch,conf,treeNum);
+    extractPosPatches(posSet,posPatch,conf,treeNum,this->classDatabase);
     extractNegPatches(negSet,negPatch,conf);
 
     std::cout << "extracted pathes" << std::endl;
@@ -376,42 +380,6 @@ void CRForest::growATree(const int treeNum){
 //    patches.push_back(negPatch);
 //}
 
-
-
-void CRForest::extractAllPatches(const CDataset &dataSet, const cv::vector<cv::Mat*> &image, std::vector<CPatch> &patches) const{
-
-    cv::Rect temp;
-    CPatch tPatch;
-
-    temp.width = conf.p_width;
-    temp.height = conf.p_height;
-
-    patches.clear();
-    //std::cout << "extraction patches!" << std::endl;
-    for(int j = 0; j < image.at(0)->cols - conf.p_width; j += conf.stride){
-        for(int k = 0; k < image.at(0)->rows - conf.p_height; k += conf.stride){
-            temp.x = j;
-            temp.y = k;
-
-            //std::cout << dataSet.className << std::endl;
-
-            int classNum = classDatabase.search(dataSet.className.at(0));
-
-            //std::cout << "class num is " << classNum << std::endl;
-            //classDatabase.show();
-            if(classNum == -1){
-                //std::cout << "This tree not contain this class data" << std::endl;
-                //exit(-1);
-            }
-
-            tPatch.setPatch(temp, image, dataSet, classNum);
-
-            tPatch.setPosition(j,k);
-            patches.push_back(tPatch);
-        }
-    }
-}
-
 void CRForest::loadForest(){
     char buffer[256];
     for(int i = 0; i < vTrees.size(); ++i){
@@ -425,42 +393,47 @@ void CRForest::loadForest(){
 // name   : detect function
 // input  : image and dataset
 // output : classification result and detect picture
-void CRForest::detection(const CDataset &dataSet,
-                         const cv::vector<cv::Mat*> &image) const{
+void CRForest::detection(CTestDataset &testSet) const{
+
     int classNum = classDatabase.vNode.size();//contain class number
-    std::vector<CPatch> patches;
-    cv::vector<cv::Mat*> features;
+    //std::vector<CPatch> patches;
+    std::vector<CTestPatch> testPatch;
+    //cv::vector<cv::Mat*> features;
     std::vector<const LeafNode*> result;
     cv::vector<cv::Mat> outputImage(classNum);
     cv::vector<cv::Mat> outputImageColorOnly(classNum);
     std::vector<int> totalVote(classNum,0);
     boost::timer t;
 
+    testSet.loadImage();
+    testSet.extractFeatures();
+    //testSet.releaseImage();
+
     for(int i = 0; i < classNum; ++i){
-        outputImage.at(i) = image.at(0)->clone();
-        outputImageColorOnly.at(i) = cv::Mat::zeros(image.at(0)->rows,image.at(0)->cols,CV_32FC1);
+        outputImage.at(i) = testSet.img.at(0)->clone();
+        outputImageColorOnly.at(i) = cv::Mat::zeros(testSet.img.at(0)->rows,testSet.img.at(0)->cols,CV_32FC1);
     }
 
     // extract feature from test image
-    features.clear();
-    extractFeatureChannels(image.at(0), features);
+    //features.clear();
+    //extractFeatureChannels(image.at(0), features);
 
     // add depth image to features
-    features.push_back(image.at(1));
+    //features.push_back(image.at(1));
 
     // extract patches from features
-    extractAllPatches(dataSet, features, patches);
+    extractTestPatches(testSet,testPatch,this->conf);
 
-    std::cout << "patch num: " << patches.size() << std::endl;
+    std::cout << "patch num: " << testPatch.size() << std::endl;
 
     t.restart();
 
     // regression and vote for every patch
-    for(int j = 0; j < patches.size(); ++j){
+    for(int j = 0; j < testPatch.size(); ++j){
         //std::vector<float> detectionScore(classNum,0);
 
         result.clear();
-        this->regression(result, patches.at(j));
+        this->regression(result, testPatch.at(j));
 
         // vote for all trees (leafs)
         for(std::vector<const LeafNode*>::const_iterator itL = result.begin();
@@ -486,7 +459,7 @@ void CRForest::detection(const CDataset &dataSet,
                             cv::Point patchSize(conf.p_height/2,conf.p_width/2);
                             //std::cout << weight << std::endl;
 
-                            cv::Point pos = patches.at(j).position + patchSize +  (*itL)->vCenter.at(c).at(l);
+                            cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->vCenter.at(c).at(l).x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->vCenter.at(c).at(l).y);
                             if(pos.x > 0 && pos.y > 0 &&
                                     pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){// &&
                                 //(outputImageColorOnly.at(c).at<uchar>(pos.y,pos.x) + weight * 100) < 254){
@@ -593,11 +566,14 @@ void CRForest::detection(const CDataset &dataSet,
     std::cout << time << "sec" << std::endl;
     std::cout << 1 / (time / classNum) << "Hz" << std::endl;
 
-    //create tree directory
-    std::string opath(dataSet.imageFilePath);
+    //create result directory
+    std::string opath(testSet.getRgbImagePath());
     opath.erase(opath.find_last_of(PATH_SEP));
-    std::string imageFilename = dataSet.rgbImageName;
+    std::string imageFilename = testSet.getRgbImagePath();
     imageFilename.erase(imageFilename.find_last_of("."));
+    //imageFilename.erase(imageFilename.begin(),imageFilename.find_last_of(PATH_SEP));
+    imageFilename = imageFilename.substr(imageFilename.rfind(PATH_SEP),imageFilename.length());
+
     opath += PATH_SEP;
     opath += imageFilename;
     std::string execstr = "mkdir ";
@@ -633,8 +609,8 @@ void CRForest::detection(const CDataset &dataSet,
     std::cout << "show grand truth" << std::endl;
     //    std::cout << dataSet.className.size() << std::endl;
     //    std::cout << dataSet.centerPoint.size() << std::endl;
-    for(int i = 0; i < dataSet.className.size(); ++i){
-        std::cout << dataSet.className.at(i) << " " << dataSet.centerPoint.at(i) << std::endl;
+    for(int i = 0; i < testSet.param.size(); ++i){
+        testSet.param.at(i).showParam();
     }
 
     for(int c = 0; c < classNum; ++c){
@@ -659,13 +635,13 @@ void CRForest::detection(const CDataset &dataSet,
 
         // display grand truth
         if(conf.showGT){
-            for(int i = 0; i < dataSet.centerPoint.size(); ++i){
-                int tempClassNum = classDatabase.search(dataSet.className.at(i));
+            for(int i = 0; i < testSet.param.size(); ++i){
+                int tempClassNum = classDatabase.search(testSet.param.at(i).getClassName());
                 if(tempClassNum != -1){
                     cv::Size tempSize = classDatabase.vNode.at(tempClassNum).classSize;
-                    cv::Rect_<int> outRect(dataSet.centerPoint.at(i).x - tempSize.width / 2,dataSet.centerPoint.at(i).y - tempSize.height / 2 , tempSize.width,tempSize.height);
+                    cv::Rect_<int> outRect(testSet.param.at(i).getCenterPoint().x - tempSize.width / 2,testSet.param.at(i).getCenterPoint().y - tempSize.height / 2 , tempSize.width,tempSize.height);
                     cv::rectangle(outputImage.at(tempClassNum),outRect,cv::Scalar(200,0,0),3);
-                    cv::putText(outputImage.at(tempClassNum),classDatabase.vNode.at(c).name,cv::Point(dataSet.centerPoint.at(i).x, dataSet.centerPoint.at(i).y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(200,0,0), 2, CV_AA);
+                    cv::putText(outputImage.at(tempClassNum),classDatabase.vNode.at(c).name,cv::Point(testSet.param.at(i).getCenterPoint().x, testSet.param.at(i).getCenterPoint().y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(200,0,0), 2, CV_AA);
                 }
             }
         }
@@ -677,16 +653,12 @@ void CRForest::detection(const CDataset &dataSet,
         cv::imwrite(outputName.c_str(),outputImage.at(c));
     }
 
-    for(int i = 0; i < features.size() - 1; ++i){
-        delete features.at(i);
-    }
-
-    //patches.clear();
-    features.clear();
+    testSet.releaseImage();
+    testSet.releaseFeatures();
 }
 
 // Regression 
-void CRForest::regression(std::vector<const LeafNode*>& result, CPatch &patch) const{
+void CRForest::regression(std::vector<const LeafNode*>& result, CTestPatch &patch) const{
     result.resize( vTrees.size() );
     //std::cout << "enter regression" << std::endl;
     for(int i=0; i<(int)vTrees.size(); ++i) {
@@ -694,71 +666,71 @@ void CRForest::regression(std::vector<const LeafNode*>& result, CPatch &patch) c
     }
 }
 
-void CRForest::loadImages(cv::vector<cv::vector<cv::Mat *> > &img, std::vector<CDataset> &dataSet){
-    img.resize(0);
+//void CRForest::loadImages(cv::vector<cv::vector<cv::Mat *> > &img, std::vector<CDataset> &dataSet){
+//    img.resize(0);
 
-    cv::Mat* rgb,*depth;//, *mask;
-    cv::vector<cv::Mat*> planes;
-    cv::vector<cv::Mat*> allImages;
-    //cv::vector<cv::Mat> rgbSplited;
+//    cv::Mat* rgb,*depth;//, *mask;
+//    cv::vector<cv::Mat*> planes;
+//    cv::vector<cv::Mat*> allImages;
+//    //cv::vector<cv::Mat> rgbSplited;
 
-    for(int i = 0;i < dataSet.size(); ++i){
-        rgb = new cv::Mat();
-        depth = new cv::Mat();
-        //mask = new cv::Mat();
+//    for(int i = 0;i < dataSet.size(); ++i){
+//        rgb = new cv::Mat();
+//        depth = new cv::Mat();
+//        //mask = new cv::Mat();
 
-        // load Mask image
+//        // load Mask image
 
-        //*mask = cv::imread(dataSet.at(i).imageFilePath
-        //                   + dataSet.at(i).maskImageName,3).clone();
+//        //*mask = cv::imread(dataSet.at(i).imageFilePath
+//        //                   + dataSet.at(i).maskImageName,3).clone();
 
-        // load RGB image
-        *rgb = cv::imread(dataSet.at(i).imageFilePath
-                          + dataSet.at(i).rgbImageName,3).clone();
+//        // load RGB image
+//        *rgb = cv::imread(dataSet.at(i).imageFilePath
+//                          + dataSet.at(i).rgbImageName,3).clone();
 
-        //std::cout << dataSet.at(i).rgbImageName << " " << rgb->channels() << std::endl;
-        // load Depth image
-        *depth = cv::imread(dataSet.at(i).imageFilePath
-                            + dataSet.at(i).depthImageName,
-                            CV_LOAD_IMAGE_ANYDEPTH).clone();
-        cv::Point tempPoint;
-        tempPoint.x = (*rgb).cols / 2;
-        tempPoint.y = (*rgb).rows / 2;
+//        //std::cout << dataSet.at(i).rgbImageName << " " << rgb->channels() << std::endl;
+//        // load Depth image
+//        *depth = cv::imread(dataSet.at(i).imageFilePath
+//                            + dataSet.at(i).depthImageName,
+//                            CV_LOAD_IMAGE_ANYDEPTH).clone();
+//        cv::Point tempPoint;
+//        tempPoint.x = (*rgb).cols / 2;
+//        tempPoint.y = (*rgb).rows / 2;
 
-        dataSet.at(i).centerPoint.push_back(tempPoint);
+//        dataSet.at(i).centerPoint.push_back(tempPoint);
 
-        //        cv::namedWindow("test");
-        //        cv::imshow("test",*rgb);
-        //        cv::waitKey(0);
-        //        cv::destroyWindow("test");
-
-
-
-        //std::cout << depth << std::endl;
+//        //        cv::namedWindow("test");
+//        //        cv::imshow("test",*rgb);
+//        //        cv::waitKey(0);
+//        //        cv::destroyWindow("test");
 
 
 
-        for(int k = 0;k < rgb->cols; ++k)
-            for(int l = 0;l < rgb->rows; ++l){
-                //std::cout << depth.at<ushort>(l, k) << " " << std::endl;
-                //if(!(bool)mask->at<char>(l, k))
-                //depth->at<ushort>(l, k) = 0;
-                // for(int j = 0;j < 3; ++j)
-                //   if(!(bool)mask.at<char>(l, k))
-                //     rgb.at<cv::Vec3b>(l, k)[j] = 0;
-            }
-        //rgbSplited.resize(rgb.channels());
+//        //std::cout << depth << std::endl;
 
-        //cv::split(rgb, rgbSplited);
 
-        allImages.clear();
-        allImages.push_back(rgb);
-        allImages.push_back(depth);
-        img.push_back(allImages);
 
-        //delete mask;
-    }
+//        for(int k = 0;k < rgb->cols; ++k)
+//            for(int l = 0;l < rgb->rows; ++l){
+//                //std::cout << depth.at<ushort>(l, k) << " " << std::endl;
+//                //if(!(bool)mask->at<char>(l, k))
+//                //depth->at<ushort>(l, k) = 0;
+//                // for(int j = 0;j < 3; ++j)
+//                //   if(!(bool)mask.at<char>(l, k))
+//                //     rgb.at<cv::Vec3b>(l, k)[j] = 0;
+//            }
+//        //rgbSplited.resize(rgb.channels());
+
+//        //cv::split(rgb, rgbSplited);
+
+//        allImages.clear();
+//        allImages.push_back(rgb);
+//        allImages.push_back(depth);
+//        img.push_back(allImages);
+
+//        //delete mask;
+//    }
 
     
-}
+//}
 

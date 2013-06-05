@@ -8,29 +8,36 @@ CDataset::CDataset()
     feature.clear();
 }
 
-virtual CDataset::~CDataset(){
-    if(imgFlag)
+CDataset::~CDataset(){
+    if(imgFlag){
         releaseImage();
+        std::cout << "image released!" << std::endl;
+    }
 
-    if(featureFlag)
+    if(featureFlag){
         releaseFeatures();
+        std::cout << "feature released!" << std::endl;
+    }
 }
 
 int CDataset::loadImage(){
     cv::Mat *rgbImg, *depthImg;
 
-    rgbImg = new cv::imread(rgb,3);
+    rgbImg = new cv::Mat;
+    *rgbImg = cv::imread(rgb,3).clone();
     if(rgbImg == NULL){
         std::cout << "error! rgb image file " << rgb << " not found!" << std::endl;
         return -1;
     }
-    depthImg = new cv::imread(depth, CV_LOAD_IMAGE_ANYDEPTH);
+    depthImg = new cv::Mat;
+    *depthImg = cv::imread(depth, CV_LOAD_IMAGE_ANYDEPTH).clone();
     if(depthImg == NULL){
         std::cout << "error! depth image file " << depth << " not found!" << std::endl;
         return -1;
     }
 
-    img.push_back(rgbImg, depthImg);
+    img.push_back(rgbImg);
+    img.push_back(depthImg);
 
     imgFlag  = 1;
 
@@ -47,6 +54,14 @@ int CDataset::releaseImage(){
         delete img.at(i);
 
     return 0;
+}
+
+int CParamset::showParam(){
+    std::cout << "name : " << this->className;
+    std::cout << " center point : " << this->centerPoint;
+    std::cout << " angle : " << this->angle;
+
+    std::cout << std::endl;
 }
 
 int CDataset::extractFeatures(){
@@ -76,8 +91,8 @@ int CDataset::extractFeatures(){
      /* cv::destroyWindow("test"); */
 
     // Orientation of gradients
-    for(int  y = 0; y < img->rows; y++)
-      for(int  x = 0; x < img->cols; x++) {
+    for(int  y = 0; y < img.at(0)->rows; y++)
+      for(int  x = 0; x < img.at(0)->cols; x++) {
         // Avoid division by zero
         float tx = (float)I_x.at<short>(y, x) + (float)copysign(0.000001f, I_x.at<short>(y, x));
         // Scaling [-pi/2 pi/2] -> [0 80*pi]
@@ -87,8 +102,8 @@ int CDataset::extractFeatures(){
       }
 
     // Magunitude of gradients
-    for(int y = 0; y < img->rows; y++)
-        for(int x = 0; x < img->cols; x++ ) {
+    for(int y = 0; y < img.at(0)->rows; y++)
+        for(int x = 0; x < img.at(0)->cols; x++ ) {
       feature.at(2)->at<uchar>(y, x) = (uchar)sqrt(I_x.at<short>(y, x)*I_x.at<short>(y, x) + I_y.at<short>(y, x) * I_y.at<short>(y, x));
         }
 
@@ -124,7 +139,7 @@ int CDataset::extractFeatures(){
     for(int c = 0; c < 16; ++c)
       maxFilter(feature[c], feature[c], 5);
 
-    cv::Mat *tempDepth = new *img.at(1);
+    cv::Mat *tempDepth = new cv::Mat(img.at(1)->clone());
     feature.push_back(tempDepth);
 
     featureFlag = 1;

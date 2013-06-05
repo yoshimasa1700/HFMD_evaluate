@@ -32,6 +32,18 @@ public:
     std::vector<int> vClass;
 };
 
+class CTrainSet{
+public:
+    CTrainSet(){}
+    CTrainSet(std::vector<CPosPatch> &pos, std::vector<CNegPatch> &neg){posPatch = pos; negPatch = neg;}
+    ~CTrainSet(){}
+
+    int size()const{return posPatch.size() + negPatch.size();}
+
+    std::vector<CPosPatch> posPatch;
+    std::vector<CNegPatch> negPatch;
+};
+
 class CRTree 
 {
 public:
@@ -39,9 +51,10 @@ public:
     CRTree(int		min_s,	//min sample
            int		max_d,	//max depth of tree
            int		cp,	//number of center point
+           CClassDatabase cDatabase,
            boost::mt19937	randomGen	// random number seed
            )
-        : min_samples(min_s), max_depth(max_d), num_leaf(0), num_cp(cp), gen(randomGen)
+        : min_samples(min_s), max_depth(max_d), num_leaf(0), num_cp(cp), gen(randomGen), classDatabase(cDatabase)
     {
         num_nodes = (int)pow(2.0, int(max_depth + 1)) - 1;
 
@@ -73,15 +86,15 @@ public:
     unsigned int GetNumCenter() const {return num_cp;}
 
     // Regression
-    const LeafNode* regression(CPatch &patch) const;
+    const LeafNode* regression(CTestPatch &patch) const;
 
     // Training
     //void growTree(std::vector<std::vector<CPatch> > &TrData, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
     void growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &negPatch, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
 
-    bool optimizeTest(std::vector<std::vector<CPatch> > &SetA,
-                      std::vector<std::vector<CPatch> > &SetB,
-                      const std::vector<std::vector<CPatch> > &TrainSet,
+    bool optimizeTest(CTrainSet &SetA,
+                      CTrainSet &SetB,
+                      const CTrainSet &trainSet,
                       int* test,
                       unsigned int iter,
                       unsigned int measure_mode,
@@ -89,19 +102,19 @@ public:
                       );
     void generateTest(int* test, unsigned int max_w, unsigned int max_h, unsigned int max_c, int depth);
 
-    void makeLeaf(const std::vector<std::vector<CPatch> > &TrainSet, float pnratio, int node);
+    void makeLeaf(CTrainSet &trainSet, float pnratio, int node);
 
-    void evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const std::vector<std::vector<CPatch> > &TrainSet);
-    void split(std::vector<std::vector<CPatch> >& SetA, std::vector<std::vector<CPatch> >& SetB, const std::vector<std::vector<CPatch> >& TrainSet, const std::vector<std::vector<IntIndex> >& valSet, int t);
-    double distMean(const std::vector<CPatch>& SetA, const std::vector<CPatch>& SetB);
-    double InfGain(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB);
-    double calcEntropy(const std::vector<CPatch> &set, int negSize,int maxClass);
-    double measureSet(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB, unsigned int depth,int mode) {
+    void evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const CTrainSet &trainSet);
+    void split(CTrainSet& SetA, CTrainSet& SetB, const CTrainSet& TrainSet, const std::vector<std::vector<IntIndex> >& valSet, int t);
+    double distMean(const std::vector<CPosPatch>& SetA, const std::vector<CPosPatch>& SetB);
+    double InfGain(const CTrainSet& SetA, const CTrainSet& SetB);
+    double calcEntropy(const CTrainSet &set);//, int negSize,int maxClass);
+    double measureSet(const CTrainSet& SetA, const CTrainSet& SetB, unsigned int depth,int mode) {
         double lamda = 1;
         if(mode == 1)
             return InfGain(SetA, SetB);
         else
-            return distMean(SetA.at(0), SetB.at(0)) * -1;
+            return distMean(SetA.posPatch, SetB.posPatch) * -1;
     };
 
 
@@ -145,7 +158,9 @@ private:
 
     std::vector<int> defaultClass, containClass, containClassA, containClassB;
 
-    std::vector<std::vector<CPatch> > patchPerClass;
+    std::vector<std::vector<CPosPatch> > patchPerClass;
+
+    const CClassDatabase classDatabase;
 };
 
 inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max_h, unsigned int max_c, int depth) {

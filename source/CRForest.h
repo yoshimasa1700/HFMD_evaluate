@@ -30,8 +30,7 @@ class CRForest {
 
   void growATree(const int treeNum);
   
-  void detection(const CDataset &dataSet, 
-         const cv::vector<cv::Mat*> &image) const;//, std::vector<double> &detectionResult, int &detectClass) const;
+  void detection(CTestDataset &testSet) const;//, std::vector<double> &detectionResult, int &detectClass) const;
   
   void extractPatches(std::vector<std::vector<CPatch> > &patches, 
 		      const std::vector<CDataset> dataSet, 
@@ -46,12 +45,10 @@ class CRForest {
                       const int treeNum);
 
   void loadForest();
-  void extractAllPatches(const CDataset &dataSet, 
-			 const cv::vector<cv::Mat*> &image, 
-			 std::vector<CPatch> &patches) const;
+
   // Regression 
   void regression(std::vector<const LeafNode*>& result, 
-		  CPatch &patch) const;
+          CTestPatch &patch) const;
 
 
 

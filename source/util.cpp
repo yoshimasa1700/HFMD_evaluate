@@ -439,7 +439,7 @@ void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet)
             trainDataList >> nameTemp;
             posTemp.setDepthImagePath(imageFilePath + nameTemp);
 
-            trainDataList >> maskTemp;// dummy
+            trainDataList >> nameTemp;// dummy
 
             //read class name
             std::string tempClassName;
@@ -448,7 +448,7 @@ void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet)
             posTemp.setClassName(tempClassName);
 
             // read image size
-            cv::Mat tempImage = cv::imread(posTemp.img.at(0),3);
+            cv::Mat tempImage = cv::imread(posTemp.getRgbImagePath(),3);
             cv::Size tempSize = cv::Size(tempImage.cols, tempImage.rows);
 
             // set center point
@@ -520,6 +520,8 @@ void loadTrainNegFile(CConfig conf, std::vector<CNegDataset> &negSet)
 
         in >> tempName;
         negTemp.setDepthImagePath(negDataFilePath + tempName);
+
+        negSet.push_back(negTemp);
     }
 
     in.close();
@@ -531,10 +533,11 @@ void loadTrainNegFile(CConfig conf, std::vector<CNegDataset> &negSet)
 // extract patch from images
 // !!!!!!coution!!!!!!!
 // this function is use for negatime mode!!!!!
-void extractPosPatches(const std::vector<CPosDataset> &posSet,
+void extractPosPatches(std::vector<CPosDataset> &posSet,
                        std::vector<CPosPatch> &posPatch,
                        CConfig conf,
-                       const int treeNum){
+                       const int treeNum,
+                       const CClassDatabase &classDatabase){
     cv::Rect tempRect;
 
     std::vector<CPosPatch> tPosPatch(0);//, posPatch(0);
@@ -561,12 +564,12 @@ void extractPosPatches(const std::vector<CPosDataset> &posSet,
                 // detect negative patch
                 for(int m = j; m < j + conf.p_width; ++m){
                     for(int n = k; n < k + conf.p_height; ++n){
-                        pixNum += (int)(image.at(l).at(image.at(l).size() - 1)->at<ushort>(n, m));
+                        pixNum += (int)(posSet.at(l).img.at(1)->at<ushort>(n, m));
                     }
                 }
 
                 // set patch class
-                classNum = classDatabase.search(posSet.at(i).getParam()->getClassName());//dataSet.at(l).className.at(0));
+                classNum = classDatabase.search(posSet.at(l).getParam()->getClassName());//dataSet.at(l).className.at(0));
                 if(classNum == -1){
                     std::cout << "class not found!" << std::endl;
                     exit(-1);
@@ -576,7 +579,7 @@ void extractPosPatches(const std::vector<CPosDataset> &posSet,
                 CPosPatch posTemp(&posSet.at(l),tempRect);
                 if (pixNum > 0){
                     tPosPatch.push_back(posTemp);
-                    patchPerClass.at(classNum).push_back(tPatch);
+                    patchPerClass.at(classNum).push_back(posTemp);
                 } // if
             }//x
         }//y
@@ -610,12 +613,12 @@ void extractPosPatches(const std::vector<CPosDataset> &posSet,
     return;
 }
 
-void extractNegPatches(const std::vector<CNegDataset> &negSet,
+void extractNegPatches(std::vector<CNegDataset> &negSet,
                        std::vector<CNegPatch> &negPatch,
                        CConfig conf){
     cv::Rect tempRect;
 
-    std::vector<CPosPatch> tNegPatch(0);//, posPatch(0);
+    std::vector<CNegPatch> tNegPatch(0);//, posPatch(0);
     nCk nck;
     int negPatchNum;
 
@@ -625,6 +628,9 @@ void extractNegPatches(const std::vector<CNegDataset> &negSet,
     tempRect.height = conf.p_height;
 
     // extract negative patch
+    std::cout << negSet.size() << std::endl;
+    std::cout << negSet.at(0).img.at(0)->cols << std::endl;
+    std::cout << negSet.at(0).img.at(0)->rows << std::endl;
     for(int i = 0; i < negSet.size(); ++i){
         for(int j = 0; j < negSet.at(i).img.at(0)->cols - conf.p_width; j += conf.stride){
             for(int k = 0; k < negSet.at(i).img.at(0)->rows - conf.p_height; k += conf.stride){
@@ -640,8 +646,8 @@ void extractNegPatches(const std::vector<CNegDataset> &negSet,
     } // every image
 
     // choose negative patch randamly
-    negPatchNum = posPatch.size() * conf.pnRatio;
-    std::cout << "pos patch num : " << posPatch.size() << " neg patch num : " << negPatchNum << std::endl;
+    negPatchNum = conf.patchRatio * conf.pnRatio;
+    //std::cout << "pos patch num : " << posPatch.size() << " neg patch num : " << negPatchNum << std::endl;
 
     if(negPatchNum < tNegPatch.size()){
         std::set<int> chosenPatch = nck.generate(tNegPatch.size(), negPatchNum);//totalPatchNum * conf.patchRatio);
@@ -659,6 +665,41 @@ void extractNegPatches(const std::vector<CNegDataset> &negSet,
 
 //    patches.push_back(posPatch);
 //    patches.push_back(negPatch);
+}
+
+void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch, CConfig conf){
+
+    cv::Rect tempRect;
+    //CPatch tPatch;
+
+    tempRect.width = conf.p_width;
+    tempRect.height = conf.p_height;
+
+    testPatch.clear();
+    //std::cout << "extraction patches!" << std::endl;
+    for(int j = 0; j < testSet.img.at(0)->cols - conf.p_width; j += conf.stride){
+        for(int k = 0; k < testSet.img.at(0)->rows - conf.p_height; k += conf.stride){
+            tempRect.x = j;
+            tempRect.y = k;
+
+            //std::cout << dataSet.className << std::endl;
+
+            //int classNum = classDatabase.search(dataSet.className.at(0));
+
+            //std::cout << "class num is " << classNum << std::endl;
+            //classDatabase.show();
+            //if(classNum == -1){
+                //std::cout << "This tree not contain this class data" << std::endl;
+                //exit(-1);
+            //}
+
+            CTestPatch testTemp(&testSet,tempRect);
+            //tesetPatch.setPatch(temp, image, dataSet, classNum);
+
+            //tPatch.setPosition(j,k);
+            testPatch.push_back(testTemp);
+        }
+    }
 }
 
 void pBar(int p,int maxNum, int width){

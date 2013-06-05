@@ -113,28 +113,6 @@ class CConfig
 
 };
 
-void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet);//, boost::mt19937 &gen);
-void loadTrainNegFile(CConfig conf, std::vector<CNegDataset> &negSet);
-
-void extractPosPatches(const std::vector<CPosDataset> &posSet,std::vector<CPosPatch> &posPatch,
-                       CConfig conf,
-                       const int treeNum);
-void extractNegPatches(const std::vector<CNegDataset> &negSet,std::vector<CNegPatch> &negPatch,
-                       CConfig conf);
-
-void pBar(int p,int maxNum, int width);
-
-class CImages{
- public:
-  CImages(){img.resize(0);}
-  std::vector<std::vector<cv::Mat> > img;
-  
-  void loadImages(std::vector<CDataset> dataSet);
-};
-
-std::vector<cv::Mat> convertScale(const std::vector<cv::Mat> &inputImg, double scale);
-
-
 class databaseNode{
  public:
  databaseNode(std::string className,cv::Size size, uchar depth)
@@ -191,6 +169,21 @@ public:
 private:
   static boost::lagged_fibonacci1279 gen;
 };
+
+void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet);//, boost::mt19937 &gen);
+void loadTrainNegFile(CConfig conf, std::vector<CNegDataset> &negSet);
+//void loadTestFile(CConfig conf, std::vector<CTestDataset> &testSet);
+
+void extractPosPatches(std::vector<CPosDataset> &posSet,
+                       std::vector<CPosPatch> &posPatch,
+                       CConfig conf,
+                       const int treeNum,
+                       const CClassDatabase &classDatabase);
+void extractNegPatches(std::vector<CNegDataset> &negSet,std::vector<CNegPatch> &negPatch,
+                       CConfig conf);
+void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch, CConfig conf);
+
+void pBar(int p,int maxNum, int width);
 
 
 #endif

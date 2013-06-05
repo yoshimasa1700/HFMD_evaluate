@@ -8,15 +8,16 @@ class CPatch
 {
 public:
     CPatch(CDataset *d, cv::Rect r) : data(d), roi(r){}
+    CPatch(){}
     virtual ~CPatch(){}
 
     void setData(CDataset *d){data = d;}
-    CDataset* getData(){return data;}
+    CDataset* getData()const{return data;}
 
     void setRoi(cv::Rect r){roi = r;}
-    cv::Rect getRoi(){return roi;}
+    cv::Rect getRoi()const{return roi;}
 
-    cv::Mat* getFeature(int featureNum){return data->feature.at(featureNum);}
+    cv::Mat* getFeature(int featureNum) const{return data->feature.at(featureNum);}
 
 private:
     cv::Rect roi;
@@ -26,9 +27,12 @@ private:
 class CPosPatch : public CPatch{
 public:
     CPosPatch(CPosDataset *pos, cv::Rect r) : pData(pos), CPatch(pos, r){}
-    virtual ~CPosPatch();
+    CPosPatch(){}
+    virtual ~CPosPatch(){}
 
-    std::string getClassName(){return pData->getParam()->getClassName();}
+    std::string getClassName()const{return pData->getParam()->getClassName();}
+    cv::Point getCenterPoint()const{return pData->getParam()->getCenterPoint();}
+    int getFeatureNum()const{return pData->feature.size();}
 private:
     CPosDataset *pData;
 };
@@ -36,7 +40,8 @@ private:
 class CNegPatch : public CPatch{
 public:
     CNegPatch(CNegDataset *neg, cv::Rect r) : nData(neg), CPatch(neg, r){}
-    virtual ~CNegPatch();
+    CNegPatch(){}
+    virtual ~CNegPatch(){}
 
 private:
     CNegDataset *nData;
@@ -45,7 +50,10 @@ private:
 class CTestPatch : public CPatch{
 public:
     CTestPatch(CTestDataset *tes, cv::Rect r) : tData(tes), CPatch(tes, r){}
-    virtual ~CTestPatch();
+    CTestPatch(){}
+    virtual ~CTestPatch(){}
+
+    //cv::Rect getPatchRoi(){return this->getRoi(
 
 private:
     CTestDataset *tData;

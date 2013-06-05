@@ -18,6 +18,8 @@ public:
     int setAngle(double an){angle = an;return 0;}
     double getAngle(){return angle;}
 
+    int showParam();
+
 private:
     // parameters should be estimated
     cv::Point centerPoint;
@@ -43,6 +45,8 @@ public:
     void setRgbImagePath(std::string rgb_path){rgb = rgb_path;}
     void setDepthImagePath(std::string depth_path){depth = depth_path;}
 
+    std::string getRgbImagePath(){return rgb;}
+
     // loaded images and features
     std::vector<cv::Mat*> img, feature;
 
@@ -54,21 +58,23 @@ private:
     std::string rgb, depth, mask;
 
     // min and max filter
-    int minFilter(cv::Mat* src, cv::Mat* des, int fWind);
-    int maxFilter(cv::Mat* src, cv::Mat* des, int fWind);
+    void minFilter(cv::Mat* src, cv::Mat* des, int fWind);
+    void maxFilter(cv::Mat* src, cv::Mat* des, int fWind);
 
     //  cv::Rect bBox;
     //  std::vector<std::string> className;
     //  std::vector<cv::Point> centerPoint;
     //  std::vector<double> angles;
 
-    void showDataset();
+    //void showDataset();
+
+    HoG hog;
 };
 
 class CPosDataset : public CDataset{
 public:
-    CPosDataset();
-    virtual ~CPosDataset();
+    CPosDataset(){}
+    virtual ~CPosDataset(){}
 
     void setClassName(std::string name){param.setClassName(name);}
     void setAngle(double an){param.setAngle(an);}
@@ -82,15 +88,15 @@ private:
 
 class CNegDataset : public CDataset{
 public:
-    CNegDataset();
-    virtual ~CNegDataset();
+    CNegDataset(){}
+    virtual ~CNegDataset(){}
 
 };
 
 class CTestDataset : public CDataset{
 public:
-    CTestDataset();
-    virtual ~CTestDataset();
+    CTestDataset(){}
+    virtual ~CTestDataset(){}
 
     std::vector<CParamset> param;
 };
