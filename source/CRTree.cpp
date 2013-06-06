@@ -104,6 +104,7 @@ CRTree::CRTree(const char* filename) {
             in >> containClassNum;
             ptLN->pfg.resize(allClassNum);
             ptLN->vCenter.resize(allClassNum);
+            ptLN->param.resize(allClassNum);
 
             for(int i = 0; i < allClassNum; ++i)
                 ptLN->pfg.at(i) = 0.0;
@@ -121,11 +122,12 @@ CRTree::CRTree(const char* filename) {
                 voteSum.at(cNum) += containPoints;
 
                 ptLN->vCenter.at(cNum).resize(containPoints);
-
+                ptLN->param.at(cNum).resize(containPoints);
                 for(int j = 0; j < containPoints; j++){
-                    in >> ptLN->vCenter.at(cNum).at(j).x;
-
-                    in >> ptLN->vCenter.at(cNum).at(j).y;
+                    //in >> ptLN->vCenter.at(cNum).at(j).x;
+                    ptLN->param.at(cNum).at(j).readParam(in);
+                    //in >> ptLN->vCenter.at(cNum).at(j).y;
+                    ptLN->param.at(cNum).at(j).showParam();//readParam(in);
                 }
             }
 
@@ -220,11 +222,12 @@ bool CRTree::saveTree(const char* filename) const {
 
             for(int j = 0; j < ptLN->pfg.size(); ++j){
                 if(ptLN->pfg.at(j) != 0){
-                    std::cout << j << std::endl;
-                    out << j << " " << ptLN->pfg.at(j) << " " << ptLN->vCenter.at(j).size() << " ";
+                    //std::cout << j << std::endl;
+                    out << j << " " << ptLN->param.at(j).at(0).getClassName() << " " << ptLN->pfg.at(j) << " " << ptLN->vCenter.at(j).size() << " ";
                     for(int i = 0; i < ptLN->vCenter.at(j).size(); ++i)
-                        out << ptLN->vCenter.at(j).at(i).x << " " << ptLN->vCenter.at(j).at(i).y
-                            << " ";
+                        ptLN->param.at(j).at(i).outputParam(out);
+                        //out << ptLN->vCenter.at(j).at(i).x << " " << ptLN->vCenter.at(j).at(i).y
+                          //  << " ";
                 }
             }
             out << endl;
@@ -402,7 +405,7 @@ void CRTree::makeLeaf(CTrainSet &trainSet, float pnratio, int node) {
 
     // divide reached patch to each class
     patchPerClass.clear();
-    patchPerClass.resize(nclass);
+    patchPerClass.resize(classDatabase.vNode.size());
     for(int c = 0; c < nclass; ++c)
         patchPerClass.at(c).clear();
 
@@ -432,14 +435,19 @@ void CRTree::makeLeaf(CTrainSet &trainSet, float pnratio, int node) {
 
     // set each center point
     ptL->vCenter.resize(nclass);
+    ptL->param.resize(nclass);
     for(int i = 0; i < nclass; ++i){
         ptL->vCenter.at(i).clear();
+        ptL->param.at(i).clear();
         for(int j = 0; j < patchPerClass.at(i).size(); ++j)
-            ptL->vCenter.at(i).push_back(patchPerClass.at(i).at(j).getCenterPoint());
-
+            //ptL->vCenter.at(i).push_back(patchPerClass.at(i).at(j).getCenterPoint());
+            ptL->param.at(i).push_back(patchPerClass.at(i).at(j).getParam());
         //if(!patchPerClass.at(i).empty())
             //std::cout << patchPerClass.at(i).at(0).center << std::endl;
     }
+
+    //for(int i = 0;i < trainSet.posPatch.size(); ++i)
+      //  ptL->param.push_back(trainSet.posPatch.at(i).getParam());
 
     // Increase leaf counter
     ++num_leaf;
@@ -484,7 +492,7 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &tra
 
         //std::cout << posPatch.at(0).patch.size() << std::endl;
 
-        std::cout << SetA.size() << std::endl;
+        //std::cout << SetA.size() << std::endl;
 
         generateTest(&tmpTest[0],
                 config.p_width,//posPatch.at(0).patchRoi.width,

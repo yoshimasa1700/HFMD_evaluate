@@ -3,6 +3,7 @@
 
 //#include "util.h"
 #include "HoG.h"
+#include <iostream>
 
 class CParamset{
 public:
@@ -19,6 +20,9 @@ public:
     double getAngle(){return angle;}
 
     int showParam();
+
+    void outputParam(std::ofstream &out);
+    void readParam(std::ifstream &in);
 
 private:
     // parameters should be estimated

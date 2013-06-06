@@ -1,5 +1,26 @@
 #include "CDataset.h"
 
+template<typename T>
+void write(std::ofstream &out, const T &t)
+{
+    out << t << " ";
+}
+
+void CParamset::outputParam(std::ofstream &out){
+//    out << this->className << " " <<
+//           this->centerPoint << " " <<
+//           this->angle << " ";
+    write<std::string>(out, this->className);
+    write<cv::Point>(out, this->centerPoint);
+    write<double>(out, this->angle);
+}
+
+void CParamset::readParam(std::ifstream &in){
+    in >> this->className;
+    in >> this->centerPoint;
+    in >> this->angle;
+}
+
 CDataset::CDataset()
     :imgFlag(0),
       featureFlag(0)
@@ -11,12 +32,12 @@ CDataset::CDataset()
 CDataset::~CDataset(){
     if(imgFlag){
         releaseImage();
-        std::cout << "image released!" << std::endl;
+        //std::cout << "image released!" << std::endl;
     }
 
     if(featureFlag){
         releaseFeatures();
-        std::cout << "feature released!" << std::endl;
+        //std::cout << "feature released!" << std::endl;
     }
 }
 

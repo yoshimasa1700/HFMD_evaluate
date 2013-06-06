@@ -30,6 +30,7 @@ public:
     std::vector<float> pfg;
     std::vector<std::vector<cv::Point> > vCenter; // per class per patch
     std::vector<int> vClass;
+    std::vector<std::vector<CParamset> > param; // per class per patch
 };
 
 class CTrainSet{
