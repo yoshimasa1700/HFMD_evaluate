@@ -316,6 +316,8 @@ int main(int argc, char* argv[]){
 
     //create tree directory
     string opath(conf.outpath);
+    //std::cout << "kokomade kitayo" << std::endl;
+    //std::cout << conf.outpath << std::endl;
     opath.erase(opath.find_last_of(PATH_SEP));
     string execstr = "mkdir ";
     execstr += opath;

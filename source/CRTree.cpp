@@ -147,7 +147,7 @@ CRTree::CRTree(const char* filename, const char* databaseName) {
                     in >> tempAngle;
 
                     CParamset tempParam;
-                    tempParam.setClassName(tempClassName);
+                    //tempParam.setClassName(tempClassName);
                     tempParam.setCenterPoint(tempPoint);
                     tempParam.setAngle(tempAngle);
 
@@ -156,33 +156,6 @@ CRTree::CRTree(const char* filename, const char* databaseName) {
                     ptLN->param.at(cNum).at(j).showParam();//readParam(in);
                 }
             }
-
-            // for(int m = 0; m < maxNum; m++){
-            // 	in >> ptLN->pfg.at(m);
-            // }
-            // // number of positive patches
-            // in >> dummy;
-            // ptLN->vCenter.resize(dummy);
-            // ptLN->vClass.resize(dummy);ratios.resize(0);
-            // for(int i=0; i<dummy; ++i) {
-            // 	// ptLN->vCenter[i].resize(num_cp);
-            // 	// for(unsigned int k=0; k<num_cp; ++k) {
-            // 	//   in >> ptLN->vCenter[i][k].x;
-            // 	//   in >> ptLN->vCenter[i][k].y;
-            // 	// }
-            // 	in >> ptLN->vClass[i];
-            // 	in >> ptLN->vCenter[i].x;
-            // 	in >> ptLN->vCenter[i].y;
-            // }
-
-//            for(int i = 0; i < ptLN->pfg.size(); ++i)
-//                std::cout << ptLN->pfg.at(i) << std::endl;
-
-//            for(int i = 0; i < ptLN->vCenter.size(); ++i){
-//                for(int j = 0; j < ptLN->vCenter.at(i).size(); ++j)
-//                    std::cout << ptLN->vCenter.at(i).at(j).x << " ";
-//                std::cout << std::endl;
-//            }
         }
 
 
@@ -250,8 +223,9 @@ bool CRTree::saveTree(const char* filename) const {
                 if(ptLN->pfg.at(j) != 0){
                     //std::cout << j << std::endl;
                     out << j << " " << ptLN->param.at(j).at(0).getClassName() << " " << ptLN->pfg.at(j) << " " << ptLN->param.at(j).size() << " ";
-                    for(int i = 0; i < ptLN->param.at(j).size(); ++i)
+                    for(int i = 0; i < ptLN->param.at(j).size(); ++i){
                         out << ptLN->param.at(j).at(i).outputParam();
+                    }
                         //out << ptLN->vCenter.at(j).at(i).x << " " << ptLN->vCenter.at(j).at(i).y
                           //  << " ";
                 }
@@ -316,9 +290,6 @@ void CRTree::growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &
         std::cout << "classRatio is " << classRatio << std::endl;
     }
 
-
-
-
     float negratio = (float)negPatch.size() / (float)(posPatch.size() + negPatch.size());
     std::cout << "pos patch " << posPatch.size() << " neg patch " << negPatch.size() << " neg ratio " << negratio <<std::endl;
 
@@ -328,11 +299,7 @@ void CRTree::growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &
 
     std::cout << "measure mode " << measureMode << std::endl;
 
-
     if(depth < max_depth && negratio < 0.95 && posPatch.size() > conf.min_sample) {
-
-        //if(depth < max_depth && TrainSet[0].size() > 0) {
-
         // spilit patches by the binary test
         CTrainSet SetA;
         CTrainSet SetB;
@@ -350,17 +317,6 @@ void CRTree::growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &
         for(int i = 0; i < nclass; ++i){
             std::cout << "class" << i << " : " << containClass.at(i) << endl;
         }
-
-        //containClass.clear();
-        //containClass.resize(nclass);
-
-        //for(int i = 0; i < posPatch.size(); ++i){
-        //containClass.at(posPatch.at(i).classNum)++;
-        //}
-
-        //for(int i = 0; i < nclass; ++i)
-
-
 
         // Find optimal test
         if( optimizeTest(SetA, SetB, trainSet, test, 1000, measureMode, depth) ) {
@@ -386,8 +342,7 @@ void CRTree::growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &
             for(int l = 0; l < SetB.posPatch.size(); ++l)
                 containClassB.at(classDatabase.search(SetB.posPatch.at(l).getClassName()))++;
 
-            for(int l = 0; l < nclass; ++l)
-std:cout << "class" << l << " is splitted " << containClassA.at(l) << " " << containClassB.at(l) << std::endl;
+            for(int l = 0; l < nclass; ++l)std:cout << "class" << l << " is splitted " << containClassA.at(l) << " " << containClassB.at(l) << std::endl;
 
             std::cout << "negpatch splitted by " << SetA.negPatch.size() << " " << SetB.negPatch.size() << std::endl;
             // Go left
@@ -405,22 +360,16 @@ std:cout << "class" << l << " is splitted " << containClassA.at(l) << " " << con
             } else {
                 makeLeaf(SetB, pnratio, 2*node+2);
             }
-
-
         } else {
-
             // Could not find split (only invalid one leave split)
             makeLeaf(trainSet, pnratio, node);
-
         }
 
     } else {
 
         // Only negative patches are left or maximum depth is reached
         makeLeaf(trainSet, pnratio, node);
-
     }
-
 }
 
 // Create leaf node from patches 
@@ -465,11 +414,25 @@ void CRTree::makeLeaf(CTrainSet &trainSet, float pnratio, int node) {
     for(int i = 0; i < nclass; ++i){
         ptL->vCenter.at(i).clear();
         ptL->param.at(i).clear();
-        for(int j = 0; j < patchPerClass.at(i).size(); ++j)
+        for(int j = 0; j < patchPerClass.at(i).size(); ++j){
             //ptL->vCenter.at(i).push_back(patchPerClass.at(i).at(j).getCenterPoint());
-            ptL->param.at(i).push_back(patchPerClass.at(i).at(j).getParam());
+            CParamset tParam;
+            tParam = patchPerClass.at(i).at(j).getParam();
+
+            cv::Point tCenterPoint = tParam.getCenterPoint();
+
+            tCenterPoint.x -= patchPerClass.at(i).at(j).getRoi().x;
+            tCenterPoint.x -= (patchPerClass.at(i).at(j).getRoi().width) / 2;
+
+            tCenterPoint.y -= patchPerClass.at(i).at(j).getRoi().y;
+            tCenterPoint.y -= (patchPerClass.at(i).at(j).getRoi().height) / 2;
+
+            tParam.setCenterPoint(tCenterPoint);
+
+            ptL->param.at(i).push_back(tParam);
         //if(!patchPerClass.at(i).empty())
             //std::cout << patchPerClass.at(i).at(0).center << std::endl;
+        }
     }
 
     //for(int i = 0;i < trainSet.posPatch.size(); ++i)

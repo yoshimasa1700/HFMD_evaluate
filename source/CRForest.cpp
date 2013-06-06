@@ -59,15 +59,6 @@ void CRForest::growATree(const int treeNum){
     CRTree *tree = new CRTree(conf.min_sample, conf.max_depth, classDatabase.vNode.size(),this->classDatabase, gen);
     std::cout << "tree created" << std::endl;
 
-//    if(conf.negMode){
-//        extractPatches(vPatches, dataSets, features, negFeatures, conf, treeNum);
-//    }else{
-//        // extract patch from image
-//        //std::cout << "extruction patch from features" << std::endl;
-//        extractPatches(vPatches, dataSets, features, conf);
-//        //std::cout << "patch extracted!" << std::endl;
-//    }
-
     extractPosPatches(posSet,posPatch,conf,treeNum,this->classDatabase);
     extractNegPatches(negSet,negPatch,conf);
 
@@ -117,269 +108,6 @@ void CRForest::growATree(const int treeNum){
     negSet.clear();
 }
 
-//// extract patch from images
-//void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
-//                              const std::vector<CDataset> dataSet,
-//                              const cv::vector<cv::vector<cv::Mat*> > &image,
-//                              CConfig conf){
-//    cv::Rect temp;
-//    CPatch tPatch;
-
-//    std::vector<CPatch> tPosPatch, posPatch, negPatch;
-//    std::vector<std::vector<CPatch> > patchPerClass(classDatabase.vNode.size());
-//    int pixNum;
-//    nCk nck;
-
-//    int classNum = 0;
-
-//    temp.width  = conf.p_width;
-//    temp.height = conf.p_height;
-
-//    patches.resize(0);
-
-//    tPosPatch.clear();
-//    posPatch.clear();
-//    negPatch.clear();
-
-//    std::cout << "image num is " << image.size();
-
-//    std::cout << "extracting patch from image" << std::endl;
-//    std::cout << image.at(0).size() << std::endl;
-//    for(int l = 0;l < image.size(); ++l){
-//        //tPosPatch.clear();
-//        for(int j = 0; j < image.at(l).at(0)->cols - conf.p_width; j += conf.stride){
-//            for(int k = 0; k < image.at(l).at(0)->rows - conf.p_height; k += conf.stride){
-//                //if(rand() < conf.patchRatio){
-//                //for(int i = 0;i < image.img.at(l).size(); ++i){// for every channel
-
-//                //std::cout << "x = " << j << " y = " << k << std::endl;
-//                temp.x = j;
-//                temp.y = k;
-
-//                pixNum = 0;
-
-//                //std::cout << image.img.at(l).at(1).cols << std::endl;
-//                //std::cout << image.img.at(l).at(1).rows << std::endl;
-
-//                // detect negative patch
-//                for(int m = j; m < j + conf.p_width; ++m){
-//                    for(int n = k; n < k + conf.p_height; ++n){
-//                        pixNum += (int)(image.at(l).at(image.at(l).size() - 1)->at<ushort>(n, m));
-//                    }
-//                }
-
-//                // set patch class
-//                classNum = classDatabase.search(dataSet.at(l).className.at(0));
-//                if(classNum == -1){
-//                    std::cout << "class not found!" << std::endl;
-//                    exit(-1);
-//                }
-
-//                // std::cout << "this is for debug" << std::endl;
-//                // std::cout << temp << std::endl;
-//                // std::cout << dataSet.at(l).centerPoint << std::endl;
-
-//                tPatch.setPatch(temp, image.at(l), dataSet.at(l), classNum);
-//                //for(int q = 0; q < tPosPatch.size(); ++q){
-//                // cv::namedWindow("test");
-//                // cv::imshow("test",(*(tPatch.patch.at(0)))(tPatch.patchRoi));
-//                // cv::waitKey(0);
-//                // cv::destroyWindow("test");
-
-//                //std::cout << pixNum << std::endl;
-//                //}
-//                //std::cout << pixNum << std::endl;
-//                if (pixNum > 0){
-//                    //if(pixNum > 500 * conf.p_height * conf.p_width * 0.2)
-//                    tPosPatch.push_back(tPatch);
-//                    patchPerClass.at(classNum).push_back(tPatch);
-//                    // std::cout << "this is for debug patch center point is :" << std::endl;
-//                    // std::cout << tPatch.center << std::endl;
-
-//                    //else
-//                    //negPatch.push_back(tPatch);
-//                } // if
-//                //}
-//                //}
-//            }//x
-//        }//y
-//        pBar(l,dataSet.size(), 50);
-//    }//allimages
-//    //int totalPatchNum = (int)(((double)(image.at(l).at(0).cols - conf.p_width) / (double)conf.stride) * ((double)(image.at(l).at(0).rows - conf.p_height) / (double)conf.stride));
-
-//    //std::cout << "total patch num is " << totalPatchNum << std::endl;
-//    //std::cout << tPosPatch.size() << std::endl;
-
-//    // for(int q = 0; q < tPosPatch.size(); ++q){
-//    //   cv::namedWindow("test");
-//    //   cv::imshow("test",(*(tPosPatch.at(q).patch.at(0)))(tPosPatch.at(q).patchRoi));
-//    //   cv::waitKey(0);
-//    //   cv::destroyWindow("test");
-//    // }
-
-//    // choose patch from each image
-//    for(int i = 0; i < patchPerClass.size(); ++i){
-//        if(patchPerClass.at(i).size() > conf.patchRatio){
-
-//            std::set<int> chosenPatch = nck.generate(patchPerClass.at(i).size(), conf.patchRatio);//totalPatchNum * conf.patchRatio);
-
-//            //std::cout << "keisan deketa" << std::endl;
-
-//            std::set<int>::iterator ite = chosenPatch.begin();
-
-//            //cv::namedWindow("test");
-//            //cv::imshow("test",image.at(l).at(0));
-//            //cv::waitKey(0);
-//            //cv::destroyWindow("test");w
-
-//            //std::cout << "patch torimasu" << std::endl;
-//            //std::cout << "tPosPatch num is " << tPosPatch.size() << std::endl;
-
-//            while(ite != chosenPatch.end()){
-//                //std::cout << "this is for debug ite is " << tPosPatch.at(*ite).center << std::endl;
-//                posPatch.push_back(patchPerClass.at(i).at(*ite));
-//                ite++;
-//            }
-//        }else{
-//            std::cout << "can't extruct enough patch" << std::endl;
-//        }
-//    }
-//    //std::cout << "kokomade kimashita" << std::endl;
-//    //tPosPatch.clear();
-//    //
-//    patches.push_back(posPatch);
-//    patches.push_back(negPatch);
-
-//    std::cout << std::endl;
-//}
-
-// extract patch from images
-// !!!!!!coution!!!!!!!
-// this function is use for negatime mode!!!!!
-//void CRForest::extractPatches(std::vector<std::vector<CPatch> > &patches,
-//                              const std::vector<CDataset> dataSet,
-//                              const cv::vector<cv::vector<cv::Mat*> > &image,
-//                              const cv::vector<cv::vector<cv::Mat*> > &negImage,
-//                              CConfig conf,
-//                              const int treeNum){
-//    cv::Rect temp;
-//    CPatch tPatch;
-
-//    std::vector<CPatch> tPosPatch, posPatch, tNegPatch,negPatch;
-//    std::vector<std::vector<CPatch> > patchPerClass(classDatabase.vNode.size());
-//    int pixNum;
-//    nCk nck;
-//    int classNum = 0;
-//    int negPatchNum;
-
-
-//    temp.width  = conf.p_width;
-//    temp.height = conf.p_height;
-
-//    patches.clear();
-
-//    tPosPatch.clear();
-//    posPatch.clear();
-//    tNegPatch.clear();
-//    negPatch.clear();
-
-//    std::cout << "image num is " << image.size();
-
-//    std::cout << "extracting patch from image" << std::endl;
-//    std::cout << image.at(0).size() << std::endl;
-//    for(int l = 0;l < image.size(); ++l){
-//        //tPosPatch.clear();
-//        for(int j = 0; j < image.at(l).at(0)->cols - conf.p_width; j += conf.stride){
-//            for(int k = 0; k < image.at(l).at(0)->rows - conf.p_height; k += conf.stride){
-//                temp.x = j;
-//                temp.y = k;
-//                pixNum = 0;
-
-//                // detect negative patch
-//                for(int m = j; m < j + conf.p_width; ++m){
-//                    for(int n = k; n < k + conf.p_height; ++n){
-//                        pixNum += (int)(image.at(l).at(image.at(l).size() - 1)->at<ushort>(n, m));
-//                    }
-//                }
-
-//                // set patch class
-//                classNum = classDatabase.search(dataSet.at(l).className.at(0));
-//                if(classNum == -1){
-//                    std::cout << "class not found!" << std::endl;
-//                    exit(-1);
-//                }
-
-//                tPatch.setPatch(temp, image.at(l), dataSet.at(l), classNum);
-//                if (pixNum > 0){
-//                    tPosPatch.push_back(tPatch);
-//                    patchPerClass.at(classNum).push_back(tPatch);
-//                } // if
-//            }//x
-//        }//y
-//    }//allimages
-
-//    std::vector<int> patchNum(patchPerClass.size(),conf.patchRatio);
-
-//    for(int i = 0; i < patchPerClass.size(); ++i){
-//        if(i == treeNum % patchPerClass.size())
-//            patchNum.at(i) = conf.patchRatio;
-//        else
-//            patchNum.at(i) = conf.patchRatio * 0.2;
-//    }
-
-//    // choose patch from each image
-//    for(int i = 0; i < patchPerClass.size(); ++i){
-//        if(patchPerClass.at(i).size() > conf.patchRatio){
-
-//            std::set<int> chosenPatch = nck.generate(patchPerClass.at(i).size(),patchNum.at(i));// conf.patchRatio);//totalPatchNum * conf.patchRatio);
-//            std::set<int>::iterator ite = chosenPatch.begin();
-
-//            while(ite != chosenPatch.end()){
-//                //std::cout << "this is for debug ite is " << tPosPatch.at(*ite).center << std::endl;
-//                posPatch.push_back(patchPerClass.at(i).at(*ite));
-//                ite++;
-//            }
-//        }else{
-//            std::cout << "can't extruct enough patch" << std::endl;
-//        }
-//    }
-
-//    // extract negative patch
-//    for(int i = 0; i < negImage.size(); ++i){
-//        for(int j = 0; j < negImage.at(i).at(0)->cols - conf.p_width; j += conf.stride){
-//            for(int k = 0; k < negImage.at(i).at(0)->rows - conf.p_height; k += conf.stride){
-
-//                temp.x = j;
-//                temp.y = k;
-
-//                tPatch.setPatch(temp, negImage.at(i));
-//                tNegPatch.push_back(tPatch);
-//            }//x
-//        }//y
-//    } // every image
-
-//    // choose negative patch randamly
-//    negPatchNum = posPatch.size() * conf.pnRatio;
-//    std::cout << "pos patch num : " << posPatch.size() << " neg patch num : " << negPatchNum << std::endl;
-
-//    if(negPatchNum < tNegPatch.size()){
-//        std::set<int> chosenPatch = nck.generate(tNegPatch.size(), negPatchNum);//totalPatchNum * conf.patchRatio);
-//        std::set<int>::iterator ite = chosenPatch.begin();
-
-//        while(ite != chosenPatch.end()){
-//            negPatch.push_back(tNegPatch.at(*ite));
-//            ite++;
-//        }
-//    }else{
-//        std::cout << "only " << tNegPatch.size() << " pathes extracted from negative images" << std::endl;
-//        std::cout << "can't extract enogh negative patch please set pnratio more low!" << std::endl;
-//        exit(-1);
-//    }
-
-//    patches.push_back(posPatch);
-//    patches.push_back(negPatch);
-//}
-
 void CRForest::loadForest(){
     char buffer[256];
     char buffer2[256];
@@ -387,7 +115,9 @@ void CRForest::loadForest(){
         sprintf(buffer, "%s%03d.txt",conf.treepath.c_str(),i);
         sprintf(buffer2, "%s%s%03d.txt", conf.treepath.c_str(), conf.classDatabaseName.c_str(), i);
         vTrees[i] = new CRTree(buffer, buffer2);
-        classDatabase.read(buffer);
+
+        //std::cout << buffer2 << std::endl;
+        classDatabase.read(buffer2);
     }
 }
 
@@ -395,7 +125,6 @@ void CRForest::loadForest(){
 // input  : image and dataset
 // output : classification result and detect picture
 void CRForest::detection(CTestDataset &testSet) const{
-
     int classNum = classDatabase.vNode.size();//contain class number
     //std::vector<CPatch> patches;
     std::vector<CTestPatch> testPatch;
@@ -651,8 +380,8 @@ void CRForest::detection(CTestDataset &testSet) const{
         cv::imwrite(outputName.c_str(),outputImage.at(c));
     }
 
-    testSet.releaseImage();
-    testSet.releaseFeatures();
+    //testSet.releaseImage();
+    //testSet.releaseFeatures();
 }
 
 // Regression 

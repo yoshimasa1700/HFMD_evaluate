@@ -68,7 +68,7 @@ public:
         leaf= new LeafNode[(int)pow(2.0, int(max_depth))];
     }
 
-    CRTree(const char* filename, const char* filename);
+    CRTree(const char* filename, const char* datasetname);
 
     //destructor
     ~CRTree()
@@ -161,7 +161,7 @@ private:
 
     std::vector<std::vector<CPosPatch> > patchPerClass;
 
-    const CClassDatabase classDatabase;
+    CClassDatabase classDatabase;
 };
 
 inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max_h, unsigned int max_c, int depth) {

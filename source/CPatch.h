@@ -53,7 +53,6 @@ public:
     CTestPatch(CTestDataset *tes, cv::Rect r) : tData(tes), CPatch(tes, r){}
     CTestPatch(){}
     virtual ~CTestPatch(){}
-
     //cv::Rect getPatchRoi(){return this->getRoi(
 
 private:

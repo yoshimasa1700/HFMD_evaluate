@@ -127,15 +127,15 @@ int CConfig::loadConfig(const char* filename)
 //    for (int i;i < ratios.size(); ++i)
 //        std::cout << i << ": " << ratios.at(i) << std::endl;
 
-//    // load output path
-//    if (boost::optional<std::string> str
-//            = pt.get_optional<std::string>("root.outpath")) {
-//        std::cout << str.get() << std::endl;
-//        outpath = *str;
-//    }
-//    else {
-//        std::cout << "root.str is nothing" << std::endl;
-//    }
+    // load output path
+    if (boost::optional<std::string> str
+            = pt.get_optional<std::string>("root.outpath")) {
+        std::cout << str.get() << std::endl;
+        outpath = *str;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
+    }
 
     // load scale factor for output imae
     if (boost::optional<int> integer
@@ -576,6 +576,8 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
                 }
 
                 //tPatch.setPatch(temp, image.at(l), dataSet.at(l), classNum);
+
+
                 CPosPatch posTemp(&posSet.at(l),tempRect);
                 if (pixNum > 0){
                     tPosPatch.push_back(posTemp);
