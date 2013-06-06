@@ -9,7 +9,7 @@ needFile+=("config.xml")
 needFolder+=("dataset")
 needFolder+=("negdata")
 needFolder+=("trees")
-needFolder+=("input")
+needFolder+=("testdata")
 
 echo ${needFile[@]}
 echo ${needFolder[@]}

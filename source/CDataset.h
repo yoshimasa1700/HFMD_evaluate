@@ -4,6 +4,7 @@
 //#include "util.h"
 #include "HoG.h"
 #include <iostream>
+#include <sstream>
 
 class CParamset{
 public:
@@ -21,8 +22,8 @@ public:
 
     int showParam();
 
-    void outputParam(std::ofstream &out);
-    void readParam(std::ifstream &in);
+    std::string outputParam();
+    //void readParam(std::stringstream *in);
 
 private:
     // parameters should be estimated

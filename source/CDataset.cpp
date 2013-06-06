@@ -1,25 +1,29 @@
 #include "CDataset.h"
 
-template<typename T>
-void write(std::ofstream &out, const T &t)
-{
-    out << t << " ";
+//template<typename T>
+//void write(std::ofstream &out, const T &t)
+//{
+//    out << t << " ";
+//}
+
+std::string CParamset::outputParam(){
+    std::stringstream sstream;
+
+    sstream << //this->className << " " <<
+               this->centerPoint.x << " " << this->centerPoint.y << " "<<
+               this->angle << " ";
+    return sstream.str();
+
+//    write<std::string>(out, this->className);
+//    write<cv::Point>(out, this->centerPoint);
+//    write<double>(out, this->angle);
 }
 
-void CParamset::outputParam(std::ofstream &out){
-//    out << this->className << " " <<
-//           this->centerPoint << " " <<
-//           this->angle << " ";
-    write<std::string>(out, this->className);
-    write<cv::Point>(out, this->centerPoint);
-    write<double>(out, this->angle);
-}
-
-void CParamset::readParam(std::ifstream &in){
-    in >> this->className;
-    in >> this->centerPoint;
-    in >> this->angle;
-}
+//void CParamset::readParam(std::sstream &in){
+//    in >> this->className;
+//    in >> this->centerPoint;
+//    in >> this->angle;
+//}
 
 CDataset::CDataset()
     :imgFlag(0),

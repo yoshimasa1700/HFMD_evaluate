@@ -58,8 +58,10 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
 }
 
 // Read tree from file
-CRTree::CRTree(const char* filename) {
+CRTree::CRTree(const char* filename, const char* databaseName) {
     cout << "Load Tree " << filename << endl;
+
+    classDatabase.read(databaseName);
 
     int dummy;
 
@@ -102,6 +104,7 @@ CRTree::CRTree(const char* filename) {
             in >> allClassNum;
             int containClassNum = 0;
             in >> containClassNum;
+
             ptLN->pfg.resize(allClassNum);
             ptLN->vCenter.resize(allClassNum);
             ptLN->param.resize(allClassNum);
@@ -114,6 +117,14 @@ CRTree::CRTree(const char* filename) {
             for(int i = 0; i < containClassNum; ++i){
                 in >> cNum;
                 std::cout << cNum;// << std::endl;
+                std::string tempCName;
+                in >> tempCName;
+
+                int collectClassNum = classDatabase.search(tempCName);
+
+                cNum = collectClassNum;
+
+                std::cout << tempCName << std::endl;
                 in >> ptLN->pfg.at(cNum);
                 in >> containPoints;
                 std::cout << " " << ptLN->pfg.at(cNum) << " " << containPoints << std::endl;
@@ -122,10 +133,25 @@ CRTree::CRTree(const char* filename) {
                 voteSum.at(cNum) += containPoints;
 
                 ptLN->vCenter.at(cNum).resize(containPoints);
-                ptLN->param.at(cNum).resize(containPoints);
+                ptLN->param.at(cNum).clear();//resize(containPoints);
                 for(int j = 0; j < containPoints; j++){
                     //in >> ptLN->vCenter.at(cNum).at(j).x;
-                    ptLN->param.at(cNum).at(j).readParam(in);
+
+                    // read each parameter
+                    //std::string tempClassName;
+                    //in >> tempClassName;
+                    cv::Point tempPoint;
+                    in >> tempPoint.x;
+                    in >> tempPoint.y;
+                    double tempAngle;
+                    in >> tempAngle;
+
+                    CParamset tempParam;
+                    tempParam.setClassName(tempClassName);
+                    tempParam.setCenterPoint(tempPoint);
+                    tempParam.setAngle(tempAngle);
+
+                    ptLN->param.at(cNum).push_back(tempParam);
                     //in >> ptLN->vCenter.at(cNum).at(j).y;
                     ptLN->param.at(cNum).at(j).showParam();//readParam(in);
                 }
@@ -137,7 +163,7 @@ CRTree::CRTree(const char* filename) {
             // // number of positive patches
             // in >> dummy;
             // ptLN->vCenter.resize(dummy);
-            // ptLN->vClass.resize(dummy);
+            // ptLN->vClass.resize(dummy);ratios.resize(0);
             // for(int i=0; i<dummy; ++i) {
             // 	// ptLN->vCenter[i].resize(num_cp);
             // 	// for(unsigned int k=0; k<num_cp; ++k) {
@@ -223,9 +249,9 @@ bool CRTree::saveTree(const char* filename) const {
             for(int j = 0; j < ptLN->pfg.size(); ++j){
                 if(ptLN->pfg.at(j) != 0){
                     //std::cout << j << std::endl;
-                    out << j << " " << ptLN->param.at(j).at(0).getClassName() << " " << ptLN->pfg.at(j) << " " << ptLN->vCenter.at(j).size() << " ";
-                    for(int i = 0; i < ptLN->vCenter.at(j).size(); ++i)
-                        ptLN->param.at(j).at(i).outputParam(out);
+                    out << j << " " << ptLN->param.at(j).at(0).getClassName() << " " << ptLN->pfg.at(j) << " " << ptLN->param.at(j).size() << " ";
+                    for(int i = 0; i < ptLN->param.at(j).size(); ++i)
+                        out << ptLN->param.at(j).at(i).outputParam();
                         //out << ptLN->vCenter.at(j).at(i).x << " " << ptLN->vCenter.at(j).at(i).y
                           //  << " ";
                 }

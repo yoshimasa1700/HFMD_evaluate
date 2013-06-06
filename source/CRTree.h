@@ -68,7 +68,7 @@ public:
         leaf= new LeafNode[(int)pow(2.0, int(max_depth))];
     }
 
-    CRTree(const char* filename);
+    CRTree(const char* filename, const char* filename);
 
     //destructor
     ~CRTree()

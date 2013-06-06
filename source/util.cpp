@@ -97,45 +97,45 @@ int CConfig::loadConfig(const char* filename)
     }
 
     // load image scales
-    std::cout << "kokomade" << std::endl;
-    scales.resize(0);
-    BOOST_FOREACH (const boost::property_tree::ptree::value_type& child,
-                   pt.get_child("root.scales")) {
-        const float value = boost::lexical_cast<float>(child.second.data());
-        scales.push_back(value);
+    //std::cout << "kokomade" << std::endl;
+//    scales.resize(0);
+//    BOOST_FOREACH (const boost::property_tree::ptree::value_type& child,
+//                   pt.get_child("root.scales")) {
+//        const float value = boost::lexical_cast<float>(child.second.data());
+//        scales.push_back(value);
 
-        std::cout << value << std::endl;
-    }
-    for (int i;i < scales.size(); ++i)
-        std::cout << i << ": " << scales.at(i) << std::endl;
-    float value_temp = 1;
-    scales.clear();
-    scales.push_back(value_temp);
+//        std::cout << value << std::endl;
+//    }
+//    for (int i;i < scales.size(); ++i)
+//        std::cout << i << ": " << scales.at(i) << std::endl;
+//    float value_temp = 1;
+//    scales.clear();
+//    scales.push_back(value_temp);
 
-    ratios.clear();
-    ratios.push_back(value_temp);
-    ratios.push_back(value_temp);
+//    ratios.clear();
+//    ratios.push_back(value_temp);
+//    ratios.push_back(value_temp);
 
     // // load image ratios
-    ratios.resize(0);
-    BOOST_FOREACH (const boost::property_tree::ptree::value_type& child, pt.get_child("root.ratio")) {
-        const float value = boost::lexical_cast<float>(child.second.data());
-        ratios.push_back(value);
+//    ratios.resize(0);
+//    BOOST_FOREACH (const boost::property_tree::ptree::value_type& child, pt.get_child("root.ratio")) {
+//        const float value = boost::lexical_cast<float>(child.second.data());
+//        ratios.push_back(value);
 
-        std::cout << value << std::endl;
-    }
-    for (int i;i < ratios.size(); ++i)
-        std::cout << i << ": " << ratios.at(i) << std::endl;
+//        std::cout << value << std::endl;
+//    }
+//    for (int i;i < ratios.size(); ++i)
+//        std::cout << i << ": " << ratios.at(i) << std::endl;
 
-    // load output path
-    if (boost::optional<std::string> str
-            = pt.get_optional<std::string>("root.outpath")) {
-        std::cout << str.get() << std::endl;
-        outpath = *str;
-    }
-    else {
-        std::cout << "root.str is nothing" << std::endl;
-    }
+//    // load output path
+//    if (boost::optional<std::string> str
+//            = pt.get_optional<std::string>("root.outpath")) {
+//        std::cout << str.get() << std::endl;
+//        outpath = *str;
+//    }
+//    else {
+//        std::cout << "root.str is nothing" << std::endl;
+//    }
 
     // load scale factor for output imae
     if (boost::optional<int> integer

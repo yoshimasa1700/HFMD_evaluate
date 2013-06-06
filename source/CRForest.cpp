@@ -382,10 +382,11 @@ void CRForest::growATree(const int treeNum){
 
 void CRForest::loadForest(){
     char buffer[256];
+    char buffer2[256];
     for(int i = 0; i < vTrees.size(); ++i){
         sprintf(buffer, "%s%03d.txt",conf.treepath.c_str(),i);
-        vTrees[i] = new CRTree(buffer);
-        sprintf(buffer, "%s%s%03d.txt", conf.treepath.c_str(), conf.classDatabaseName.c_str(), i);
+        sprintf(buffer2, "%s%s%03d.txt", conf.treepath.c_str(), conf.classDatabaseName.c_str(), i);
+        vTrees[i] = new CRTree(buffer, buffer2);
         classDatabase.read(buffer);
     }
 }
@@ -471,9 +472,6 @@ void CRForest::detection(CTestDataset &testSet) const{
                     }
                 }
             }
-
-
-
         } // for every leaf
     } // for every patch
 
