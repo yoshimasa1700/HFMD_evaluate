@@ -60,4 +60,6 @@
   <negativedatalist>negDataList.txt</negativedatalist>
   <negativemode>1</negativemode>
   <posnegpatchratio>0.2</posnegpatchratio>
+  <activepatchratio>0.2</activepatchratio>
+  <mindistance>0.35</mindistance>
 </root>

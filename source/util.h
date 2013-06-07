@@ -108,6 +108,9 @@ class CConfig
 
   double pnRatio;
 
+  double acPatchRatio;
+  double mindist;
+
  private:
   boost::property_tree::ptree pt;
 

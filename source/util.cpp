@@ -368,6 +368,25 @@ int CConfig::loadConfig(const char* filename)
         std::cout << "root.str is nothing" << std::endl;
     }
 
+    // load testing image name list
+    if (boost::optional<double> dou
+            = pt.get_optional<double>("root.activepatchratio")) {
+        std::cout << dou.get() << std::endl;
+        acPatchRatio = *dou;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
+    }
+
+    // load testing image name list
+    if (boost::optional<double> dou
+            = pt.get_optional<double>("root.mindistance")) {
+        std::cout << dou.get() << std::endl;
+        mindist = *dou;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
+    }
 
 
     return 0;
@@ -593,7 +612,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
         if(i == treeNum % patchPerClass.size())
             patchNum.at(i) = conf.patchRatio;
         else
-            patchNum.at(i) = conf.patchRatio * 0.2;
+            patchNum.at(i) = conf.patchRatio * conf.acPatchRatio;
     }
 
     // choose patch from each image

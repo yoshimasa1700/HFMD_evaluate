@@ -130,6 +130,9 @@ void CRForest::detection(CTestDataset &testSet) const{
     std::vector<CTestPatch> testPatch;
     //cv::vector<cv::Mat*> features;
     std::vector<const LeafNode*> result;
+
+    std::vector<std::vector<const LeafNode*> > storedLN(0);
+
     cv::vector<cv::Mat> outputImage(classNum);
     cv::vector<cv::Mat> outputImageColorOnly(classNum);
     std::vector<int> totalVote(classNum,0);
@@ -165,30 +168,18 @@ void CRForest::detection(CTestDataset &testSet) const{
         result.clear();
         this->regression(result, testPatch.at(j));
 
+        storedLN.push_back(result);
+
         // vote for all trees (leafs)
         for(std::vector<const LeafNode*>::const_iterator itL = result.begin();
             itL!=result.end(); ++itL) {
 
-
-//            for(int l = 0;l < (*itL)->pfg.size(); ++l){
-
-//                // voting weight for leaf
-//                if((*itL)->pfg.at(l) > 0.5)
-//                    detectionScore.at(l) += (*itL)->pfg.at(l) * (*itL)->vCenter.at(l).size();
-
-//                //classification_result.at(maxClass) += (double) w;
-//            }
-
             for(int c = 0; c < classNum; c++){
-                //std::cout << "class: " << c << " " << (*itL)->vCenter.at(c).size() << std::endl;
                 if(!(*itL)->vCenter.at(c).empty()){
-                    if((*itL)->pfg.at(c) > 0.9  ){
-                        //float weight =  (*itL)->pfg.at(c) / float((*itL)->vCenter.at(c).size() * result.size());
-
-                        for(int l = 0; l < (*itL)->vCenter.at(c).size(); ++l){
+                    //if((*itL)->pfg.at(c) > 0.9  ){
+                        for(int l = 0; l < (*itL)->param.at(c).size(); ++l){
                             cv::Point patchSize(conf.p_height/2,conf.p_width/2);
                             //std::cout << weight << std::endl;
-
                             cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->vCenter.at(c).at(l).x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->vCenter.at(c).at(l).y);
                             if(pos.x > 0 && pos.y > 0 &&
                                     pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){// &&
@@ -198,7 +189,7 @@ void CRForest::detection(CTestDataset &testSet) const{
                                 totalVote.at(c) += 1;
                             }
                         }
-                    }
+                    //}
                 }
             }
         } // for every leaf
@@ -207,8 +198,7 @@ void CRForest::detection(CTestDataset &testSet) const{
     // vote end
 
 
-
-    // clustaring by mean shift
+    // find balance by mean shift
     for(int i = 0; i < classNum; ++i){
         cv::Mat hsv,hue,rgb;
         int bins = 256;
@@ -264,12 +254,12 @@ void CRForest::detection(CTestDataset &testSet) const{
 
 
         //show and write histgram
-                cv::imwrite("test.png",hist_img);
+//        cv::imwrite("test.png",hist_img);
 
-                cv::namedWindow("test");
-                cv::imshow("test",hist_img);
-                cv::waitKey(0);
-                cv::destroyWindow("test");
+//        cv::namedWindow("test");
+//        cv::imshow("test",hist_img);
+//        cv::waitKey(0);
+//        cv::destroyWindow("test");
 
         /// Get Backprojection
         cv::Mat backproj;

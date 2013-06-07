@@ -7,7 +7,10 @@
 class CPatch
 {
 public:
-    CPatch(CDataset *d, cv::Rect r) : data(d), roi(r){}
+    CPatch(CDataset *d, cv::Rect r) : data(d), roi(r){
+        cv::Mat* depthImage = d->img.at(1);
+
+    }
     CPatch(){}
     virtual ~CPatch(){}
 
@@ -21,6 +24,7 @@ public:
 
 private:
     cv::Rect roi;
+    double scale;
     CDataset *data;
 };
 
