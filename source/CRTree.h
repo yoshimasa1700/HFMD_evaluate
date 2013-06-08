@@ -121,6 +121,7 @@ public:
 
 
 
+
     // IO functions
     bool saveTree(const char* filename) const;
     void showLeaves(int width, int height) const {
@@ -162,6 +163,9 @@ private:
     std::vector<std::vector<CPosPatch> > patchPerClass;
 
     CClassDatabase classDatabase;
+
+    void normarizationByDepth(const CPatch* patch,cv::Mat& rgb, const CConfig &config)const;
+
 };
 
 inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max_h, unsigned int max_c, int depth) {

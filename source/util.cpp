@@ -2,49 +2,15 @@
 
 boost::lagged_fibonacci1279 nCk::gen = boost::lagged_fibonacci1279();
 
-//void CDataset::showDataset(){
-//    std::cout << "RGB image name:" << rgbImageName << std::endl;
-//    std::cout << "Depth image name:" << depthImageName << std::endl;
-//    std::cout << "mask image name:" << maskImageName << std::endl;
-
-//    std::cout << "bouding box: " << bBox << std::endl;
-
-//    for(int i = 0; i < centerPoint.size(); ++i){
-//        std::cout << "class: " << className.at(i) << std::endl;
-//        std::cout << "\t" << "center point: " << centerPoint.at(i) << std::endl;
-
-//        std::cout << "\t" << "angle grand truth:" << angles.at(i) << std::endl;
-//    }
-//}
-
-CConfig::CConfig()
-{
-}
-
-
 int CConfig::loadConfig(const char* filename)
 {
     read_xml(filename, pt);
 
     // load tree path
-    if (boost::optional<std::string> str
-            = pt.get_optional<std::string>("root.treepath")) {
-        std::cout << str.get() << std::endl;
-        treepath = *str;
-    }
-    else {
-        std::cout << "root.str is nothing" << std::endl;
-    }
+    treepath = *(pt.get_optional<std::string>("root.treepath"));
 
     // load number of tree
-    if (boost::optional<int> integer
-            = pt.get_optional<int>("root.ntree")) {
-        std::cout << integer << std::endl;
-        ntrees = *integer;
-    }
-    else {
-        std::cout << "root.str is nothing" << std::endl;
-    }
+    ntrees = *pt.get_optional<int>("root.ntree");
 
     // load patch width
     if (boost::optional<int> integer
@@ -388,6 +354,10 @@ int CConfig::loadConfig(const char* filename)
         std::cout << "root.str is nothing" << std::endl;
     }
 
+    maxdist = *pt.get_optional<double>("root.maxdistance");
+
+    widthScale = p_width / mindist;
+    heightScale = p_height / mindist;
 
     return 0;
 }
@@ -703,6 +673,12 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
             tempRect.x = j;
             tempRect.y = k;
 
+            unsigned short depthSum;
+
+            for(int p = 0; p < testSet.feature.at(32)->rows; ++p)
+                for(int q = 0; q < testSet.feature.at(32)->cols; ++q)
+                    depthSum += testSet.feature.at(32)->at<ushort>(p, q);
+
             //std::cout << dataSet.className << std::endl;
 
             //int classNum = classDatabase.search(dataSet.className.at(0));
@@ -714,11 +690,13 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
                 //exit(-1);
             //}
 
-            CTestPatch testTemp(&testSet,tempRect);
-            //tesetPatch.setPatch(temp, image, dataSet, classNum);
+            if(depthSum > 0){
+                CTestPatch testTemp(&testSet,tempRect);
+                //tesetPatch.setPatch(temp, image, dataSet, classNum);
 
-            //tPatch.setPosition(j,k);
-            testPatch.push_back(testTemp);
+                //tPatch.setPosition(j,k);
+                testPatch.push_back(testTemp);
+            }
         }
     }
 }

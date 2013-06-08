@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>
 
+//#include "util.h"
+
 class CParamset{
 public:
     CParamset(){}
@@ -41,7 +43,7 @@ public:
     CDataset();
     virtual ~CDataset();
 
-    int loadImage();
+    int loadImage(double mindist, double maxdist);
     int releaseImage();
 
     int extractFeatures();

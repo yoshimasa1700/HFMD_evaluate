@@ -1,11 +1,5 @@
 #include "CDataset.h"
 
-//template<typename T>
-//void write(std::ofstream &out, const T &t)
-//{
-//    out << t << " ";
-//}
-
 std::string CParamset::outputParam(){
     std::stringstream sstream;
 
@@ -24,6 +18,43 @@ std::string CParamset::outputParam(){
 //    in >> this->centerPoint;
 //    in >> this->angle;
 //}
+
+void cropImageAndDepth(cv::Mat* rgb, cv::Mat* depth, double mindist, double maxdist){
+    cv::Mat depthForView = cv::Mat(depth->rows, depth->cols, CV_8U);
+
+    cv::Mat allMinDepth = cv::Mat::ones(depth->rows, depth->cols, CV_16U) * (ushort)mindist;
+    cv::Mat allMaxDepth = cv::Mat::ones(depth->rows, depth->cols, CV_16U) * (ushort)maxdist;
+
+    cv::min(*depth, allMaxDepth, *depth);
+    cv::max(*depth, allMinDepth, *depth);
+
+//    depth->convertTo(depthForView, CV_8U, 255.0 / 1000.0);
+//    cv::namedWindow("test");
+//    cv::imshow("test", *rgbm);
+//    cv::waitKey(0);
+//    cv::imshow("test",depthForView);
+//    cv::waitKey(0);
+//    cv::destroyAllWindows();
+
+    for(int i = 0; i < depth->rows; ++i){
+        for(int j = 0; j < depth->cols; ++j){
+            if(depth->at<ushort>(i,j) == (ushort)maxdist)
+                depth->at<ushort>(i, j) = 0;
+            if(depth->at<ushort>(i,j) == 0){
+                for(int k = 0; k < 3; ++k)
+                    rgb->at<cv::Vec3b>(i,j)[k] = 0;
+
+            }
+        }
+    }
+
+    *depth -= allMinDepth;
+
+//    cv::namedWindow("test");
+//    cv::imshow("test", *rgb);
+//    cv::waitKey(0);
+//    cv::destroyAllWindows();
+}
 
 CDataset::CDataset()
     :imgFlag(0),
@@ -45,7 +76,7 @@ CDataset::~CDataset(){
     }
 }
 
-int CDataset::loadImage(){
+int CDataset::loadImage(double mindist, double maxdist){
     cv::Mat *rgbImg, *depthImg;
 
     rgbImg = new cv::Mat;
@@ -60,6 +91,8 @@ int CDataset::loadImage(){
         std::cout << "error! depth image file " << depth << " not found!" << std::endl;
         return -1;
     }
+
+    cropImageAndDepth(rgbImg, depthImg, mindist, maxdist);
 
     img.push_back(rgbImg);
     img.push_back(depthImg);
@@ -87,6 +120,7 @@ int CParamset::showParam(){
     std::cout << " angle : " << this->angle;
 
     std::cout << std::endl;
+    return 0;
 }
 
 int CDataset::extractFeatures(){

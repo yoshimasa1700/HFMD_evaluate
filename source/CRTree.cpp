@@ -21,6 +21,8 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
         cv::Mat tempFeture = *patch.getFeature(pnode[9]);
         cv::Mat ptC = tempFeture(patch.getRoi());
 
+        normarizationByDepth(&patch,ptC,config);
+
         //std::cout << ptC << std::endl;
 
         if(pnode[9] == 32){
@@ -226,8 +228,8 @@ bool CRTree::saveTree(const char* filename) const {
                     for(int i = 0; i < ptLN->param.at(j).size(); ++i){
                         out << ptLN->param.at(j).at(i).outputParam();
                     }
-                        //out << ptLN->vCenter.at(j).at(i).x << " " << ptLN->vCenter.at(j).at(i).y
-                          //  << " ";
+                    //out << ptLN->vCenter.at(j).at(i).x << " " << ptLN->vCenter.at(j).at(i).y
+                    //  << " ";
                 }
             }
             out << endl;
@@ -430,13 +432,13 @@ void CRTree::makeLeaf(CTrainSet &trainSet, float pnratio, int node) {
             tParam.setCenterPoint(tCenterPoint);
 
             ptL->param.at(i).push_back(tParam);
-        //if(!patchPerClass.at(i).empty())
+            //if(!patchPerClass.at(i).empty())
             //std::cout << patchPerClass.at(i).at(0).center << std::endl;
         }
     }
 
     //for(int i = 0;i < trainSet.posPatch.size(); ++i)
-      //  ptL->param.push_back(trainSet.posPatch.at(i).getParam());
+    //  ptL->param.push_back(trainSet.posPatch.at(i).getParam());
 
     // Increase leaf counter
     ++num_leaf;
@@ -578,6 +580,46 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &tra
     return found;
 }
 
+void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb, const CConfig &config)const {
+    cv::Mat tempDepth = *patch->getFeature(32);
+    cv::Mat depth = tempDepth(patch->getRoi());
+
+                cv::namedWindow("test");
+                cv::imshow("test",rgb);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+
+    //std::cout << trainSet.posPatch.at(i).getFeature(32)->at<uchar>(10,10) << std::endl;
+
+    double widthSca, heightSca;
+    widthSca = config.widthScale * (double)(depth.at<ushort>(config.p_height / 2 + 1, config.p_width / 2 + 1) + config.mindist) / (double)config.p_width;
+    heightSca = config.heightScale * (double)(depth.at<ushort>(config.p_height / 2 + 1, config.p_width / 2 + 1) + config.mindist) / (double)config.p_height;
+
+    //std::cout << "depth : " << depth.at<ushort>(config.p_height / 2 + 1, config.p_width / 2 + 1) << " widht scale : " << widthSca << " height scape : " << heightSca << std::endl;
+
+    double realWindowWidth, realWindowHeight;
+
+    realWindowWidth = (double)config.p_width / widthSca;
+    realWindowHeight = (double)config.p_height / heightSca;
+
+    cv::Rect roi;
+
+    roi.x = (int)((config.p_width - realWindowHeight) / 2);
+    roi.y = (int)((config.p_height - realWindowWidth) / 2);
+
+    roi.width = (int)realWindowWidth;
+    roi.height = (int)realWindowHeight;
+
+    rgb = rgb(roi);
+    cv::resize(rgb,rgb,cv::Size(config.p_width,config.p_height));
+
+
+                cv::namedWindow("test");
+                cv::imshow("test",rgb);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+}
+
 void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const CTrainSet &trainSet) {
 
     // for(int m = 0; m < 6; ++m)
@@ -597,6 +639,9 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
             // pointer to channel
             cv::Mat tempMat = *trainSet.posPatch.at(i).getFeature(test[8]);
             cv::Mat ptC = tempMat(trainSet.posPatch.at(i).getRoi());//(*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
+
+            normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC,config);
+
             if(test[8] == 32){
                 //std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;
                 //int dummy;
@@ -665,33 +710,33 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
 void CRTree::split(CTrainSet& SetA, CTrainSet& SetB, const CTrainSet& trainSet, const vector<vector<IntIndex> >& valSet, int t) {
     //for(int j = 0; j < TrainSet.size(); ++j){
 
-        SetA.posPatch.clear();
-        SetA.negPatch.clear();
+    SetA.posPatch.clear();
+    SetA.negPatch.clear();
 
-        SetB.posPatch.clear();
-        SetB.negPatch.clear();
+    SetB.posPatch.clear();
+    SetB.negPatch.clear();
 
-        // pos patch
-        for(int i = 0; i < valSet.at(0).size(); ++i){
-            if(valSet.at(0).at(i).val < t){
-                SetA.posPatch.push_back(trainSet.posPatch.at(valSet.at(0).at(i).index));
-                //SetA.posPatch.back().getCenterPoint() = trainSet.posPatch.at(valSet.at(0).at(i).index).center;
-            }else{
-                SetB.posPatch.push_back(trainSet.posPatch.at(valSet.at(0).at(i).index));
-                //SetB.posPatch.back().center = trainSet.posPatch.at(valSet.at(0).at(i).index).center;
-            }
+    // pos patch
+    for(int i = 0; i < valSet.at(0).size(); ++i){
+        if(valSet.at(0).at(i).val < t){
+            SetA.posPatch.push_back(trainSet.posPatch.at(valSet.at(0).at(i).index));
+            //SetA.posPatch.back().getCenterPoint() = trainSet.posPatch.at(valSet.at(0).at(i).index).center;
+        }else{
+            SetB.posPatch.push_back(trainSet.posPatch.at(valSet.at(0).at(i).index));
+            //SetB.posPatch.back().center = trainSet.posPatch.at(valSet.at(0).at(i).index).center;
         }
+    }
 
-        // neg patch
-        for(int i = 0; i < valSet.at(1).size(); ++i){
-            if(valSet.at(1).at(i).val < t){
-                SetA.negPatch.push_back(trainSet.negPatch.at(valSet.at(1).at(i).index));
-                //SetA.negPatch.back().center = trainSet.negPatch.at(valSet.at(1).at(i).index).center;
-            }else{
-                SetB.negPatch.push_back(trainSet.negPatch.at(valSet.at(1).at(i).index));
-                //SetB.negPatch.back().center = trainSet.negPatch.at(valSet.at(1).at(i).index).center;
-            }
+    // neg patch
+    for(int i = 0; i < valSet.at(1).size(); ++i){
+        if(valSet.at(1).at(i).val < t){
+            SetA.negPatch.push_back(trainSet.negPatch.at(valSet.at(1).at(i).index));
+            //SetA.negPatch.back().center = trainSet.negPatch.at(valSet.at(1).at(i).index).center;
+        }else{
+            SetB.negPatch.push_back(trainSet.negPatch.at(valSet.at(1).at(i).index));
+            //SetB.negPatch.back().center = trainSet.negPatch.at(valSet.at(1).at(i).index).center;
         }
+    }
     //}
 
 
@@ -843,11 +888,11 @@ double CRTree::InfGain(const CTrainSet& SetA, const CTrainSet& SetB) {
         set.negPatch.push_back(SetB.negPatch.at(i));
 
 
-//    for(int i = 0; i < nclass; ++i){
-//        entoropyA += calcEntropy(SetA.posPatch, SetA.negPatch.size(),i);
-//        entoropyB += calcEntropy(SetB.posPatch, SetB.negPatch.size(),i);
-//        entoropy += calcEntropy(set, SetA.negPatch.size() + SetB.negPatch.size(), i);
-//    }
+    //    for(int i = 0; i < nclass; ++i){
+    //        entoropyA += calcEntropy(SetA.posPatch, SetA.negPatch.size(),i);
+    //        entoropyB += calcEntropy(SetB.posPatch, SetB.negPatch.size(),i);
+    //        entoropy += calcEntropy(set, SetA.negPatch.size() + SetB.negPatch.size(), i);
+    //    }
 
     entoropyA = calcEntropy(SetA);
     entoropyB = calcEntropy(SetB);
@@ -859,35 +904,35 @@ double CRTree::InfGain(const CTrainSet& SetA, const CTrainSet& SetB) {
     double wb = (double)SetB.size() / (double)set.size();
 
 
-//    std::cout << std::endl << "SetA pos " << SetA.posPatch.size() << " neg " << SetA.negPatch.size() << " entropy A " << entoropyA << std::endl;
-//    std::cout << "SetB pos " << SetB.posPatch.size() << " neg " << SetB.negPatch.size() << " entropy B " << entoropyB << std::endl;
-//    std::cout << "entropy " << entoropy << " IG " << entoropy - (wa * entoropyA + wb * entoropyB) << std::endl;
+    //    std::cout << std::endl << "SetA pos " << SetA.posPatch.size() << " neg " << SetA.negPatch.size() << " entropy A " << entoropyA << std::endl;
+    //    std::cout << "SetB pos " << SetB.posPatch.size() << " neg " << SetB.negPatch.size() << " entropy B " << entoropyB << std::endl;
+    //    std::cout << "entropy " << entoropy << " IG " << entoropy - (wa * entoropyA + wb * entoropyB) << std::endl;
 
 
 
-//    std::cout << "positive entoropy is caliculated" << std::endl;
+    //    std::cout << "positive entoropy is caliculated" << std::endl;
 
     //calc negative entropy
-//    for(int i = 0; i < SetA.size(); ++i){
-//        double pA = (double)SetA.at(i).size() / (double)(SetA.posPatch.size() + SetA.negPatch.size());
-//        double pB = (double)SetB.at(i).size() / (double)(SetB.posPatch.size() + SetB.negPatch.size());
-//        double pT = (double)(SetA.at(i).size() + SetB.at(i).size()) / (double)(set.size() + SetA.negPatch.size() + SetB.negPatch.size());
+    //    for(int i = 0; i < SetA.size(); ++i){
+    //        double pA = (double)SetA.at(i).size() / (double)(SetA.posPatch.size() + SetA.negPatch.size());
+    //        double pB = (double)SetB.at(i).size() / (double)(SetB.posPatch.size() + SetB.negPatch.size());
+    //        double pT = (double)(SetA.at(i).size() + SetB.at(i).size()) / (double)(set.size() + SetA.negPatch.size() + SetB.negPatch.size());
 
-//        //std::cout << pA << " " << pB << " " << pT << std::endl;
+    //        //std::cout << pA << " " << pB << " " << pT << std::endl;
 
-//        if(pA != 0 && pB !=0 && pT != 0){
-//            entoropyA += -1 * pA * log(pA);
-//            entoropyB += -1 * pB * log(pB);
-//            entoropy += -1 * pT * log(pT);
-//        }
-//    }
+    //        if(pA != 0 && pB !=0 && pT != 0){
+    //            entoropyA += -1 * pA * log(pA);
+    //            entoropyB += -1 * pB * log(pB);
+    //            entoropy += -1 * pT * log(pT);
+    //        }
+    //    }
 
     //std::cout << entoropyA << std::endl;
 
 
-//    std::cout << std::endl << "SetA pos " << SetA.posPatch.size() << " neg " << SetA.negPatch.size() << " entropy A " << entoropyA << std::endl;
-//    std::cout << "SetB pos " << SetB.posPatch.size() << " neg " << SetB.negPatch.size() << " entropy B " << entoropyB << std::endl;
-//    std::cout << "entropy " << entoropy << " IG " << entoropy - (wa * entoropyA + wb * entoropyB) << std::endl;
+    //    std::cout << std::endl << "SetA pos " << SetA.posPatch.size() << " neg " << SetA.negPatch.size() << " entropy A " << entoropyA << std::endl;
+    //    std::cout << "SetB pos " << SetB.posPatch.size() << " neg " << SetB.negPatch.size() << " entropy B " << entoropyB << std::endl;
+    //    std::cout << "entropy " << entoropy << " IG " << entoropy - (wa * entoropyA + wb * entoropyB) << std::endl;
 
     //    std::cout << "owattayo" << std::endl;
 

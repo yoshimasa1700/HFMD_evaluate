@@ -24,153 +24,158 @@
 
 class CConfig
 {
- public:
-  CConfig();
-  ~CConfig(){};
+public:
+    CConfig(){
 
-  int loadConfig(const char* filename);
-  
-  // Path to trees
-  std::string	treepath;
-  // Number of trees
-  int		ntrees;
-  // Patch width
-  int		p_width;
-  // Patch height
-  int		p_height;
-  // Path to images
-  std::string	impath;
-  // File with names of images
-  std::string	imfiles;
-  // Extract features
-  bool		xtrFeature;
-  // Scales
-  std::vector<float>	scales;
-  // Ratio
-  std::vector<float>	ratios;
-  // Output path
-  std::string	outpath;
-  // scale factor for output image (default: 128)
-  int		out_scale;
-  // Path to training image folder 12/12/14 MasahikoToyoshi
-  std::string	trainpath;
-  // training data file name
-  std::string	traindatafile;
-  // Path to positive examples
-  std::string	trainpospath;
-  // File with postive examples
-  std::string	trainposfiles;
-  // Subset of positive images -1: all images
-  int		subsamples_pos;
-  // Sample patches from pos. examples
-  unsigned int	samples_pos;
-  // Path to positive examples
-  std::string	trainnegpath;
-  // File with postive examples
-  std::string	trainnegfiles;
-  // Subset of neg images -1: all images
-  int		subsamples_neg;
-  // Samples from pos. examples
-  unsigned int	samples_neg;
-  // offset for saving tree number
-  int	off_tree;
-  // train image per tree
-  int	imagePerTree;
-  // min sample number per leaf
-  int	min_sample;
-  // max depth of tree
-  int	max_depth;
-  // feature channel number
-  int	featureChannel;
-  // extract patch ratio
-  double	patchRatio;
-  // stride of getting patch
-  int stride;
-  // test data path
-  std::string testPath;
-  // test data file
-  std::string testData;
-  // test mode
-  int testMode;
-  double detectThreshold;
+    };
+    ~CConfig(){};
 
-  std::string negDataPath,negDataList;
+    double widthScale,heightScale;
 
-  int showGT;
+    int loadConfig(const char* filename);
 
-  std::string classDatabaseName;
+    // Path to trees
+    std::string	treepath;
+    // Number of trees
+    int		ntrees;
+    // Patch width
+    int		p_width;
+    // Patch height
+    int		p_height;
+    // Path to images
+    std::string	impath;
+    // File with names of images
+    std::string	imfiles;
+    // Extract features
+    bool		xtrFeature;
+    // Scales
+    std::vector<float>	scales;
+    // Ratio
+    std::vector<float>	ratios;
+    // Output path
+    std::string	outpath;
+    // scale factor for output image (default: 128)
+    int		out_scale;
+    // Path to training image folder 12/12/14 MasahikoToyoshi
+    std::string	trainpath;
+    // training data file name
+    std::string	traindatafile;
+    // Path to positive examples
+    std::string	trainpospath;
+    // File with postive examples
+    std::string	trainposfiles;
+    // Subset of positive images -1: all images
+    int		subsamples_pos;
+    // Sample patches from pos. examples
+    unsigned int	samples_pos;
+    // Path to positive examples
+    std::string	trainnegpath;
+    // File with postive examples
+    std::string	trainnegfiles;
+    // Subset of neg images -1: all images
+    int		subsamples_neg;
+    // Samples from pos. examples
+    unsigned int	samples_neg;
+    // offset for saving tree number
+    int	off_tree;
+    // train image per tree
+    int	imagePerTree;
+    // sample number per leaf
+    int	min_sample;
+    // max depth of tree
+    int	max_depth;
+    // feature channel number
+    int	featureChannel;
+    // extract patch ratio
+    double	patchRatio;
+    // stride of getting patch
+    int stride;
+    // test data path
+    std::string testPath;
+    // test data file
+    std::string testData;
+    // test mode
+    int testMode;
+    double detectThreshold;
 
-  int learningMode;
+    std::string negDataPath,negDataList;
 
-  std::string traindatalist;
-  std::string testdatalist;
-  int negMode;
+    int showGT;
 
-  double pnRatio;
+    std::string classDatabaseName;
 
-  double acPatchRatio;
-  double mindist;
+    int learningMode;
 
- private:
-  boost::property_tree::ptree pt;
+    std::string traindatalist;
+    std::string testdatalist;
+    int negMode;
+
+    double pnRatio;
+
+    double acPatchRatio;
+    double mindist;
+    double maxdist;
+
+private:
+    boost::property_tree::ptree pt;
 
 };
 
 class databaseNode{
- public:
- databaseNode(std::string className,cv::Size size, uchar depth)
-     : name(className), instances(1), classSize(size),classDepth(depth){}
-  
-  std::string name;
-  cv::Size classSize;
-  uchar classDepth;
+public:
+    databaseNode(std::string className,cv::Size size, uchar depth)
+        : name(className), instances(1), classSize(size),classDepth(depth){}
 
-  int instances;
+    std::string name;
+    cv::Size classSize;
+    uchar classDepth;
+
+    int instances;
 };
 
 class CClassDatabase{
- public:
-  CClassDatabase(){
-    vNode.clear();
-  }
+public:
+    CClassDatabase(){
+        vNode.clear();
+    }
 
-  void add(std::string str, cv::Size size, uchar depth);
-  void write(const char* str);
-  void read(const char* str);
+    void add(std::string str, cv::Size size, uchar depth);
+    void write(const char* str);
+    void read(const char* str);
 
-  int search(std::string str) const;
+    int search(std::string str) const;
 
-  void show() const;
+    void show() const;
 
-  void clear(){
-    vNode.clear();
-  };
+    void clear(){
+        vNode.clear();
+    };
 
-  std::vector<databaseNode> vNode;
+    std::vector<databaseNode> vNode;
 };
 
 class nCk{
 public:
-  std::set<int> generate(int n, int k){
-    std::set<int> cmb;
-    int j;
-    //srand(time(NULL));
-    boost::uniform_smallint<> dst(0,n);
-    boost::variate_generator<
-      boost::lagged_fibonacci1279&, boost::uniform_smallint<>
-      > rand( gen, dst );
-  
-    for(int i = n - k; i < n; i++){
-      j = rand()%i;
-      if(cmb.find(j) == cmb.end())
-	cmb.insert(j);
-      else
-	cmb.insert(i);
-    }     
-    return cmb;
-  }
+    std::set<int> generate(int n, int k){
+        std::set<int> cmb;
+        int j;
+        //srand(time(NULL));
+        boost::uniform_smallint<> dst(0,n);
+        boost::variate_generator<
+                boost::lagged_fibonacci1279&, boost::uniform_smallint<>
+                > rand( gen, dst );
+
+        for(int i = n - k; i < n; i++){
+            j = rand()%i;
+            if(cmb.find(j) == cmb.end())
+                cmb.insert(j);
+            else
+                cmb.insert(i);
+        }
+        return cmb;
+    }
 private:
-  static boost::lagged_fibonacci1279 gen;
+    static boost::lagged_fibonacci1279 gen;
 };
 
 void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet);//, boost::mt19937 &gen);

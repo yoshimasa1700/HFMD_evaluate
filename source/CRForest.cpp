@@ -39,7 +39,7 @@ void CRForest::growATree(const int treeNum){
     for(int i = 0; i < posSet.size(); ++i){
         //std::cout << i << std::endl;
 
-        posSet.at(i).loadImage();
+        posSet.at(i).loadImage(conf.mindist, conf.maxdist);
         posSet.at(i).extractFeatures();
 
 
@@ -52,7 +52,7 @@ void CRForest::growATree(const int treeNum){
 
     // extract neg features
     for(int i = 0; i < negSet.size(); ++i){
-        negSet.at(i).loadImage();
+        negSet.at(i).loadImage(conf.mindist,conf.maxdist);
         negSet.at(i).extractFeatures();
     }
 
@@ -138,7 +138,7 @@ void CRForest::detection(CTestDataset &testSet) const{
     std::vector<int> totalVote(classNum,0);
     boost::timer t;
 
-    testSet.loadImage();
+    testSet.loadImage(conf.mindist, conf.maxdist);
     testSet.extractFeatures();
     //testSet.releaseImage();
 

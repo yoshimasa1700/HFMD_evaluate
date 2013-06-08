@@ -5,9 +5,9 @@
   <!-- Number of trees -->
   <ntree>20</ntree>
   <!-- Patch width -->
-  <pwidth>20</pwidth>
+  <pwidth>100</pwidth>
   <!-- Patch height -->
-  <pheight>20</pheight>
+  <pheight>100</pheight>
   <!-- Path to images-->
   <!--<imgpath>example/testimage</imgpath>-->
   <!-- Image name list -->
@@ -42,7 +42,7 @@
   <!-- extract patch ratio-->
   <patchratio>1000</patchratio>
   <!-- Stride -->
-  <stride>5</stride>
+  <stride>1</stride>
   <!-- Offset of tree-->
   <offTree>0</offTree>
   <!-- test data path -->
@@ -61,5 +61,6 @@
   <negativemode>1</negativemode>
   <posnegpatchratio>0.2</posnegpatchratio>
   <activepatchratio>0.2</activepatchratio>
-  <mindistance>0.35</mindistance>
+  <mindistance>350</mindistance>
+  <maxdistance>1400</maxdistance>
 </root>
