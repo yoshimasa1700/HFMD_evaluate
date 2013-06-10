@@ -116,6 +116,8 @@ public:
     double mindist;
     double maxdist;
 
+    int nOfTrials;
+
 private:
     boost::property_tree::ptree pt;
 

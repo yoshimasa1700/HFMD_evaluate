@@ -398,7 +398,7 @@ void CRTree::growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &
         }
 
         // Find optimal test
-        if( optimizeTest(SetA, SetB, trainSet, test, 1000, measureMode, depth) ) {
+        if( optimizeTest(SetA, SetB, trainSet, test, conf.nOfTrials, measureMode, depth) ) {
 
             // Store binary test for current node
             int* ptT = &treetable[node*11];

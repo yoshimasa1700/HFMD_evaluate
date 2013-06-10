@@ -356,6 +356,8 @@ int CConfig::loadConfig(const char* filename)
 
     maxdist = *pt.get_optional<double>("root.maxdistance");
 
+    nOfTrials = *pt.get_optional<int>("root.numberOfTrials");
+
     widthScale = p_width / mindist;
     heightScale = p_height / mindist;
 

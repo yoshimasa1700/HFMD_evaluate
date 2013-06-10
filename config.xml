@@ -42,7 +42,7 @@
   <!-- extract patch ratio-->
   <patchratio>1000</patchratio>
   <!-- Stride -->
-  <stride>1</stride>
+  <stride>10</stride>
   <!-- Offset of tree-->
   <offTree>0</offTree>
   <!-- test data path -->
@@ -63,4 +63,5 @@
   <activepatchratio>0.4</activepatchratio>
   <mindistance>350</mindistance>
   <maxdistance>1400</maxdistance>
+  <numberOfTrials>1000</numberOfTrials>
 </root>
