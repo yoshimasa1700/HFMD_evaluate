@@ -68,7 +68,7 @@ public:
         leaf= new LeafNode[(int)pow(2.0, int(max_depth))];
     }
 
-    CRTree(const char* filename, const char* datasetname);
+    CRTree(const char* filename, const char* datasetname, CConfig &conf);
 
     //destructor
     ~CRTree()
@@ -164,7 +164,7 @@ private:
 
     CClassDatabase classDatabase;
 
-    void normarizationByDepth(const CPatch* patch,cv::Mat& rgb, const CConfig &config)const;
+    void normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const;//, const CConfig &config)const;
 
 };
 

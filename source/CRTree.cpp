@@ -21,7 +21,7 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
         cv::Mat tempFeture = *patch.getFeature(pnode[9]);
         cv::Mat ptC = tempFeture(patch.getRoi());
 
-        normarizationByDepth(&patch,ptC,config);
+        normarizationByDepth(&patch,ptC);
 
         //std::cout << ptC << std::endl;
 
@@ -60,7 +60,7 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
 }
 
 // Read tree from file
-CRTree::CRTree(const char* filename, const char* databaseName) {
+CRTree::CRTree(const char* filename, const char* databaseName,CConfig &conf):config(conf) {
     cout << "Load Tree " << filename << endl;
 
     classDatabase.read(databaseName);
@@ -152,6 +152,7 @@ CRTree::CRTree(const char* filename, const char* databaseName) {
                     //tempParam.setClassName(tempClassName);
                     tempParam.setCenterPoint(tempPoint);
                     tempParam.setAngle(tempAngle);
+                    tempParam.setClassName(tempCName);
 
                     ptLN->param.at(cNum).push_back(tempParam);
                     //in >> ptLN->vCenter.at(cNum).at(j).y;
@@ -580,14 +581,14 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &tra
     return found;
 }
 
-void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb, const CConfig &config)const {
+void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const{//, const CConfig &config)const {
     cv::Mat tempDepth = *patch->getFeature(32);
     cv::Mat depth = tempDepth(patch->getRoi());
 
-                cv::namedWindow("test");
-                cv::imshow("test",rgb);
-                cv::waitKey(0);
-                cv::destroyAllWindows();
+//                cv::namedWindow("test");
+//                cv::imshow("test",rgb);
+//                cv::waitKey(0);
+//                cv::destroyAllWindows();
 
     //std::cout << trainSet.posPatch.at(i).getFeature(32)->at<uchar>(10,10) << std::endl;
 
@@ -614,10 +615,10 @@ void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb, const CConfi
     cv::resize(rgb,rgb,cv::Size(config.p_width,config.p_height));
 
 
-                cv::namedWindow("test");
-                cv::imshow("test",rgb);
-                cv::waitKey(0);
-                cv::destroyAllWindows();
+//                cv::namedWindow("test");
+//                cv::imshow("test",rgb);
+//                cv::waitKey(0);
+//                cv::destroyAllWindows();
 }
 
 void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const CTrainSet &trainSet) {
@@ -640,7 +641,7 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
             cv::Mat tempMat = *trainSet.posPatch.at(i).getFeature(test[8]);
             cv::Mat ptC = tempMat(trainSet.posPatch.at(i).getRoi());//(*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
 
-            normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC,config);
+            normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC);
 
             if(test[8] == 32){
                 //std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;

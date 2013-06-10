@@ -1,3 +1,5 @@
 1
-rgb2.png depth2.png
-rgb1.png depth1.png
+ornament_1_1_1_crop.png ornament_1_1_1_depthcrop.png
+ornament_1_1_2_crop.png ornament_1_1_2_depthcrop.png
+ornament_1_1_3_crop.png ornament_1_1_3_depthcrop.png
+ornament_1_1_4_crop.png ornament_1_1_4_depthcrop.png

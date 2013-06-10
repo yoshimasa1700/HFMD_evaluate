@@ -114,7 +114,7 @@ void CRForest::loadForest(){
     for(int i = 0; i < vTrees.size(); ++i){
         sprintf(buffer, "%s%03d.txt",conf.treepath.c_str(),i);
         sprintf(buffer2, "%s%s%03d.txt", conf.treepath.c_str(), conf.classDatabaseName.c_str(), i);
-        vTrees[i] = new CRTree(buffer, buffer2);
+        vTrees[i] = new CRTree(buffer, buffer2, conf);
 
         //std::cout << buffer2 << std::endl;
         classDatabase.read(buffer2);
@@ -176,20 +176,20 @@ void CRForest::detection(CTestDataset &testSet) const{
 
             for(int c = 0; c < classNum; c++){
                 if(!(*itL)->vCenter.at(c).empty()){
-                    //if((*itL)->pfg.at(c) > 0.9  ){
+                    if((*itL)->pfg.at(c) > 0.9  ){
                         for(int l = 0; l < (*itL)->param.at(c).size(); ++l){
                             cv::Point patchSize(conf.p_height/2,conf.p_width/2);
                             //std::cout << weight << std::endl;
-                            cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->vCenter.at(c).at(l).x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->vCenter.at(c).at(l).y);
+                            cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->param.at(c).at(l).getCenterPoint().y);
                             if(pos.x > 0 && pos.y > 0 &&
                                     pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){// &&
                                 //(outputImageColorOnly.at(c).at<uchar>(pos.y,pos.x) + weight * 100) < 254){
 
-                                outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 10.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
+                                outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 100.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
                                 totalVote.at(c) += 1;
                             }
                         }
-                    //}
+                    }
                 }
             }
         } // for every leaf

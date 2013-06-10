@@ -14,10 +14,10 @@ public:
     ~CParamset(){}
 
     int setCenterPoint(cv::Point cp){centerPoint = cp;return 0;}
-    cv::Point getCenterPoint(){return centerPoint;}
+    cv::Point getCenterPoint()const{return centerPoint;}
 
     int setClassName(std::string name){className = name;return 0;}
-    std::string getClassName(){return className;}
+    std::string getClassName()const{return className;}
 
     int setAngle(double an){angle = an;return 0;}
     double getAngle(){return angle;}
