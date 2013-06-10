@@ -52,10 +52,10 @@ public:
     CRTree(int		min_s,	//min sample
            int		max_d,	//max depth of tree
            int		cp,	//number of center point
-           CClassDatabase cDatabase,
-           boost::mt19937	randomGen	// random number seed
+           CClassDatabase cDatabase/*,
+                         boost::mt19937	randomGen*/	// random number seed
            )
-        : min_samples(min_s), max_depth(max_d), num_leaf(0), num_cp(cp), gen(randomGen), classDatabase(cDatabase)
+        : min_samples(min_s), max_depth(max_d), num_leaf(0), num_cp(cp), classDatabase(cDatabase)
     {
         num_nodes = (int)pow(2.0, int(max_depth + 1)) - 1;
 
@@ -91,8 +91,8 @@ public:
 
     // Training
     //void growTree(std::vector<std::vector<CPatch> > &TrData, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
-    void growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &negPatch, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
-
+    void growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &negPatch, int node, int depth, float pnratio, CConfig conf, const std::vector<int> &defaultClass_);
+    //boost::mt19937 gen;
     bool optimizeTest(CTrainSet &SetA,
                       CTrainSet &SetB,
                       const CTrainSet &trainSet,
@@ -116,7 +116,8 @@ public:
             return InfGain(SetA, SetB);
         else
             return distMean(SetA.posPatch, SetB.posPatch) * -1;
-    };
+    }
+    void calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1, int &p2) const;
 
 
 
@@ -155,7 +156,7 @@ private:
     // depth of this tree
     unsigned int depth;
 
-    boost::mt19937 gen;
+    static boost::lagged_fibonacci1279 genTree;
     int nclass;
 
     std::vector<int> defaultClass, containClass, containClassA, containClassB;
@@ -173,12 +174,12 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
     boost::mt19937    gen2(static_cast<unsigned long>(time(NULL)) );
 
     boost::uniform_int<> dst( 0, INT_MAX );
-    boost::variate_generator<boost::mt19937&,
-            boost::uniform_int<> > rand( gen, dst );
+    boost::variate_generator<boost::lagged_fibonacci1279&,
+            boost::uniform_int<> > rand( genTree, dst );
 
     boost::uniform_real<> dst2( 0, 1 );
-    boost::variate_generator<boost::mt19937&,
-            boost::uniform_real<> > rand2( gen, dst2 );
+    boost::variate_generator<boost::lagged_fibonacci1279&,
+            boost::uniform_real<> > rand2( genTree, dst2 );
 
 
     //config.learningMode = 2;
@@ -204,33 +205,64 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 
             // depth
             test[8] = max_c - 1;
+            cv::Rect rect1, rect2;
 
-            test[0] = rand() % (max_w / 2 - 1);
-            test[1] = rand() % (max_h / 2 - 1);
-            test[2] = rand() % (max_w / 2 - 1);
-            test[3] = rand() % (max_h / 2 - 1);
+            // caliculate haar-like features
+            int angle = rand() % 360;
+            int type = rand() % 3;
+            int ratio = (rand() % 60) + 20;
 
-            test[4] = test[0] + test[2] + rand() % (max_w - test[0] - test[2] - 1);
-            test[5] = test[1] + test[3] + rand() % (max_h - test[1] - test[3] - 1);
-            test[6] = 1 + rand() % (max_w - test[4] - 1);
-            test[7] = 1 + rand() % (max_h - test[5] - 1);
+            test[0] = angle;
+            test[1] = type;
+            test[2] = ratio;
+
+            test[3] = -1;
+            test[4] = -1;
+            test[5] = -1;
+            test[6] = -1;
+            test[7] = -1;
+            //            rect1.width = (rand() % (max_w - 4)) + 2;
+            //            rect1.height = (rand() % (max_h - 4)) + 2;
+
+            //            rect1.x = rand() % (max_w - rect1.width);
+            //            rect1.y = rand() % (max_h - rect1.height);
+
+            //            rect2.width = (rand() % (max_w - (rect1.width))
+
+            //            test[0] = rand() % (max_w / 2 - 1);
+            //            test[1] = rand() % (max_h / 2 - 1);
+            //            test[2] = rand() % (max_w / 2 - 1);
+            //            test[3] = rand() % (max_h / 2 - 1);
+
+            //            test[4] = test[0] + test[2] + rand() % (max_w - test[0] - test[2] - 1);
+            //            test[5] = test[1] + test[3] + rand() % (max_h - test[1] - test[3] - 1);
+            //            test[6] = 1 + rand() % (max_w - test[4] - 1);
+            //            test[7] = 1 + rand() % (max_h - test[5] - 1);
         }
         break;
     case 1:
+    {
         // depth
         test[8] = max_c - 1;
 
-        test[0] = rand() % (max_w / 2 - 1);
-        test[1] = rand() % (max_h / 2 - 1);
-        test[2] = rand() % (max_w / 2 - 1);
-        test[3] = rand() % (max_h / 2 - 1);
+        // caliculate haar-like features
+        int angle = rand() % 360;
+        int type = rand() % 3;
+        int ratio = (rand() % 60) + 20;
 
-        test[4] = test[0] + test[2] + rand() % (max_w - test[0] - test[2] - 1);
-        test[5] = test[1] + test[3] + rand() % (max_h - test[1] - test[3] - 1);
-        test[6] = 1 + rand() % (max_w - test[4] - 1);
-        test[7] = 1 + rand() % (max_h - test[5] - 1);
+        test[0] = angle;
+        test[1] = type;
+        test[2] = ratio;
+
+        test[3] = -1;
+        test[4] = -1;
+        test[5] = -1;
+        test[6] = -1;
+        test[7] = -1;
         break;
+    }
     case 2:
+    {
         // rgb
         test[0] = rand() % max_w;
         test[1] = rand() % max_h;
@@ -243,6 +275,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
         test[6] = 0;
         test[7] = 0;
         break;
+    }
     default:
         std::cout << "error! can't set learning mode!" << std::endl;
         break;

@@ -549,6 +549,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
                 tempRect.x = j;
                 tempRect.y = k;
                 pixNum = 0;
+                int centerDepthFlag = 1;
 
                 // detect negative patch
                 for(int m = j; m < j + conf.p_width; ++m){
@@ -568,7 +569,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
 
 
                 CPosPatch posTemp(&posSet.at(l),tempRect);
-                if (pixNum > 0){
+                if (pixNum > 0 && posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
                     tPosPatch.push_back(posTemp);
                     patchPerClass.at(classNum).push_back(posTemp);
                 } // if

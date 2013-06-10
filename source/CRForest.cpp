@@ -56,7 +56,7 @@ void CRForest::growATree(const int treeNum){
         negSet.at(i).extractFeatures();
     }
 
-    CRTree *tree = new CRTree(conf.min_sample, conf.max_depth, classDatabase.vNode.size(),this->classDatabase, gen);
+    CRTree *tree = new CRTree(conf.min_sample, conf.max_depth, classDatabase.vNode.size(),this->classDatabase);
     std::cout << "tree created" << std::endl;
 
     extractPosPatches(posSet,posPatch,conf,treeNum,this->classDatabase);
@@ -70,7 +70,7 @@ void CRForest::growATree(const int treeNum){
     
     // grow tree
     //vTrees.at(treeNum)->growTree(vPatches, 0,0, (float)(vPatches.at(0).size()) / ((float)(vPatches.at(0).size()) + (float)(vPatches.at(1).size())), conf, gen, patchClassNum);
-    tree->growTree(posPatch,negPatch, 0,0, ((float)posPatch.size() / (float)(posPatch.size() + negPatch.size())), conf, gen, patchClassNum);
+    tree->growTree(posPatch,negPatch, 0,0, ((float)posPatch.size() / (float)(posPatch.size() + negPatch.size())), conf, patchClassNum);
 
     // save tree
     sprintf(buffer, "%s%03d.txt",
