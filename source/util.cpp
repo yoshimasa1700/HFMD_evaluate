@@ -631,10 +631,20 @@ void extractNegPatches(std::vector<CNegDataset> &negSet,
 
                 tempRect.x = j;
                 tempRect.y = k;
+                ushort pix = 0;
+
+                // detect negative patch
+                for(int m = j; m < j + conf.p_width; ++m){
+                    for(int n = k; n < k + conf.p_height; ++n){
+                        pix += negSet.at(i).img.at(1)->at<ushort>(n, m);
+                    }
+                }
 
                 //tPatch.setPatch(temp, negImage.at(i));
-                CNegPatch negTemp(&negSet.at(i),tempRect);
-                tNegPatch.push_back(negTemp);
+                if(pix > 0){
+                    CNegPatch negTemp(&negSet.at(i),tempRect);
+                    tNegPatch.push_back(negTemp);
+                }
             }//x
         }//y
     } // every image

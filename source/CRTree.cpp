@@ -85,6 +85,9 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     default:
         break;
     }
+
+    //std::cout << test[0] << " " << test[1] << " " << test[2] << std::endl;
+    //std::cout << p1 << " " << p2 << " " << s1 << " " << s2 << std::endl;
     if(s1 == 0 || s2 == 0){
         std::cout << "error! can't get enouch space for haar-like feature" << std::endl;
         exit(-1);
@@ -116,22 +119,19 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
 
         normarizationByDepth(&patch,ptC);
 
+//        for(int i = 0; i < 11; ++i)
+//            std::cout << pnode[i] << " ";
+//        std::cout << std::endl;
+
+
         //std::cout << ptC << std::endl;
 
         if(pnode[9] == 32){
-            //            p1 = 0;
-            //            p2 = 0;
-            //            for(int j = 0;j < pnode[3]; ++j){
-            //                for(int k = 0; k < pnode[4]; ++k)
-            //                    p1 += (int)ptC.at<uchar>(k + pnode[2],j +  pnode[1]);
-            //            }
 
-            //            for(int j = 0;j < pnode[7]; ++j){
-            //                for(int k = 0; k < pnode[8]; ++k)
-            //                    p2 += (int)ptC.at<uchar>(k + pnode[6],j +  pnode[5]);
-            //            }
-
-            calcHaarLikeFeature(ptC,pnode,p1,p2);
+            int regTest[9];
+            for(int i = 0; i < 9; ++i)
+                regTest[i] = pnode[i + 1];
+            calcHaarLikeFeature(ptC,regTest,p1,p2);
 
         }else{
             // get pixel values
@@ -295,8 +295,10 @@ bool CRTree::saveTree(const char* filename) const {
             out << n << " " << depth << " ";
             for(unsigned int i=0; i<11; ++i, ++ptT) {
                 out << *ptT << " ";
+                std::cout << *ptT << " ";
             }
             out << endl;
+            std::cout << std::endl;
         }
         out << endl;
 

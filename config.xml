@@ -42,7 +42,7 @@
   <!-- extract patch ratio-->
   <patchratio>1000</patchratio>
   <!-- Stride -->
-  <stride>1</stride>
+  <stride>5</stride>
   <!-- Offset of tree-->
   <offTree>0</offTree>
   <!-- test data path -->
@@ -59,7 +59,7 @@
   <negativedatapath>negdata</negativedatapath>
   <negativedatalist>negDataList.txt</negativedatalist>
   <negativemode>1</negativemode>
-  <posnegpatchratio>0.2</posnegpatchratio>
+  <posnegpatchratio>1.2</posnegpatchratio>
   <activepatchratio>0.4</activepatchratio>
   <mindistance>350</mindistance>
   <maxdistance>1400</maxdistance>
