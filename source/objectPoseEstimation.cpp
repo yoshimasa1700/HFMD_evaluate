@@ -80,7 +80,7 @@ void loadTestFileMultiObject(CConfig conf, std::vector<CTestDataset> &testSet){
                         tempParam.setAngle(tempAngle);
 
                         testTemp.param.push_back(tempParam);
-                        tempParam.showParam();
+                        //tempParam.showParam();
                     }
                 }while(tempClassName != "EOL");
 

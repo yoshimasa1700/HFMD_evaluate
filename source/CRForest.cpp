@@ -199,85 +199,85 @@ void CRForest::detection(CTestDataset &testSet) const{
 
 
     // find balance by mean shift
-    for(int i = 0; i < classNum; ++i){
-        cv::Mat hsv,hue,rgb;
-        int bins = 256;
+//    for(int i = 0; i < classNum; ++i){
+//        cv::Mat hsv,hue,rgb;
+//        int bins = 256;
 
-        double min,max;
-        cv::Point minLoc,maxLoc;
-        cv::minMaxLoc(outputImageColorOnly.at(i),&min,&max,&minLoc,&maxLoc);
+//        double min,max;
+//        cv::Point minLoc,maxLoc;
+//        cv::minMaxLoc(outputImageColorOnly.at(i),&min,&max,&minLoc,&maxLoc);
 
-        cv::GaussianBlur(outputImageColorOnly.at(i),outputImageColorOnly.at(i), cv::Size(21,21),0);
+//        cv::GaussianBlur(outputImageColorOnly.at(i),outputImageColorOnly.at(i), cv::Size(21,21),0);
 
-        //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
-        //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
+//        //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
+//        //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
 
-        hue.create( outputImageColorOnly.at(i).size(), outputImageColorOnly.at(i).depth() );
-        int ch[] = { 0, 0 };
-        mixChannels( &outputImageColorOnly.at(i), 1, &hue, 1, ch, 1 );
-
-
-        const int ch_width = 400;
-        cv::Mat hist;
-        cv::Mat hist_img(cv::Size(ch_width, 200), CV_8UC3, cv::Scalar::all(255));;
-        int histSize = MAX( bins, 2 );
-        float hue_range[] = { 0, 1 };
-        const float* ranges = { hue_range };
-        const int hist_size = 256;
-        double max_val = .0;
-        double second_val = .0;
-
-        /// Get the Histogram and normalize it
-        cv::calcHist( &outputImageColorOnly.at(i) , 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
-        cv::normalize( hist, hist, 0., 256., cv::NORM_MINMAX, -1, cv::Mat() );
-
-        cv::minMaxLoc(hist, 0, &max_val);
-        hist.at<float>(0) = 0;
-        cv::minMaxLoc(hist, 0, &second_val);
-
-        hist.at<float>(0) = max_val;
-
-        // (4)scale and draw the histogram(s)
-        cv::Scalar color = cv::Scalar::all(100);
-        //for(int i=0; i<sch; i++) {
-        //  if(sch==3)
-        //    color = Scalar((0xaa<<i*8)&0x0000ff,(0xaa<<i*8)&0x00ff00,(0xaa<<i*8)&0xff0000, 0);
-        hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);//?1./max_val:0.,0);
-        for(int j=0; j<hist_size; ++j) {
-            int bin_w = cv::saturate_cast<int>((double)ch_width/hist_size);
-            //std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
-            cv::rectangle(hist_img,
-                          cv::Point( j*bin_w, hist_img.rows),
-                          cv::Point((j+1)*bin_w, hist_img.rows-cv::saturate_cast<int>(hist.at<float>(j))),
-                          color, -1);
-        }
+//        hue.create( outputImageColorOnly.at(i).size(), outputImageColorOnly.at(i).depth() );
+//        int ch[] = { 0, 0 };
+//        mixChannels( &outputImageColorOnly.at(i), 1, &hue, 1, ch, 1 );
 
 
-        //show and write histgram
-//        cv::imwrite("test.png",hist_img);
+//        const int ch_width = 400;
+//        cv::Mat hist;
+//        cv::Mat hist_img(cv::Size(ch_width, 200), CV_8UC3, cv::Scalar::all(255));;
+//        int histSize = MAX( bins, 2 );
+//        float hue_range[] = { 0, 1 };
+//        const float* ranges = { hue_range };
+//        const int hist_size = 256;
+//        double max_val = .0;
+//        double second_val = .0;
 
-//        cv::namedWindow("test");
-//        cv::imshow("test",hist_img);
-//        cv::waitKey(0);
-//        cv::destroyWindow("test");
+//        /// Get the Histogram and normalize it
+//        cv::calcHist( &outputImageColorOnly.at(i) , 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
+//        cv::normalize( hist, hist, 0., 256., cv::NORM_MINMAX, -1, cv::Mat() );
 
-        /// Get Backprojection
-        cv::Mat backproj;
-        calcBackProject( &hue, 1, 0, hist, backproj, &ranges, 1, true );
+//        cv::minMaxLoc(hist, 0, &max_val);
+//        hist.at<float>(0) = 0;
+//        cv::minMaxLoc(hist, 0, &second_val);
 
-        cv::Rect tempRect = cv::Rect(maxLoc.x,maxLoc.y,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
-        cv::TermCriteria terminator;
-        terminator.maxCount = 1000;
-        terminator.epsilon  = 10;
-        terminator.type = cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS;
-        cv::meanShift(backproj,tempRect,terminator);
+//        hist.at<float>(0) = max_val;
 
-        //cv::Size tempSize = classDatabase.vNode.at(c).classSize;
-        //cv::Rect_<int> outRect(tempRect.x,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
-        cv::rectangle(outputImage.at(i),tempRect,cv::Scalar(0,200,0),3);
-        cv::putText(outputImage.at(i),classDatabase.vNode.at(i).name,cv::Point(tempRect.x,tempRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,0), 2, CV_AA);
+//        // (4)scale and draw the histogram(s)
+//        cv::Scalar color = cv::Scalar::all(100);
+//        //for(int i=0; i<sch; i++) {
+//        //  if(sch==3)
+//        //    color = Scalar((0xaa<<i*8)&0x0000ff,(0xaa<<i*8)&0x00ff00,(0xaa<<i*8)&0xff0000, 0);
+//        hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);//?1./max_val:0.,0);
+//        for(int j=0; j<hist_size; ++j) {
+//            int bin_w = cv::saturate_cast<int>((double)ch_width/hist_size);
+//            //std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
+//            cv::rectangle(hist_img,
+//                          cv::Point( j*bin_w, hist_img.rows),
+//                          cv::Point((j+1)*bin_w, hist_img.rows-cv::saturate_cast<int>(hist.at<float>(j))),
+//                          color, -1);
+//        }
 
-    }
+
+//        //show and write histgram
+////        cv::imwrite("test.png",hist_img);
+
+////        cv::namedWindow("test");
+////        cv::imshow("test",hist_img);
+////        cv::waitKey(0);
+////        cv::destroyWindow("test");
+
+//        /// Get Backprojection
+//        cv::Mat backproj;
+//        calcBackProject( &hue, 1, 0, hist, backproj, &ranges, 1, true );
+
+//        cv::Rect tempRect = cv::Rect(maxLoc.x,maxLoc.y,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
+//        cv::TermCriteria terminator;
+//        terminator.maxCount = 1000;
+//        terminator.epsilon  = 10;
+//        terminator.type = cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS;
+//        cv::meanShift(backproj,tempRect,terminator);
+
+//        //cv::Size tempSize = classDatabase.vNode.at(c).classSize;
+//        //cv::Rect_<int> outRect(tempRect.x,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
+//        cv::rectangle(outputImage.at(i),tempRect,cv::Scalar(0,200,0),3);
+//        cv::putText(outputImage.at(i),classDatabase.vNode.at(i).name,cv::Point(tempRect.x,tempRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,0), 2, CV_AA);
+
+//    }
 
     double time = t.elapsed();
     std::cout << time << "sec" << std::endl;
