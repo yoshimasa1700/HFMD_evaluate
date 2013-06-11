@@ -10,25 +10,28 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 
     cv::Mat showMat(patch.rows, patch.cols, CV_8U);
 
-//    std::cout << angle << std::endl;
-//    patch.convertTo(showMat, CV_8U, 255.0/ 1000.0);
-//    cv::namedWindow("test");
-//    cv::imshow("test", showMat);
-//    cv::waitKey(0);
+    //    std::cout << angle << std::endl;
+    //    patch.convertTo(showMat, CV_8U, 255.0/ 1000.0);
+    //    cv::namedWindow("test");
+    //    cv::imshow("test", showMat);
+    //    cv::waitKey(0);
 
     cv::Mat affine = cv::getRotationMatrix2D(cv::Point(config.p_width / 2 + 1, config.p_height / 2 + 1), (float)test[0] /*/ 180 * CV_PI*/, 1.0);
     cv::Mat rotatedMat(patch.rows, patch.cols, patch.type());
 
     cv::warpAffine(patch, rotatedMat, affine, cv::Size(patch.cols, patch.rows));
 
-//    rotatedMat.convertTo(showMat, CV_8U, 255.0/ 1000.0);
+    //    rotatedMat.convertTo(showMat, CV_8U, 255.0/ 1000.0);
 
-//    cv::imshow("test", showMat);
-//    cv::waitKey(0);
-//    cv::destroyAllWindows();
+    //    cv::imshow("test", showMat);
+    //    cv::waitKey(0);
+    //    cv::destroyAllWindows();
 
     p1 = 0;
     p2 = 0;
+
+    int s1 = 0;
+    int s2 = 0;
     //std::cout << test[0] << " " << test[1] << " " << test[2] << std::endl;
 
     switch(test[1]){
@@ -36,10 +39,13 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
         // edge feature
         for(int i = 0; i < rotatedMat.rows; ++i){
             for(int j = 0; j < rotatedMat.cols; ++j)
-                if(i < i * test[2] / 100)
+                if(i < rotatedMat.rows * test[2] / 100){
                     p1 += rotatedMat.at<ushort>(i, j);
-            else
+                    s1++;
+                }else{
                     p2 += rotatedMat.at<ushort>(i, j);
+                    s2++;
+                }
         }
         break;
 
@@ -47,10 +53,13 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
         // line feature
         for(int i = 0; i < rotatedMat.rows; ++i){
             for(int j = 0; j < rotatedMat.cols; ++j)
-                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2)
+                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2){
                     p1 += rotatedMat.at<ushort>(i, j);
-            else
+                    s1++;
+                }else{
                     p2 += rotatedMat.at<ushort>(i, j);
+                    s2++;
+                }
         }
 
         break;
@@ -61,10 +70,13 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
             for(int j = 0; j < rotatedMat.cols; ++j){
                 //std::cout << i << " " << j << std::endl;
                 //std::cout << rotatedMat.rows * test[2] / 100 / 2 << " " << rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 << " " << rotatedMat.cols * test[2] / 100 / 2 << " " << rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2 << std::endl;
-                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 || j < rotatedMat.cols * test[2] / 100 / 2 || j > rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2)
+                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 || j < rotatedMat.cols * test[2] / 100 / 2 || j > rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2){
                     p1 += rotatedMat.at<ushort>(i, j);
-                else
+                    s1++;
+                }else{
                     p2 += rotatedMat.at<ushort>(i, j);
+                    s2++;
+                }
             }
 
         }
@@ -72,6 +84,13 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
         break;
     default:
         break;
+    }
+    if(s1 == 0 || s2 == 0){
+        std::cout << "error! can't get enouch space for haar-like feature" << std::endl;
+        exit(-1);
+    }else{
+        p1 /= s1;
+        p2 /= s2;
     }
 
     return;
@@ -100,17 +119,17 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
         //std::cout << ptC << std::endl;
 
         if(pnode[9] == 32){
-//            p1 = 0;
-//            p2 = 0;
-//            for(int j = 0;j < pnode[3]; ++j){
-//                for(int k = 0; k < pnode[4]; ++k)
-//                    p1 += (int)ptC.at<uchar>(k + pnode[2],j +  pnode[1]);
-//            }
+            //            p1 = 0;
+            //            p2 = 0;
+            //            for(int j = 0;j < pnode[3]; ++j){
+            //                for(int k = 0; k < pnode[4]; ++k)
+            //                    p1 += (int)ptC.at<uchar>(k + pnode[2],j +  pnode[1]);
+            //            }
 
-//            for(int j = 0;j < pnode[7]; ++j){
-//                for(int k = 0; k < pnode[8]; ++k)
-//                    p2 += (int)ptC.at<uchar>(k + pnode[6],j +  pnode[5]);
-//            }
+            //            for(int j = 0;j < pnode[7]; ++j){
+            //                for(int k = 0; k < pnode[8]; ++k)
+            //                    p2 += (int)ptC.at<uchar>(k + pnode[6],j +  pnode[5]);
+            //            }
 
             calcHaarLikeFeature(ptC,pnode,p1,p2);
 
@@ -653,49 +672,49 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &tra
     std::cout << std::endl;
 
     // this is for debug
-//    cv::namedWindow("test");
-//    std::cout << test[8] << std::endl;
+    //    cv::namedWindow("test");
+    //    std::cout << test[8] << std::endl;
 
-//    if(test[8] == 32){
+    //    if(test[8] == 32){
     if(found)
         for(int i = 0; i < 8; ++i){
             std::cout << test[i] << " ";
         }
     else
         std::cout << "not found!!!!!!!!!!!!!!!!!!!!Ghaaaaaaaaaaaa!!!!!!!" << std::endl;
-        std::cout << std::endl;
-//        cv::Rect rect1 = cv::Rect(test[0], test[1], test[2], test[3]);
-//        cv::Rect rect2 = cv::Rect(test[4], test[5], test[6], test[7]);
-//        std::cout << "A" << std::endl;
-//        for(int i = 0; i < SetA.posPatch.size(); ++i){
-//            cv::Mat showMat(SetA.posPatch.at(i).getRoi().width, SetA.posPatch.at(i).getRoi().height,CV_8U);
-//            (*SetA.posPatch.at(i).getFeature(test[8]))(SetA.posPatch.at(i).getRoi()).convertTo(showMat, CV_8U, 255.0 / 1000);
-//            cv::rectangle(showMat,rect1,cv::Scalar(200,200,200));
-//            cv::rectangle(showMat,rect2,cv::Scalar(200,200,200));
-//            cv::imshow("test", showMat);
-//            cv::waitKey(0);
-//        }
-//        std::cout << "B" << std::endl;
-//        for(int i = 0; i < SetB.posPatch.size(); ++i){
-//            cv::Mat showMat(SetB.posPatch.at(i).getRoi().width, SetB.posPatch.at(i).getRoi().height,CV_8U);
-//            (*SetB.posPatch.at(i).getFeature(test[8]))(SetB.posPatch.at(i).getRoi()).convertTo(showMat, CV_8U, 255.0 / 1000);
-//            cv::imshow("test", showMat);
-//            cv::waitKey(0);
-//        }
-//    }else{
+    std::cout << std::endl;
+    //        cv::Rect rect1 = cv::Rect(test[0], test[1], test[2], test[3]);
+    //        cv::Rect rect2 = cv::Rect(test[4], test[5], test[6], test[7]);
+    //        std::cout << "A" << std::endl;
+    //        for(int i = 0; i < SetA.posPatch.size(); ++i){
+    //            cv::Mat showMat(SetA.posPatch.at(i).getRoi().width, SetA.posPatch.at(i).getRoi().height,CV_8U);
+    //            (*SetA.posPatch.at(i).getFeature(test[8]))(SetA.posPatch.at(i).getRoi()).convertTo(showMat, CV_8U, 255.0 / 1000);
+    //            cv::rectangle(showMat,rect1,cv::Scalar(200,200,200));
+    //            cv::rectangle(showMat,rect2,cv::Scalar(200,200,200));
+    //            cv::imshow("test", showMat);
+    //            cv::waitKey(0);
+    //        }
+    //        std::cout << "B" << std::endl;
+    //        for(int i = 0; i < SetB.posPatch.size(); ++i){
+    //            cv::Mat showMat(SetB.posPatch.at(i).getRoi().width, SetB.posPatch.at(i).getRoi().height,CV_8U);
+    //            (*SetB.posPatch.at(i).getFeature(test[8]))(SetB.posPatch.at(i).getRoi()).convertTo(showMat, CV_8U, 255.0 / 1000);
+    //            cv::imshow("test", showMat);
+    //            cv::waitKey(0);
+    //        }
+    //    }else{
 
-//        std::cout << "A" << std::endl;
-//        for(int i = 0; i < SetA.posPatch.size(); ++i){
-//            cv::imshow("test", *SetA.posPatch.at(i).getFeature(test[8]));
-//            cv::waitKey(0);
-//        }
-//        std::cout << "B" << std::endl;
-//        for(int i = 0; i < SetB.posPatch.size(); ++i){
-//            cv::imshow("test", *SetB.posPatch.at(i).getFeature(test[8]));
-//            cv::waitKey(0);
-//        }
-//    }
-//    cv::destroyAllWindows();
+    //        std::cout << "A" << std::endl;
+    //        for(int i = 0; i < SetA.posPatch.size(); ++i){
+    //            cv::imshow("test", *SetA.posPatch.at(i).getFeature(test[8]));
+    //            cv::waitKey(0);
+    //        }
+    //        std::cout << "B" << std::endl;
+    //        for(int i = 0; i < SetB.posPatch.size(); ++i){
+    //            cv::imshow("test", *SetB.posPatch.at(i).getFeature(test[8]));
+    //            cv::waitKey(0);
+    //        }
+    //    }
+    //    cv::destroyAllWindows();
 
     // return true if a valid test has been found
     // test is invalid if only splits with an empty set A or B has been created
@@ -706,10 +725,10 @@ void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const{//, con
     cv::Mat tempDepth = *patch->getFeature(32);
     cv::Mat depth = tempDepth(patch->getRoi());
 
-//                cv::namedWindow("test");
-//                cv::imshow("test",rgb);
-//                cv::waitKey(0);
-//                cv::destroyAllWindows();
+    //                cv::namedWindow("test");
+    //                cv::imshow("test",rgb);
+    //                cv::waitKey(0);
+    //                cv::destroyAllWindows();
 
     //std::cout << trainSet.posPatch.at(i).getFeature(32)->at<uchar>(10,10) << std::endl;
 
@@ -736,10 +755,10 @@ void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const{//, con
     cv::resize(rgb,rgb,cv::Size(config.p_width,config.p_height));
 
 
-//                cv::namedWindow("test");
-//                cv::imshow("test",rgb);
-//                cv::waitKey(0);
-//                cv::destroyAllWindows();
+    //                cv::namedWindow("test");
+    //                cv::imshow("test",rgb);
+    //                cv::waitKey(0);
+    //                cv::destroyAllWindows();
 }
 
 void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const CTrainSet &trainSet) {
@@ -771,17 +790,17 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
                 //std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;
                 //int dummy;
                 //std::cin >> dummy;
-//                p1 = 0;
-//                p2 = 0;
-//                for(int j = 0;j < test[2]; ++j){
-//                    for(int k = 0; k < test[3]; ++k)
-//                        p1 += (int)ptC.at<uchar>(k + test[1],j +  test[0]);
-//                }
+                //                p1 = 0;
+                //                p2 = 0;
+                //                for(int j = 0;j < test[2]; ++j){
+                //                    for(int k = 0; k < test[3]; ++k)
+                //                        p1 += (int)ptC.at<uchar>(k + test[1],j +  test[0]);
+                //                }
 
-//                for(int j = 0;j < test[6]; ++j){
-//                    for(int k = 0; k < test[7]; ++k)
-//                        p2 += (int)ptC.at<uchar>(k + test[5],j +  test[4]);
-//                }
+                //                for(int j = 0;j < test[6]; ++j){
+                //                    for(int k = 0; k < test[7]; ++k)
+                //                        p2 += (int)ptC.at<uchar>(k + test[5],j +  test[4]);
+                //                }
 
                 //std::cout << p1 << " " << p2 << std::endl;
 
@@ -811,17 +830,17 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
                 //std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;
                 //int dummy;
                 //std::cin >> dummy;
-//                p1 = 0;
-//                p2 = 0;
-//                for(int j = 0;j < test[2]; ++j){
-//                    for(int k = 0; k < test[3]; ++k)
-//                        p1 += (int)ptC.at<uchar>(k + test[1],j +  test[0]);
-//                }
+                //                p1 = 0;
+                //                p2 = 0;
+                //                for(int j = 0;j < test[2]; ++j){
+                //                    for(int k = 0; k < test[3]; ++k)
+                //                        p1 += (int)ptC.at<uchar>(k + test[1],j +  test[0]);
+                //                }
 
-//                for(int j = 0;j < test[6]; ++j){
-//                    for(int k = 0; k < test[7]; ++k)
-//                        p2 += (int)ptC.at<uchar>(k + test[5],j +  test[4]);
-//                }
+                //                for(int j = 0;j < test[6]; ++j){
+                //                    for(int k = 0; k < test[7]; ++k)
+                //                        p2 += (int)ptC.at<uchar>(k + test[5],j +  test[4]);
+                //                }
 
                 calcHaarLikeFeature(ptC,test,p1,p2);
 
