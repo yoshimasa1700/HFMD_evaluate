@@ -20,16 +20,16 @@ public:
     LeafNode(){};
     ~LeafNode(){};
 
-    void show(int delay, int width, int height);
-    void print()
-    {
-        std::cout << "Leaf " << vCenter.size() << " ";
-        for(int i = 0; i < pfg.size(); i++)std::cout << pfg.at(i) << " ";
-        std::cout << std::endl;
-    }
+    //void show(int delay, int width, int height);
+//    void print()
+//    {
+//        std::cout << "Leaf " << vCenter.size() << " ";
+//        for(int i = 0; i < pfg.size(); i++)std::cout << pfg.at(i) << " ";
+//        std::cout << std::endl;
+//    }
     std::vector<float> pfg;
-    std::vector<std::vector<cv::Point> > vCenter; // per class per patch
-    std::vector<int> vClass;
+    //std::vector<std::vector<cv::Point> > vCenter; // per class per patch
+    //std::vector<int> vClass;
     std::vector<std::vector<CParamset> > param; // per class per patch
 };
 
@@ -125,10 +125,10 @@ public:
 
     // IO functions
     bool saveTree(const char* filename) const;
-    void showLeaves(int width, int height) const {
-        for(unsigned int l=0; l<num_leaf; ++l)
-            leaf[l].show(5000, width, height);
-    }
+//    void showLeaves(int width, int height) const {
+//        for(unsigned int l=0; l<num_leaf; ++l)
+//            leaf[l].show(5000, width, height);
+//    }
 
 private:
     // Data structure

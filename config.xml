@@ -3,7 +3,7 @@
   <!-- Path to trees -->
   <treepath>trees/treetable</treepath>
   <!-- Number of trees -->
-  <ntree>2</ntree>
+  <ntree>20</ntree>
   <!-- Patch width -->
   <pwidth>20</pwidth>
   <!-- Patch height -->
@@ -40,9 +40,9 @@
   <!-- feature channel number-->
   <featurechannel>2</featurechannel>
   <!-- extract patch ratio-->
-  <patchratio>100</patchratio>
+  <patchratio>1000</patchratio>
   <!-- Stride -->
-  <stride>5</stride>
+  <stride>1</stride>
   <!-- Offset of tree-->
   <offTree>0</offTree>
   <!-- test data path -->

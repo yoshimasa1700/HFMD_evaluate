@@ -126,9 +126,7 @@ void CRForest::loadForest(){
 // output : classification result and detect picture
 void CRForest::detection(CTestDataset &testSet) const{
     int classNum = classDatabase.vNode.size();//contain class number
-    //std::vector<CPatch> patches;
     std::vector<CTestPatch> testPatch;
-    //cv::vector<cv::Mat*> features;
     std::vector<const LeafNode*> result;
 
     std::vector<std::vector<const LeafNode*> > storedLN(0);
@@ -163,34 +161,29 @@ void CRForest::detection(CTestDataset &testSet) const{
 
     // regression and vote for every patch
     for(int j = 0; j < testPatch.size(); ++j){
-        //std::vector<float> detectionScore(classNum,0);
-
         result.clear();
         this->regression(result, testPatch.at(j));
 
         storedLN.push_back(result);
 
         // vote for all trees (leafs)
-        for(std::vector<const LeafNode*>::const_iterator itL = result.begin();
-            itL!=result.end(); ++itL) {
+        for(std::vector<const LeafNode*>::const_iterator itL = result.begin();itL!=result.end(); ++itL) {
 
             for(int c = 0; c < classNum; c++){
-                if(!(*itL)->vCenter.at(c).empty()){
-                    if((*itL)->pfg.at(c) > 0.9  ){
-                        for(int l = 0; l < (*itL)->param.at(c).size(); ++l){
-                            cv::Point patchSize(conf.p_height/2,conf.p_width/2);
-                            //std::cout << weight << std::endl;
-                            cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->param.at(c).at(l).getCenterPoint().y);
-                            if(pos.x > 0 && pos.y > 0 &&
-                                    pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){// &&
-                                //(outputImageColorOnly.at(c).at<uchar>(pos.y,pos.x) + weight * 100) < 254){
+                //if(!(*itL)->param.at(c).empty()){
+                //if((*itL)->pfg.at(c) > 0.9  ){
+                for(int l = 0; l < (*itL)->param.at(c).size(); ++l){
+                    cv::Point patchSize(conf.p_height/2,conf.p_width/2);
+                    cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->param.at(c).at(l).getCenterPoint().y);
+                    if(pos.x > 0 && pos.y > 0 && pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){
+                        outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 100.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
+                        //std::cout << classDatabase.vNode.at(c).name << " " << (*itL)->pfg.at(c) << std::endl;
 
-                                outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 100.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
-                                totalVote.at(c) += 1;
-                            }
-                        }
+                        totalVote.at(c) += 1;
                     }
                 }
+                //}
+                //}
             }
         } // for every leaf
     } // for every patch
@@ -199,85 +192,85 @@ void CRForest::detection(CTestDataset &testSet) const{
 
 
     // find balance by mean shift
-//    for(int i = 0; i < classNum; ++i){
-//        cv::Mat hsv,hue,rgb;
-//        int bins = 256;
+    for(int i = 0; i < classNum; ++i){
+        //        cv::Mat hsv,hue,rgb;
+        //        int bins = 256;
 
-//        double min,max;
-//        cv::Point minLoc,maxLoc;
-//        cv::minMaxLoc(outputImageColorOnly.at(i),&min,&max,&minLoc,&maxLoc);
+        //        double min,max;
+        //        cv::Point minLoc,maxLoc;
+        //        cv::minMaxLoc(outputImageColorOnly.at(i),&min,&max,&minLoc,&maxLoc);
 
-//        cv::GaussianBlur(outputImageColorOnly.at(i),outputImageColorOnly.at(i), cv::Size(21,21),0);
+        cv::GaussianBlur(outputImageColorOnly.at(i),outputImageColorOnly.at(i), cv::Size(21,21),0);
 
-//        //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
-//        //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
+        //        //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
+        //        //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
 
-//        hue.create( outputImageColorOnly.at(i).size(), outputImageColorOnly.at(i).depth() );
-//        int ch[] = { 0, 0 };
-//        mixChannels( &outputImageColorOnly.at(i), 1, &hue, 1, ch, 1 );
-
-
-//        const int ch_width = 400;
-//        cv::Mat hist;
-//        cv::Mat hist_img(cv::Size(ch_width, 200), CV_8UC3, cv::Scalar::all(255));;
-//        int histSize = MAX( bins, 2 );
-//        float hue_range[] = { 0, 1 };
-//        const float* ranges = { hue_range };
-//        const int hist_size = 256;
-//        double max_val = .0;
-//        double second_val = .0;
-
-//        /// Get the Histogram and normalize it
-//        cv::calcHist( &outputImageColorOnly.at(i) , 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
-//        cv::normalize( hist, hist, 0., 256., cv::NORM_MINMAX, -1, cv::Mat() );
-
-//        cv::minMaxLoc(hist, 0, &max_val);
-//        hist.at<float>(0) = 0;
-//        cv::minMaxLoc(hist, 0, &second_val);
-
-//        hist.at<float>(0) = max_val;
-
-//        // (4)scale and draw the histogram(s)
-//        cv::Scalar color = cv::Scalar::all(100);
-//        //for(int i=0; i<sch; i++) {
-//        //  if(sch==3)
-//        //    color = Scalar((0xaa<<i*8)&0x0000ff,(0xaa<<i*8)&0x00ff00,(0xaa<<i*8)&0xff0000, 0);
-//        hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);//?1./max_val:0.,0);
-//        for(int j=0; j<hist_size; ++j) {
-//            int bin_w = cv::saturate_cast<int>((double)ch_width/hist_size);
-//            //std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
-//            cv::rectangle(hist_img,
-//                          cv::Point( j*bin_w, hist_img.rows),
-//                          cv::Point((j+1)*bin_w, hist_img.rows-cv::saturate_cast<int>(hist.at<float>(j))),
-//                          color, -1);
-//        }
+        //        hue.create( outputImageColorOnly.at(i).size(), outputImageColorOnly.at(i).depth() );
+        //        int ch[] = { 0, 0 };
+        //        mixChannels( &outputImageColorOnly.at(i), 1, &hue, 1, ch, 1 );
 
 
-//        //show and write histgram
-////        cv::imwrite("test.png",hist_img);
+        //        const int ch_width = 400;
+        //        cv::Mat hist;
+        //        cv::Mat hist_img(cv::Size(ch_width, 200), CV_8UC3, cv::Scalar::all(255));;
+        //        int histSize = MAX( bins, 2 );
+        //        float hue_range[] = { 0, 1 };
+        //        const float* ranges = { hue_range };
+        //        const int hist_size = 256;
+        //        double max_val = .0;
+        //        double second_val = .0;
 
-////        cv::namedWindow("test");
-////        cv::imshow("test",hist_img);
-////        cv::waitKey(0);
-////        cv::destroyWindow("test");
+        //        /// Get the Histogram and normalize it
+        //        cv::calcHist( &outputImageColorOnly.at(i) , 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
+        //        cv::normalize( hist, hist, 0., 256., cv::NORM_MINMAX, -1, cv::Mat() );
 
-//        /// Get Backprojection
-//        cv::Mat backproj;
-//        calcBackProject( &hue, 1, 0, hist, backproj, &ranges, 1, true );
+        //        cv::minMaxLoc(hist, 0, &max_val);
+        //        hist.at<float>(0) = 0;
+        //        cv::minMaxLoc(hist, 0, &second_val);
 
-//        cv::Rect tempRect = cv::Rect(maxLoc.x,maxLoc.y,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
-//        cv::TermCriteria terminator;
-//        terminator.maxCount = 1000;
-//        terminator.epsilon  = 10;
-//        terminator.type = cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS;
-//        cv::meanShift(backproj,tempRect,terminator);
+        //        hist.at<float>(0) = max_val;
 
-//        //cv::Size tempSize = classDatabase.vNode.at(c).classSize;
-//        //cv::Rect_<int> outRect(tempRect.x,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
-//        cv::rectangle(outputImage.at(i),tempRect,cv::Scalar(0,200,0),3);
-//        cv::putText(outputImage.at(i),classDatabase.vNode.at(i).name,cv::Point(tempRect.x,tempRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,0), 2, CV_AA);
+        //        // (4)scale and draw the histogram(s)
+        //        cv::Scalar color = cv::Scalar::all(100);
+        //        //for(int i=0; i<sch; i++) {
+        //        //  if(sch==3)
+        //        //    color = Scalar((0xaa<<i*8)&0x0000ff,(0xaa<<i*8)&0x00ff00,(0xaa<<i*8)&0xff0000, 0);
+        //        hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);//?1./max_val:0.,0);
+        //        for(int j=0; j<hist_size; ++j) {
+        //            int bin_w = cv::saturate_cast<int>((double)ch_width/hist_size);
+        //            //std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
+        //            cv::rectangle(hist_img,
+        //                          cv::Point( j*bin_w, hist_img.rows),
+        //                          cv::Point((j+1)*bin_w, hist_img.rows-cv::saturate_cast<int>(hist.at<float>(j))),
+        //                          color, -1);
+        //        }
 
-//    }
+
+        //        //show and write histgram
+        ////        cv::imwrite("test.png",hist_img);
+
+        ////        cv::namedWindow("test");
+        ////        cv::imshow("test",hist_img);
+        ////        cv::waitKey(0);
+        ////        cv::destroyWindow("test");
+
+        //        /// Get Backprojection
+        //        cv::Mat backproj;
+        //        calcBackProject( &hue, 1, 0, hist, backproj, &ranges, 1, true );
+
+        //        cv::Rect tempRect = cv::Rect(maxLoc.x,maxLoc.y,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
+        //        cv::TermCriteria terminator;
+        //        terminator.maxCount = 1000;
+        //        terminator.epsilon  = 10;
+        //        terminator.type = cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS;
+        //        cv::meanShift(backproj,tempRect,terminator);
+
+        //        //cv::Size tempSize = classDatabase.vNode.at(c).classSize;
+        //        //cv::Rect_<int> outRect(tempRect.x,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
+        //        cv::rectangle(outputImage.at(i),tempRect,cv::Scalar(0,200,0),3);
+        //        cv::putText(outputImage.at(i),classDatabase.vNode.at(i).name,cv::Point(tempRect.x,tempRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,0), 2, CV_AA);
+
+    }
 
     double time = t.elapsed();
     std::cout << time << "sec" << std::endl;
@@ -291,7 +284,7 @@ void CRForest::detection(CTestDataset &testSet) const{
     //imageFilename.erase(imageFilename.begin(),imageFilename.find_last_of(PATH_SEP));
     imageFilename = imageFilename.substr(imageFilename.rfind(PATH_SEP),imageFilename.length());
 
-    opath += PATH_SEP;
+    //opath += PATH_SEP;
     opath += imageFilename;
     std::string execstr = "mkdir ";
     execstr += opath;
@@ -340,14 +333,14 @@ void CRForest::detection(CTestDataset &testSet) const{
         //cv::circle(outputImage.at(c),maxLoc,20,cv::Scalar(200,0,0),3);
 
         //if(score > conf.detectThreshold){
-            //        cv::namedWindow("test");
-            //        cv::imshow("test",outputImage.at(c));
-            //        cv::waitKey(0);
-            //        cv::destroyWindow("test");
-            cv::Size tempSize = classDatabase.vNode.at(c).classSize;
-            cv::Rect_<int> outRect(maxLoc.x - tempSize.width / 2,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
-            cv::rectangle(outputImage.at(c),outRect,cv::Scalar(0,0,200),3);
-            cv::putText(outputImage.at(c),classDatabase.vNode.at(c).name,cv::Point(outRect.x,outRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,200), 2, CV_AA);
+        //        cv::namedWindow("test");
+        //        cv::imshow("test",outputImage.at(c));
+        //        cv::waitKey(0);
+        //        cv::destroyWindow("test");
+        cv::Size tempSize = classDatabase.vNode.at(c).classSize;
+        cv::Rect_<int> outRect(maxLoc.x - tempSize.width / 2,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
+        cv::rectangle(outputImage.at(c),outRect,cv::Scalar(0,0,200),3);
+        cv::putText(outputImage.at(c),classDatabase.vNode.at(c).name,cv::Point(outRect.x,outRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,200), 2, CV_AA);
         //}
 
         // display grand truth
@@ -378,7 +371,8 @@ void CRForest::detection(CTestDataset &testSet) const{
 void CRForest::regression(std::vector<const LeafNode*>& result, CTestPatch &patch) const{
     result.resize( vTrees.size() );
     //std::cout << "enter regression" << std::endl;
-    for(int i=0; i<(int)vTrees.size(); ++i) {
+    for(int i=0; i < vTrees.size(); ++i) {
+        //std::cout << "regressioning " << i << std::endl;
         result[i] = vTrees[i]->regression(patch);
     }
 }
@@ -448,6 +442,6 @@ void CRForest::regression(std::vector<const LeafNode*>& result, CTestPatch &patc
 //        //delete mask;
 //    }
 
-    
+
 //}
 

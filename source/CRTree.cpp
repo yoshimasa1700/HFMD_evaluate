@@ -150,8 +150,6 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
 
     // return leaf
     return &leaf[pnode[0]];
-
-
 }
 
 // Read tree from file
@@ -203,7 +201,7 @@ CRTree::CRTree(const char* filename, const char* databaseName,CConfig &conf):con
             in >> containClassNum;
 
             ptLN->pfg.resize(allClassNum);
-            ptLN->vCenter.resize(allClassNum);
+            //ptLN->vCenter.resize(allClassNum);
             ptLN->param.resize(allClassNum);
 
             for(int i = 0; i < allClassNum; ++i)
@@ -213,7 +211,7 @@ CRTree::CRTree(const char* filename, const char* databaseName,CConfig &conf):con
             int containPoints;
             for(int i = 0; i < containClassNum; ++i){
                 in >> cNum;
-                std::cout << cNum;// << std::endl;
+                //std::cout << cNum;// << std::endl;
                 std::string tempCName;
                 in >> tempCName;
 
@@ -221,15 +219,15 @@ CRTree::CRTree(const char* filename, const char* databaseName,CConfig &conf):con
 
                 cNum = collectClassNum;
 
-                std::cout << tempCName << std::endl;
+                //std::cout << tempCName << std::endl;
                 in >> ptLN->pfg.at(cNum);
                 in >> containPoints;
-                std::cout << " " << ptLN->pfg.at(cNum) << " " << containPoints << std::endl;
+                //std::cout << " " << ptLN->pfg.at(cNum) << " " << containPoints << std::endl;
 
 //                pfgSum.at(cNum) += ptLN->pfg.at(cNum);
 //                voteSum.at(cNum) += containPoints;
 
-                ptLN->vCenter.at(cNum).resize(containPoints);
+                //ptLN->vCenter.at(cNum).resize(containPoints);
                 ptLN->param.at(cNum).clear();//resize(containPoints);
                 for(int j = 0; j < containPoints; j++){
                     //in >> ptLN->vCenter.at(cNum).at(j).x;
@@ -394,7 +392,7 @@ void CRTree::growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &
     std::cout << "pos patch " << posPatch.size() << " neg patch " << negPatch.size() << " neg ratio " << negratio <<std::endl;
 
     int measureMode = 1;
-    if(classRatio > 0.95)
+    if(classRatio > 0.95 && negratio < 0.05)
         measureMode = 0;
 
     std::cout << "measure mode " << measureMode << std::endl;
@@ -509,10 +507,10 @@ void CRTree::makeLeaf(CTrainSet &trainSet, float pnratio, int node) {
     }
 
     // set each center point
-    ptL->vCenter.resize(nclass);
+    //ptL->vCenter.resize(nclass);
     ptL->param.resize(nclass);
     for(int i = 0; i < nclass; ++i){
-        ptL->vCenter.at(i).clear();
+        //ptL->vCenter.at(i).clear();
         ptL->param.at(i).clear();
         for(int j = 0; j < patchPerClass.at(i).size(); ++j){
             //ptL->vCenter.at(i).push_back(patchPerClass.at(i).at(j).getCenterPoint());
@@ -1126,36 +1124,36 @@ double CRTree::calcEntropy(const CTrainSet &set)
 }
 /////////////////////// IO functions /////////////////////////////
 
-void LeafNode::show(int delay, int width, int height) {
-    char buffer[200];
+//void LeafNode::show(int delay, int width, int height) {
+//    char buffer[200];
 
-    print();
+//    //print();
 
 
 
-    if(vCenter.size()>0) {
-        vector<IplImage*> iShow(vCenter.size());
-        for(unsigned int c = 0; c < iShow.size(); ++c) {
-            iShow[c] = cvCreateImage( cvSize(width,height), IPL_DEPTH_8U , 1 );
-            cvSetZero( iShow[c] );
-            for(unsigned int i = 0; i<vCenter[c].size(); ++i) {
-                int y = height/2+vCenter[c][i].y;
-                int x = width/2+vCenter[c][i].x;
+//    if(vCenter.size()>0) {
+//        vector<IplImage*> iShow(vCenter.size());
+//        for(unsigned int c = 0; c < iShow.size(); ++c) {
+//            iShow[c] = cvCreateImage( cvSize(width,height), IPL_DEPTH_8U , 1 );
+//            cvSetZero( iShow[c] );
+//            for(unsigned int i = 0; i<vCenter[c].size(); ++i) {
+//                int y = height/2+vCenter[c][i].y;
+//                int x = width/2+vCenter[c][i].x;
 
-                if(x>=0 && y>=0 && x<width && y<height)
-                    cvSetReal2D( iShow[c],  y,  x, 255 );
-            }
-            sprintf(buffer,"Leaf%d",c);
-            cvNamedWindow(buffer,1);
-            cvShowImage(buffer, iShow[c]);
-        }
+//                if(x>=0 && y>=0 && x<width && y<height)
+//                    cvSetReal2D( iShow[c],  y,  x, 255 );
+//            }
+//            sprintf(buffer,"Leaf%d",c);
+//            cvNamedWindow(buffer,1);
+//            cvShowImage(buffer, iShow[c]);
+//        }
 
-        cvWaitKey(delay);
+//        cvWaitKey(delay);
 
-        for(unsigned int c = 0; c<iShow.size(); ++c) {
-            sprintf(buffer,"Leaf%d",c);
-            cvDestroyWindow(buffer);
-            cvReleaseImage(&iShow[c]);
-        }
-    }
-}
+//        for(unsigned int c = 0; c<iShow.size(); ++c) {
+//            sprintf(buffer,"Leaf%d",c);
+//            cvDestroyWindow(buffer);
+//            cvReleaseImage(&iShow[c]);
+//        }
+//    }
+//}
