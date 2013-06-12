@@ -3,3 +3,6 @@
 ../dataset/koaramarch/koaramarch_1
 ../dataset/koaramarch/koaramarch_2
 ../dataset/koaramarch/koaramarch_3
+../dataset/ornament/ornament_1
+../dataset/ornament/ornament_2
+../dataset/ornament/orntmant_3
