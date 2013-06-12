@@ -10,9 +10,10 @@ if [ $# -ge 1 ]; then
     for i in `seq 1 60`
     do
 	numberedname=${babasename}_1_${i}_
-	echo "${numberedname}crop.png ${numberedname}depthcrop.png nodata ${basename} 0 0 0 EOL" >> testDataList.txt
-	mv ./testDataList.txt ./dataset/${basename}/${babasename}
+	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${basename} 0 0 0 EOL >> testDataList.txt
+	
     done
+    mv ./testDataList.txt ./dataset/${basename}/${babasename}
 else
     echo "usage : ./createNegList.sh [basename *example bottle_1]"
     exit 1
