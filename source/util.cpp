@@ -358,6 +358,8 @@ int CConfig::loadConfig(const char* filename)
 
     nOfTrials = *pt.get_optional<int>("root.numberOfTrials");
 
+    negFolderList = *pt.get_optional<std::string>("root.negativedatafolderlist");
+
     widthScale = p_width / mindist;
     heightScale = p_height / mindist;
 
@@ -485,38 +487,49 @@ void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet)
 void loadTrainNegFile(CConfig conf, std::vector<CNegDataset> &negSet)
 {
     //std::string traindatafilepath
-    int n_files;
-    CDataset temp;
-    std::string trainDataListPath = conf.negDataPath + PATH_SEP +  conf.negDataList;
+    int n_folders;
+    std::ifstream in_F((conf.negDataPath + PATH_SEP + conf.negFolderList).c_str());
+    in_F >> n_folders;
+    std::cout << conf.negDataPath + PATH_SEP + conf.negFolderList << std::endl;
 
-    std::string negDataFilePath = conf.negDataPath + PATH_SEP;
+    for(int j = 0; j < n_folders; ++j){
+        int n_files;
+        CDataset temp;
+        //std::string trainDataListPath = conf.negDataPath + PATH_SEP +  conf.negDataList;
 
-    //read train data folder list
-    std::ifstream in(trainDataListPath.c_str());
-    if(!in.is_open()){
-        std::cout << "train negative data floder list is not found!" << std::endl;
-        exit(1);
+        std::string negDataFolderName;
+        in_F >> negDataFolderName;
+        std::string negDataFilePath = conf.negDataPath + PATH_SEP + negDataFolderName +  PATH_SEP;
+
+        //read train data folder list
+        std::ifstream in((negDataFilePath + conf.negDataList).c_str());
+        if(!in.is_open()){
+            std::cout << negDataFilePath << " train negative data floder list is not found!" << std::endl;
+            exit(1);
+        }
+
+        std::cout << negDataFilePath << " loaded!" << std::endl;
+        in >> n_files;
+
+        negSet.clear();
+
+        for(int i = 0; i < n_files; ++i){
+            CNegDataset negTemp;
+            std::string tempName;
+
+            in >> tempName;
+            negTemp.setRgbImagePath(negDataFilePath + tempName);
+
+            in >> tempName;
+            negTemp.setDepthImagePath(negDataFilePath + tempName);
+
+            negSet.push_back(negTemp);
+        }
+
+        in.close();
     }
 
-    in >> n_files;
-
-    negSet.clear();
-
-    for(int i = 0; i < n_files; ++i){
-        CNegDataset negTemp;
-        std::string tempName;
-
-        in >> tempName;
-        negTemp.setRgbImagePath(negDataFilePath + tempName);
-
-        in >> tempName;
-        negTemp.setDepthImagePath(negDataFilePath + tempName);
-
-        negSet.push_back(negTemp);
-    }
-
-    in.close();
-
+    in_F.close();
     //    for(int i = 0; i < dataSet.size(); ++i)
     //        dataSet.at(i).showDataset();
 }

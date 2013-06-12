@@ -118,6 +118,8 @@ public:
 
     int nOfTrials;
 
+    std::string negFolderList;
+
 private:
     boost::property_tree::ptree pt;
 

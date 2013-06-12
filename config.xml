@@ -57,6 +57,7 @@
   <testdatalistname>testDataList.txt</testdatalistname>
   <showgrandtruth>1</showgrandtruth>
   <negativedatapath>negdata</negativedatapath>
+  <negativedatafolderlist>negDataFolderList.txt</negativedatafolderlist>
   <negativedatalist>negDataList.txt</negativedatalist>
   <negativemode>1</negativemode>
   <posnegpatchratio>1.2</posnegpatchratio>

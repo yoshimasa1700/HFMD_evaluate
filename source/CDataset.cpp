@@ -79,15 +79,17 @@ CDataset::~CDataset(){
 int CDataset::loadImage(double mindist, double maxdist){
     cv::Mat *rgbImg, *depthImg;
 
+    //std::cout << rgb << " " << depth << std::endl;
+
     rgbImg = new cv::Mat;
     *rgbImg = cv::imread(rgb,3).clone();
-    if(rgbImg == NULL){
+    if(rgbImg->empty()){
         std::cout << "error! rgb image file " << rgb << " not found!" << std::endl;
         return -1;
     }
     depthImg = new cv::Mat;
     *depthImg = cv::imread(depth, CV_LOAD_IMAGE_ANYDEPTH).clone();
-    if(depthImg == NULL){
+    if(depthImg->empty()){
         std::cout << "error! depth image file " << depth << " not found!" << std::endl;
         return -1;
     }
