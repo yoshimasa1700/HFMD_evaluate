@@ -1,4 +1,9 @@
-2
+8
 testData1
 testData2
-
+../dataset/bottle/bottle_1
+../dataset/bottle/bottle_2
+../dataset/pack/pack_1
+../dataset/pack/pack_1
+../dataset/koaramarch/koaramarch_1
+../dataset/koaramarch/koaramarch_2
