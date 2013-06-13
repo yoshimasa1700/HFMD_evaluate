@@ -14,6 +14,7 @@ public:
 
     double error;
     int found;
+    float score;
 };
 
 #endif // DETECTIONRESULT_H
