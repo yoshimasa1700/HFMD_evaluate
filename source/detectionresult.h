@@ -7,9 +7,14 @@
 class detectionResult
 {
 public:
-    detectionResult();
+    detectionResult(){}
+    virtual ~detectionResult(){}
     std::string className;
     cv::Rect bbox;
+
+    double error;
+    int found;
+    float score;
 };
 
 #endif // DETECTIONRESULT_H

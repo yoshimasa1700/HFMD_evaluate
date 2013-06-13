@@ -7,4 +7,5 @@ Makefile
 *.swp
 learning
 objectposeestimation
-HFMD_*
+HFMD_eval.creator.user
+

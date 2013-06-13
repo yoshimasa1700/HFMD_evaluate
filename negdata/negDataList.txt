@@ -1,3 +1,0 @@
-2
-rgb1.png depth1.png
-rgb2.png depth2.png

@@ -2,52 +2,15 @@
 
 boost::lagged_fibonacci1279 nCk::gen = boost::lagged_fibonacci1279();
 
-CDataset::CDataset(){
-}
-
-void CDataset::showDataset(){
-    std::cout << "RGB image name:" << rgbImageName << std::endl;
-    std::cout << "Depth image name:" << depthImageName << std::endl;
-    std::cout << "mask image name:" << maskImageName << std::endl;
-
-    std::cout << "bouding box: " << bBox << std::endl;
-
-    for(int i = 0; i < centerPoint.size(); ++i){
-        std::cout << "class: " << className.at(i) << std::endl;
-        std::cout << "\t" << "center point: " << centerPoint.at(i) << std::endl;
-
-        std::cout << "\t" << "angle grand truth:" << angles.at(i) << std::endl;
-    }
-}
-
-CConfig::CConfig()
-{
-}
-
-
 int CConfig::loadConfig(const char* filename)
 {
     read_xml(filename, pt);
 
     // load tree path
-    if (boost::optional<std::string> str
-            = pt.get_optional<std::string>("root.treepath")) {
-        std::cout << str.get() << std::endl;
-        treepath = *str;
-    }
-    else {
-        std::cout << "root.str is nothing" << std::endl;
-    }
+    treepath = *(pt.get_optional<std::string>("root.treepath"));
 
     // load number of tree
-    if (boost::optional<int> integer
-            = pt.get_optional<int>("root.ntree")) {
-        std::cout << integer << std::endl;
-        ntrees = *integer;
-    }
-    else {
-        std::cout << "root.str is nothing" << std::endl;
-    }
+    ntrees = *pt.get_optional<int>("root.ntree");
 
     // load patch width
     if (boost::optional<int> integer
@@ -76,7 +39,7 @@ int CConfig::loadConfig(const char* filename)
         impath = *str;
     }
     else {
-        std::cout << "root.impath is nothing" << std::endl;
+        std::cout << "root.str is nothing" << std::endl;
     }
 
     // load image name list
@@ -100,6 +63,7 @@ int CConfig::loadConfig(const char* filename)
     }
 
     // load image scales
+    //std::cout << "kokomade" << std::endl;
 //    scales.resize(0);
 //    BOOST_FOREACH (const boost::property_tree::ptree::value_type& child,
 //                   pt.get_child("root.scales")) {
@@ -118,7 +82,7 @@ int CConfig::loadConfig(const char* filename)
 //    ratios.push_back(value_temp);
 //    ratios.push_back(value_temp);
 
-//    // // load image ratios
+    // // load image ratios
 //    ratios.resize(0);
 //    BOOST_FOREACH (const boost::property_tree::ptree::value_type& child, pt.get_child("root.ratio")) {
 //        const float value = boost::lexical_cast<float>(child.second.data());
@@ -312,12 +276,12 @@ int CConfig::loadConfig(const char* filename)
 
     // load testing image name list
     if (boost::optional<double> dou
-        = pt.get_optional<double>("root.detectthreshold")) {
-      std::cout << dou.get() << std::endl;
-      detectThreshold = *dou;
+            = pt.get_optional<double>("root.detectthreshold")) {
+        std::cout << dou.get() << std::endl;
+        detectThreshold = *dou;
     }
     else {
-      std::cout << "root.str is nothing" << std::endl;
+        std::cout << "root.str is nothing" << std::endl;
     }
 
     // load offset of tree name
@@ -362,35 +326,62 @@ int CConfig::loadConfig(const char* filename)
 
     // load testing image name list
     if (boost::optional<double> dou
-        = pt.get_optional<double>("root.posnegpatchratio")) {
-      std::cout << dou.get() << std::endl;
-      pnRatio = *dou;
+            = pt.get_optional<double>("root.posnegpatchratio")) {
+        std::cout << dou.get() << std::endl;
+        pnRatio = *dou;
     }
     else {
-      std::cout << "root.str is nothing" << std::endl;
+        std::cout << "root.str is nothing" << std::endl;
     }
 
+    // load testing image name list
+    if (boost::optional<double> dou
+            = pt.get_optional<double>("root.activepatchratio")) {
+        std::cout << dou.get() << std::endl;
+        acPatchRatio = *dou;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
+    }
 
+    // load testing image name list
+    if (boost::optional<double> dou
+            = pt.get_optional<double>("root.mindistance")) {
+        std::cout << dou.get() << std::endl;
+        mindist = *dou;
+    }
+    else {
+        std::cout << "root.str is nothing" << std::endl;
+    }
+
+    maxdist = *pt.get_optional<double>("root.maxdistance");
+
+    nOfTrials = *pt.get_optional<int>("root.numberOfTrials");
+
+    negFolderList = *pt.get_optional<std::string>("root.negativedatafolderlist");
+
+    crossVMode = *pt.get_optional<int>("root.crossvalidationmode");
+
+    widthScale = p_width / mindist;
+    heightScale = p_height / mindist;
 
     return 0;
 }
 
-void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
+void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet)
 {
-    dataSet.resize(0);
-
     std::string traindatafilepath = conf.trainpath + PATH_SEP +  conf.traindatafile;
     int n_folders;
     int n_files;
     std::vector<std::string> trainimagefolder;
-    CDataset temp;
-    std::vector<CDataset> tempDataSet;
+    std::vector<CPosDataset> tempDataSet;
     std::string trainDataListPath;
     int dataSetNum;
     CClassDatabase database;
     cv::Point tempPoint;
     nCk nck;
 
+    posSet.clear();
 
     //read train data folder list
     std::ifstream in(traindatafilepath.c_str());
@@ -399,85 +390,75 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
         exit(1);
     }
 
-    //std::cout << "kokomade " << std::endl;
-
-    // read folder number
+    // read train pos folder
     in >> n_folders;
-    std::cout << "number of training data folder: "
-              << n_folders << std::endl;
+    std::cout << "number of training data folders : " << n_folders << std::endl;
     trainimagefolder.resize(n_folders);
-
-    // read train folder name
     for(int i = 0;i < n_folders; ++i)
         in >> trainimagefolder.at(i);
 
-    std::cout << "train image foloder num is " << trainimagefolder.size() << std::endl;
+    // close train pos data folder list
     in.close();
+
+    std::cout << "train folders lists : " << std::endl;
     //read train file name and grand truth from file
     tempDataSet.clear();
     for(int i = 0;i < n_folders; ++i){
         trainDataListPath
-                = conf.trainpath + PATH_SEP + trainimagefolder.at(i)
-                + PATH_SEP + conf.traindatalist;
+                = conf.trainpath + PATH_SEP + trainimagefolder.at(i) + PATH_SEP + conf.traindatalist;
 
         std::cout << trainDataListPath << std::endl;
-        temp.imageFilePath
+        std::string imageFilePath
                 = conf.trainpath + PATH_SEP + trainimagefolder.at(i) + PATH_SEP;
 
         std::ifstream trainDataList(trainDataListPath.c_str());
         if(!trainDataList.is_open()){
             std::cout << "can't read " << trainDataListPath << std::endl;
-            exit(0);
+            exit(1);
         }
 
         trainDataList >> n_files;
 
         for(int j = 0;j < n_files; ++j){
-            temp.className.clear();
-            temp.angles.clear();
-            temp.centerPoint.clear();
+            CPosDataset posTemp;
+            std::string nameTemp;
+
+
+            //            posTemp.angles.clear();
+            //            posTemp.centerPoint.clear();
 
             //read file names
-            trainDataList >> temp.rgbImageName;
-            trainDataList >> temp.depthImageName;
-            trainDataList >> temp.maskImageName;
+            trainDataList >> nameTemp;
+            posTemp.setRgbImagePath(imageFilePath + nameTemp);
 
-            //read bounding box
-            //trainDataList >> temp.bBox.x;
-            //trainDataList >> temp.bBox.y;
-            //trainDataList >> temp.bBox.width;
-            //trainDataList >> temp.bBox.height;
+            trainDataList >> nameTemp;
+            posTemp.setDepthImagePath(imageFilePath + nameTemp);
 
-            temp.centerPoint.clear();
-
-            //read center point
-            //trainDataList >> tempPoint.x;//temp.centerPoint.x;
-            //trainDataList >> tempPoint.y;
-
-            //temp.centerPoint.push_back(tempPoint);
+            trainDataList >> nameTemp;// dummy
 
             //read class name
             std::string tempClassName;
             trainDataList >> tempClassName;
-            temp.className.push_back(tempClassName);
+            //temp.className.push_back(tempClassName);
+            posTemp.setClassName(tempClassName);
 
-            cv::Mat tempImage = cv::imread(temp.imageFilePath
-                                           + temp.rgbImageName,3);
-
+            // read image size
+            cv::Mat tempImage = cv::imread(posTemp.getRgbImagePath(),3);
             cv::Size tempSize = cv::Size(tempImage.cols, tempImage.rows);
 
-            //std::cout << temp.className.at(0) << std::endl;
-            database.add(temp.className.at(0), tempSize, 0);
+            // set center point
+            tempPoint = cv::Point(tempImage.cols / 2, tempImage.rows / 2);
+            posTemp.setCenterPoint(tempPoint);
+
+            // registre class param to class database
+            database.add(posTemp.getParam()->getClassName(), tempSize, 0);
 
             //read angle grand truth
             double tempAngle;
             trainDataList >> tempAngle;
-            temp.angles.push_back(tempAngle);
+            posTemp.setAngle(tempAngle);
 
-            //show read data *for debug
-            //temp.showDataset();
-
-            tempDataSet.push_back(temp);
+            tempDataSet.push_back(posTemp);
         }
 
         trainDataList.close();
@@ -492,63 +473,260 @@ void loadTrainFile(CConfig conf, std::vector<CDataset> &dataSet)
         std::set<int>::iterator ite = chosenData.begin();
 
         while(ite != chosenData.end()){
-            dataSet.push_back(tempDataSet.at(*ite + dataOffset));
+            posSet.push_back(tempDataSet.at(*ite + dataOffset));
             ite++;
         }
         dataOffset += database.vNode.at(j).instances;
     }
 
 
-//    std::cout << "show chosen dataset" << std::endl;
-//    for(int i = 0; i < dataSet.size(); ++i){
-//        dataSet.at(i).showDataset();
-//    }
-
-    //in.close();
+    //    std::cout << "show chosen dataset" << std::endl;
+    //    for(int i = 0; i < dataSet.size(); ++i){
+    //        dataSet.at(i).showDataset();
+    //    }
 }
 
-void loadTrainNegFile(CConfig conf, std::vector<CDataset> &dataSet)
+void loadTrainNegFile(CConfig conf, std::vector<CNegDataset> &negSet)
 {
     //std::string traindatafilepath
-    int n_files;
-    CDataset temp;
-    std::string trainDataListPath = conf.negDataPath + PATH_SEP +  conf.negDataList;
-    int dataSetNum;
-    CClassDatabase database;
-    cv::Point tempPoint;
+    int n_folders;
+    std::ifstream in_F((conf.negDataPath + PATH_SEP + conf.negFolderList).c_str());
+    in_F >> n_folders;
+    std::cout << conf.negDataPath + PATH_SEP + conf.negFolderList << std::endl;
+
+    for(int j = 0; j < n_folders; ++j){
+        int n_files;
+        CDataset temp;
+        //std::string trainDataListPath = conf.negDataPath + PATH_SEP +  conf.negDataList;
+
+        std::string negDataFolderName;
+        in_F >> negDataFolderName;
+        std::string negDataFilePath = conf.negDataPath + PATH_SEP + negDataFolderName +  PATH_SEP;
+
+        //read train data folder list
+        std::ifstream in((negDataFilePath + conf.negDataList).c_str());
+        if(!in.is_open()){
+            std::cout << negDataFilePath << " train negative data floder list is not found!" << std::endl;
+            exit(1);
+        }
+
+        std::cout << negDataFilePath << " loaded!" << std::endl;
+        in >> n_files;
+
+        negSet.clear();
+
+        for(int i = 0; i < n_files; ++i){
+            CNegDataset negTemp;
+            std::string tempName;
+
+            in >> tempName;
+            negTemp.setRgbImagePath(negDataFilePath + tempName);
+
+            in >> tempName;
+            negTemp.setDepthImagePath(negDataFilePath + tempName);
+
+            negSet.push_back(negTemp);
+        }
+
+        in.close();
+    }
+
+    in_F.close();
+    //    for(int i = 0; i < dataSet.size(); ++i)
+    //        dataSet.at(i).showDataset();
+}
+
+// extract patch from images
+// !!!!!!coution!!!!!!!
+// this function is use for negatime mode!!!!!
+void extractPosPatches(std::vector<CPosDataset> &posSet,
+                       std::vector<CPosPatch> &posPatch,
+                       CConfig conf,
+                       const int treeNum,
+                       const CClassDatabase &classDatabase){
+    cv::Rect tempRect;
+
+    std::vector<CPosPatch> tPosPatch(0);//, posPatch(0);
+    std::vector<std::vector<CPosPatch> > patchPerClass(classDatabase.vNode.size());
+    int pixNum;
     nCk nck;
+    int classNum = 0;
+
+    posPatch.clear();
+
+    tempRect.width  = conf.p_width;
+    tempRect.height = conf.p_height;
+
+    std::cout << "image num is " << posSet.size();
+
+    std::cout << "extracting patch from image" << std::endl;
+    for(int l = 0;l < posSet.size(); ++l){
+        for(int j = 0; j < posSet.at(l).img.at(0)->cols - conf.p_width; j += conf.stride){
+            for(int k = 0; k < posSet.at(l).img.at(0)->rows - conf.p_height; k += conf.stride){
+                tempRect.x = j;
+                tempRect.y = k;
+                pixNum = 0;
+                int centerDepthFlag = 1;
+
+                // detect negative patch
+                for(int m = j; m < j + conf.p_width; ++m){
+                    for(int n = k; n < k + conf.p_height; ++n){
+                        pixNum += (int)(posSet.at(l).img.at(1)->at<ushort>(n, m));
+                    }
+                }
+
+                // set patch class
+                classNum = classDatabase.search(posSet.at(l).getParam()->getClassName());//dataSet.at(l).className.at(0));
+                if(classNum == -1){
+                    std::cout << "class not found!" << std::endl;
+                    exit(-1);
+                }
+
+                //tPatch.setPatch(temp, image.at(l), dataSet.at(l), classNum);
 
 
-    //read train data folder list
-    std::ifstream in(trainDataListPath.c_str());
-    if(!in.is_open()){
-        std::cout << "train negative data floder list is not found!" << std::endl;
-        exit(1);
+                CPosPatch posTemp(&posSet.at(l),tempRect);
+                if (pixNum > 0 && posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
+                    tPosPatch.push_back(posTemp);
+                    patchPerClass.at(classNum).push_back(posTemp);
+                } // if
+            }//x
+        }//y
+    }//allimages
+
+    std::vector<int> patchNum(patchPerClass.size(),conf.patchRatio);
+
+    for(int i = 0; i < patchPerClass.size(); ++i){
+        if(i == treeNum % patchPerClass.size())
+            patchNum.at(i) = conf.patchRatio;
+        else
+            patchNum.at(i) = conf.patchRatio * conf.acPatchRatio;
     }
 
-    in >> n_files;
+    // choose patch from each image
+    for(int i = 0; i < patchPerClass.size(); ++i){
+        if(patchPerClass.at(i).size() > conf.patchRatio){
 
-    dataSet.clear();
+            std::set<int> chosenPatch = nck.generate(patchPerClass.at(i).size(),patchNum.at(i));// conf.patchRatio);//totalPatchNum * conf.patchRatio);
+            std::set<int>::iterator ite = chosenPatch.begin();
 
-    for(int i = 0; i < n_files; ++i){
-        temp.className.clear();
-        temp.angles.clear();
-        temp.centerPoint.clear();
+            while(ite != chosenPatch.end()){
+                //std::cout << "this is for debug ite is " << tPosPatch.at(*ite).center << std::endl;
+                posPatch.push_back(patchPerClass.at(i).at(*ite));
+                ite++;
+            }
+        }else{
+            std::cout << "can't extruct enough patch" << std::endl;
+        }
+    }
+    return;
+}
 
-        temp.imageFilePath = conf.negDataPath + PATH_SEP;
-        std::string negName = "neg";
-        temp.className.push_back(negName);
+void extractNegPatches(std::vector<CNegDataset> &negSet,
+                       std::vector<CNegPatch> &negPatch,
+                       CConfig conf){
+    cv::Rect tempRect;
 
-        in >> temp.rgbImageName;
-        in >> temp.depthImageName;
+    std::vector<CNegPatch> tNegPatch(0);//, posPatch(0);
+    nCk nck;
+    int negPatchNum;
 
-        dataSet.push_back(temp);
+    negPatch.clear();
+
+    tempRect.width  = conf.p_width;
+    tempRect.height = conf.p_height;
+
+    // extract negative patch
+    std::cout << negSet.size() << std::endl;
+    std::cout << negSet.at(0).img.at(0)->cols << std::endl;
+    std::cout << negSet.at(0).img.at(0)->rows << std::endl;
+    for(int i = 0; i < negSet.size(); ++i){
+        for(int j = 0; j < negSet.at(i).img.at(0)->cols - conf.p_width; j += conf.stride){
+            for(int k = 0; k < negSet.at(i).img.at(0)->rows - conf.p_height; k += conf.stride){
+
+                tempRect.x = j;
+                tempRect.y = k;
+                ushort pix = 0;
+
+                // detect negative patch
+                for(int m = j; m < j + conf.p_width; ++m){
+                    for(int n = k; n < k + conf.p_height; ++n){
+                        pix += negSet.at(i).img.at(1)->at<ushort>(n, m);
+                    }
+                }
+
+                //tPatch.setPatch(temp, negImage.at(i));
+                if(pix > 0){
+                    CNegPatch negTemp(&negSet.at(i),tempRect);
+                    tNegPatch.push_back(negTemp);
+                }
+            }//x
+        }//y
+    } // every image
+
+    // choose negative patch randamly
+    negPatchNum = conf.patchRatio * conf.pnRatio;
+    //std::cout << "pos patch num : " << posPatch.size() << " neg patch num : " << negPatchNum << std::endl;
+
+    if(negPatchNum < tNegPatch.size()){
+        std::set<int> chosenPatch = nck.generate(tNegPatch.size(), negPatchNum);//totalPatchNum * conf.patchRatio);
+        std::set<int>::iterator ite = chosenPatch.begin();
+
+        while(ite != chosenPatch.end()){
+            negPatch.push_back(tNegPatch.at(*ite));
+            ite++;
+        }
+    }else{
+        std::cout << "only " << tNegPatch.size() << " pathes extracted from negative images" << std::endl;
+        std::cout << "can't extract enogh negative patch please set pnratio more low!" << std::endl;
+        exit(-1);
     }
 
-    in.close();
+//    patches.push_back(posPatch);
+//    patches.push_back(negPatch);
+}
 
-    for(int i = 0; i < dataSet.size(); ++i)
-        dataSet.at(i).showDataset();
+void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch, CConfig conf){
+
+    cv::Rect tempRect;
+    //CPatch tPatch;
+
+    tempRect.width = conf.p_width;
+    tempRect.height = conf.p_height;
+
+    testPatch.clear();
+    //std::cout << "extraction patches!" << std::endl;
+    for(int j = 0; j < testSet.img.at(0)->cols - conf.p_width; j += conf.stride){
+        for(int k = 0; k < testSet.img.at(0)->rows - conf.p_height; k += conf.stride){
+            tempRect.x = j;
+            tempRect.y = k;
+
+            unsigned short depthSum;
+
+            for(int p = 0; p < testSet.feature.at(32)->rows; ++p)
+                for(int q = 0; q < testSet.feature.at(32)->cols; ++q)
+                    depthSum += testSet.feature.at(32)->at<ushort>(p, q);
+
+            //std::cout << dataSet.className << std::endl;
+
+            //int classNum = classDatabase.search(dataSet.className.at(0));
+
+            //std::cout << "class num is " << classNum << std::endl;
+            //classDatabase.show();
+            //if(classNum == -1){
+                //std::cout << "This tree not contain this class data" << std::endl;
+                //exit(-1);
+            //}
+
+            if(depthSum > 0){
+                CTestPatch testTemp(&testSet,tempRect);
+                //tesetPatch.setPatch(temp, image, dataSet, classNum);
+
+                //tPatch.setPosition(j,k);
+                testPatch.push_back(testTemp);
+            }
+        }
+    }
 }
 
 void pBar(int p,int maxNum, int width){

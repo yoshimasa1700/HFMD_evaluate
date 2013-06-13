@@ -3,13 +3,16 @@ echo "test"
 echo $#
 currentD=`pwd`
 echo $currentD
+
 needFile+=("learning")
 needFile+=("objectPoseEstimation")
 needFile+=("config.xml")
+needFile+=("changeConfig.sh")
+
 needFolder+=("dataset")
 needFolder+=("negdata")
 needFolder+=("trees")
-needFolder+=("input")
+needFolder+=("testdata")
 
 echo ${needFile[@]}
 echo ${needFolder[@]}

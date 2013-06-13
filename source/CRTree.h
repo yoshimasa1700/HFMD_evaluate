@@ -20,16 +20,29 @@ public:
     LeafNode(){};
     ~LeafNode(){};
 
-    void show(int delay, int width, int height);
-    void print()
-    {
-        std::cout << "Leaf " << vCenter.size() << " ";
-        for(int i = 0; i < pfg.size(); i++)std::cout << pfg.at(i) << " ";
-        std::cout << std::endl;
-    }
+    //void show(int delay, int width, int height);
+//    void print()
+//    {
+//        std::cout << "Leaf " << vCenter.size() << " ";
+//        for(int i = 0; i < pfg.size(); i++)std::cout << pfg.at(i) << " ";
+//        std::cout << std::endl;
+//    }
     std::vector<float> pfg;
-    std::vector<std::vector<cv::Point> > vCenter; // per class per patch
-    std::vector<int> vClass;
+    //std::vector<std::vector<cv::Point> > vCenter; // per class per patch
+    //std::vector<int> vClass;
+    std::vector<std::vector<CParamset> > param; // per class per patch
+};
+
+class CTrainSet{
+public:
+    CTrainSet(){}
+    CTrainSet(std::vector<CPosPatch> &pos, std::vector<CNegPatch> &neg){posPatch = pos; negPatch = neg;}
+    ~CTrainSet(){}
+
+    int size()const{return posPatch.size() + negPatch.size();}
+
+    std::vector<CPosPatch> posPatch;
+    std::vector<CNegPatch> negPatch;
 };
 
 class CRTree 
@@ -39,9 +52,10 @@ public:
     CRTree(int		min_s,	//min sample
            int		max_d,	//max depth of tree
            int		cp,	//number of center point
-           boost::mt19937	randomGen	// random number seed
+           CClassDatabase cDatabase/*,
+                         boost::mt19937	randomGen*/	// random number seed
            )
-        : min_samples(min_s), max_depth(max_d), num_leaf(0), num_cp(cp), gen(randomGen)
+        : min_samples(min_s), max_depth(max_d), num_leaf(0), num_cp(cp), classDatabase(cDatabase)
     {
         num_nodes = (int)pow(2.0, int(max_depth + 1)) - 1;
 
@@ -54,7 +68,7 @@ public:
         leaf= new LeafNode[(int)pow(2.0, int(max_depth))];
     }
 
-    CRTree(const char* filename);
+    CRTree(const char* filename, const char* datasetname, CConfig &conf);
 
     //destructor
     ~CRTree()
@@ -73,14 +87,15 @@ public:
     unsigned int GetNumCenter() const {return num_cp;}
 
     // Regression
-    const LeafNode* regression(CPatch &patch) const;
+    const LeafNode* regression(CTestPatch &patch) const;
 
     // Training
-    void growTree(std::vector<std::vector<CPatch> > &TrData, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
-
-    bool optimizeTest(std::vector<std::vector<CPatch> > &SetA,
-                      std::vector<std::vector<CPatch> > &SetB,
-                      const std::vector<std::vector<CPatch> > &TrainSet,
+    //void growTree(std::vector<std::vector<CPatch> > &TrData, int node, int depth, float pnratio, CConfig conf, boost::mt19937 gen,const std::vector<int> &defaultClass_);
+    void growTree(std::vector<CPosPatch> &posPatch, std::vector<CNegPatch> &negPatch, int node, int depth, float pnratio, CConfig conf, const std::vector<int> &defaultClass_);
+    //boost::mt19937 gen;
+    bool optimizeTest(CTrainSet &SetA,
+                      CTrainSet &SetB,
+                      const CTrainSet &trainSet,
                       int* test,
                       unsigned int iter,
                       unsigned int measure_mode,
@@ -88,30 +103,32 @@ public:
                       );
     void generateTest(int* test, unsigned int max_w, unsigned int max_h, unsigned int max_c, int depth);
 
-    void makeLeaf(const std::vector<std::vector<CPatch> > &TrainSet, float pnratio, int node);
+    void makeLeaf(CTrainSet &trainSet, float pnratio, int node);
 
-    void evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const std::vector<std::vector<CPatch> > &TrainSet);
-    void split(std::vector<std::vector<CPatch> >& SetA, std::vector<std::vector<CPatch> >& SetB, const std::vector<std::vector<CPatch> >& TrainSet, const std::vector<std::vector<IntIndex> >& valSet, int t);
-    double distMean(const std::vector<CPatch>& SetA, const std::vector<CPatch>& SetB);
-    double InfGain(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB);
-    double calcEntropy(const std::vector<CPatch> &set, int negSize,int maxClass);
-    double measureSet(const std::vector<std::vector<CPatch> >& SetA, const std::vector<std::vector<CPatch> >& SetB, unsigned int depth,int mode) {
+    void evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const CTrainSet &trainSet);
+    void split(CTrainSet& SetA, CTrainSet& SetB, const CTrainSet& TrainSet, const std::vector<std::vector<IntIndex> >& valSet, int t);
+    double distMean(const std::vector<CPosPatch>& SetA, const std::vector<CPosPatch>& SetB);
+    double InfGain(const CTrainSet& SetA, const CTrainSet& SetB);
+    double calcEntropy(const CTrainSet &set);//, int negSize,int maxClass);
+    double measureSet(const CTrainSet& SetA, const CTrainSet& SetB, unsigned int depth,int mode) {
         double lamda = 1;
         if(mode == 1)
             return InfGain(SetA, SetB);
         else
-            return distMean(SetA.at(0), SetB.at(0)) * -1;
-    };
+            return distMean(SetA.posPatch, SetB.posPatch) * -1;
+    }
+    void calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1, int &p2) const;
+
 
 
 
 
     // IO functions
     bool saveTree(const char* filename) const;
-    void showLeaves(int width, int height) const {
-        for(unsigned int l=0; l<num_leaf; ++l)
-            leaf[l].show(5000, width, height);
-    }
+//    void showLeaves(int width, int height) const {
+//        for(unsigned int l=0; l<num_leaf; ++l)
+//            leaf[l].show(5000, width, height);
+//    }
 
 private:
     // Data structure
@@ -139,12 +156,17 @@ private:
     // depth of this tree
     unsigned int depth;
 
-    boost::mt19937 gen;
+    static boost::lagged_fibonacci1279 genTree;
     int nclass;
 
     std::vector<int> defaultClass, containClass, containClassA, containClassB;
 
-    std::vector<std::vector<CPatch> > patchPerClass;
+    std::vector<std::vector<CPosPatch> > patchPerClass;
+
+    CClassDatabase classDatabase;
+
+    void normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const;//, const CConfig &config)const;
+
 };
 
 inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max_h, unsigned int max_c, int depth) {
@@ -152,12 +174,12 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
     boost::mt19937    gen2(static_cast<unsigned long>(time(NULL)) );
 
     boost::uniform_int<> dst( 0, INT_MAX );
-    boost::variate_generator<boost::mt19937&,
-            boost::uniform_int<> > rand( gen, dst );
+    boost::variate_generator<boost::lagged_fibonacci1279&,
+            boost::uniform_int<> > rand( genTree, dst );
 
     boost::uniform_real<> dst2( 0, 1 );
-    boost::variate_generator<boost::mt19937&,
-            boost::uniform_real<> > rand2( gen, dst2 );
+    boost::variate_generator<boost::lagged_fibonacci1279&,
+            boost::uniform_real<> > rand2( genTree, dst2 );
 
 
     //config.learningMode = 2;
@@ -183,33 +205,64 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 
             // depth
             test[8] = max_c - 1;
+            cv::Rect rect1, rect2;
 
-            test[0] = rand() % (max_w / 2 - 1);
-            test[1] = rand() % (max_h / 2 - 1);
-            test[2] = rand() % (max_w / 2 - 1);
-            test[3] = rand() % (max_h / 2 - 1);
+            // caliculate haar-like features
+            int angle = rand() % 360;
+            int type = rand() % 3;
+            int ratio = (rand() % 60) + 20;
 
-            test[4] = test[0] + test[2] + rand() % (max_w - test[0] - test[2] - 1);
-            test[5] = test[1] + test[3] + rand() % (max_h - test[1] - test[3] - 1);
-            test[6] = 1 + rand() % (max_w - test[4] - 1);
-            test[7] = 1 + rand() % (max_h - test[5] - 1);
+            test[0] = angle;
+            test[1] = type;
+            test[2] = ratio;
+
+            test[3] = -1;
+            test[4] = -1;
+            test[5] = -1;
+            test[6] = -1;
+            test[7] = -1;
+            //            rect1.width = (rand() % (max_w - 4)) + 2;
+            //            rect1.height = (rand() % (max_h - 4)) + 2;
+
+            //            rect1.x = rand() % (max_w - rect1.width);
+            //            rect1.y = rand() % (max_h - rect1.height);
+
+            //            rect2.width = (rand() % (max_w - (rect1.width))
+
+            //            test[0] = rand() % (max_w / 2 - 1);
+            //            test[1] = rand() % (max_h / 2 - 1);
+            //            test[2] = rand() % (max_w / 2 - 1);
+            //            test[3] = rand() % (max_h / 2 - 1);
+
+            //            test[4] = test[0] + test[2] + rand() % (max_w - test[0] - test[2] - 1);
+            //            test[5] = test[1] + test[3] + rand() % (max_h - test[1] - test[3] - 1);
+            //            test[6] = 1 + rand() % (max_w - test[4] - 1);
+            //            test[7] = 1 + rand() % (max_h - test[5] - 1);
         }
         break;
     case 1:
+    {
         // depth
         test[8] = max_c - 1;
 
-        test[0] = rand() % (max_w / 2 - 1);
-        test[1] = rand() % (max_h / 2 - 1);
-        test[2] = rand() % (max_w / 2 - 1);
-        test[3] = rand() % (max_h / 2 - 1);
+        // caliculate haar-like features
+        int angle = rand() % 360;
+        int type = rand() % 3;
+        int ratio = (rand() % 60) + 20;
 
-        test[4] = test[0] + test[2] + rand() % (max_w - test[0] - test[2] - 1);
-        test[5] = test[1] + test[3] + rand() % (max_h - test[1] - test[3] - 1);
-        test[6] = 1 + rand() % (max_w - test[4] - 1);
-        test[7] = 1 + rand() % (max_h - test[5] - 1);
+        test[0] = angle;
+        test[1] = type;
+        test[2] = ratio;
+
+        test[3] = -1;
+        test[4] = -1;
+        test[5] = -1;
+        test[6] = -1;
+        test[7] = -1;
         break;
+    }
     case 2:
+    {
         // rgb
         test[0] = rand() % max_w;
         test[1] = rand() % max_h;
@@ -222,6 +275,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
         test[6] = 0;
         test[7] = 0;
         break;
+    }
     default:
         std::cout << "error! can't set learning mode!" << std::endl;
         break;
