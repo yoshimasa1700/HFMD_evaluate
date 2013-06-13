@@ -29,6 +29,7 @@ echo "sa is $haba"
 		#cd ../$foldername
 		./changeConfig.sh config.xml $param $lerolero2
 		./learning
+		./objectPoseEstimation
 		cd "$currentDir" 
 		echo "$currentDir" 
 	done

@@ -10,7 +10,13 @@ if [ $# -ge 1 ]; then
     for i in `seq 1 60`
     do
 	numberedname=${babasename}_1_${i}_
-	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${basename} 0 0 0 EOL >> testDataList.txt
+	width=`identify -format "%w" ./dataset/${basename}/${babasename}/${numberedname}crop.png`
+	height=`identify -format "%h" ./dataset/${basename}/${babasename}/${numberedname}crop.png`
+	#echo "$width"
+	centx=`expr $width / 2`
+	centy=`expr $height / 2`
+
+	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${basename} ${centx} ${centy} 0 EOL >> testDataList.txt
 	
     done
     mv ./testDataList.txt ./dataset/${basename}/${babasename}

@@ -65,4 +65,5 @@
   <mindistance>350</mindistance>
   <maxdistance>1400</maxdistance>
   <numberOfTrials>1000</numberOfTrials>
+  <crossvalidationmode>1</crossvalidationmode>
 </root>

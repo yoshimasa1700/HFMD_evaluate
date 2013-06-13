@@ -124,7 +124,7 @@ void CRForest::loadForest(){
 // name   : detect function
 // input  : image and dataset
 // output : classification result and detect picture
-void CRForest::detection(CTestDataset &testSet) const{
+detectionResult CRForest::detection(CTestDataset &testSet) const{
     int classNum = classDatabase.vNode.size();//contain class number
     std::vector<CTestPatch> testPatch;
     std::vector<const LeafNode*> result;
@@ -314,7 +314,8 @@ void CRForest::detection(CTestDataset &testSet) const{
     //    cv::waitKey(0);
     //    cv::destroyWindow("test");
 
-    std::vector<detectionResult*> dResult(0);
+    //std::vector<detectionResult*> dResult(0);
+    detectionResult detectResult;
 
     std::cout << "show grand truth" << std::endl;
     //    std::cout << dataSet.className.size() << std::endl;
@@ -361,7 +362,16 @@ void CRForest::detection(CTestDataset &testSet) const{
         std::string outputName = opath + PATH_SEP + "detectionResult" + "_" + classDatabase.vNode.at(c).name + ".png";
 
         cv::imwrite(outputName.c_str(),outputImage.at(c));
+        detectResult.className = classDatabase.vNode.at(c).name;
+        detectResult.error = std::sqrt((double)((maxLoc.x - testSet.param.at(0).getCenterPoint().x) ^ 2)
+                +  (double)((maxLoc.x - testSet.param.at(0).getCenterPoint().x) ^ 2));
+        if(detectResult.error >= std::sqrt((double)((testSet.param.at(0).getCenterPoint().x)^2) + (double)((testSet.param.at(0).getCenterPoint().y)^2)))
+            detectResult.found = 0;
+        else
+            detectResult.found = 1;
     }
+
+    return detectResult;
 
     //testSet.releaseImage();
     //testSet.releaseFeatures();
