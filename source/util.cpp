@@ -360,6 +360,8 @@ int CConfig::loadConfig(const char* filename)
 
     negFolderList = *pt.get_optional<std::string>("root.negativedatafolderlist");
 
+    crossVMode = *pt.get_optional<int>("root.crossvalidationmode");
+
     widthScale = p_width / mindist;
     heightScale = p_height / mindist;
 

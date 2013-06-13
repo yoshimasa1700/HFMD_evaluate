@@ -118,6 +118,8 @@ public:
 
     int nOfTrials;
 
+    int crossVMode;
+
     std::string negFolderList;
 
 private:

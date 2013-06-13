@@ -97,6 +97,8 @@ void detect(const CRForest &forest, CConfig conf){
 
     std::fstream result("detectionResult.txt", std::ios::out);
 
+    detectionResult detectR;
+
     //set dataset
     dataSet.clear();
     loadTestFileMultiObject(conf,dataSet);
@@ -104,7 +106,8 @@ void detect(const CRForest &forest, CConfig conf){
 
     for(int i = 0; i < dataSet.size(); ++i){
         dataSet.at(i).loadImage(conf.mindist, conf.maxdist);
-        forest.detection(dataSet.at(i));
+        detectR = forest.detection(dataSet.at(i));
+        result << dataSet.at(i).param.at(0).getClassName() << " " << detectR.className << " " << detectR.found << " " << detectR.error << std::endl;
     }
 
     result.close();
