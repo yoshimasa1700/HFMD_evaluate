@@ -367,14 +367,17 @@ detectionResult CRForest::detection(CTestDataset &testSet) const{
         double zizyoHeikin = (double)((maxLoc.x - testSet.param.at(0).getCenterPoint().x) ^ 2)
                                        +  (double)((maxLoc.x - testSet.param.at(0).getCenterPoint().x) ^ 2);
 
+        std::cout << "maxLoc x is " << maxLoc.x << " y is " << maxLoc.y << " GT x " << testSet.param.at(0).getCenterPoint().x << " GT y " << testSet.param.at(0).getCenterPoint().y << std::endl;
+        std::cout << zizyoHeikin << " " << std::sqrt(std::abs(zizyoHeikin)) << std::endl;
+
         if(zizyoHeikin != 0)
-            detectResult.error = std::sqrt(zizyoHeikin);
+            detectResult.error = std::sqrt(abs(zizyoHeikin));
         else
             detectResult.error = 0;
 
         double saidaikyori = (double)((testSet.param.at(0).getCenterPoint().x)^2) + (double)((testSet.param.at(0).getCenterPoint().y)^2);
         detectResult.score = outputImageColorOnly.at(c).at<float>(maxLoc.y, maxLoc.x);
-        if(detectResult.error >= saidaikyori != 0 ? std::sqrt( saidaikyori) : 0)
+        if(detectResult.error >= saidaikyori != 0 ? std::sqrt( abs(saidaikyori)) : 0)
             detectResult.found = 0;
         else
             detectResult.found = 1;

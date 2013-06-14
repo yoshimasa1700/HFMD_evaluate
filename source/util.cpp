@@ -703,9 +703,9 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
 
             unsigned short depthSum;
 
-            for(int p = 0; p < testSet.feature.at(32)->rows; ++p)
-                for(int q = 0; q < testSet.feature.at(32)->cols; ++q)
-                    depthSum += testSet.feature.at(32)->at<ushort>(p, q);
+//            for(int p = 0; p < testSet.feature.at(32)->rows; ++p)
+//                for(int q = 0; q < testSet.feature.at(32)->cols; ++q)
+//                    depthSum += testSet.feature.at(32)->at<ushort>(p, q);
 
             //std::cout << dataSet.className << std::endl;
 
@@ -718,13 +718,13 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
                 //exit(-1);
             //}
 
-            if(depthSum > 0){
+            //if(depthSum > 0){
                 CTestPatch testTemp(&testSet,tempRect);
                 //tesetPatch.setPatch(temp, image, dataSet, classNum);
 
                 //tPatch.setPosition(j,k);
                 testPatch.push_back(testTemp);
-            }
+            //}
         }
     }
 }
