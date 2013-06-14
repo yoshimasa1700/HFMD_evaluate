@@ -396,6 +396,7 @@ void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet)
     trainimagefolder.resize(n_folders);
     for(int i = 0;i < n_folders; ++i)
         in >> trainimagefolder.at(i);
+    std::cout << trainimagefolder.at(0) << std::endl;
 
     // close train pos data folder list
     in.close();

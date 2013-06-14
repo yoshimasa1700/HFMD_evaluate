@@ -41,8 +41,8 @@ do
 	fi
     done
     
-    echo "$posfolder"　> ./trainData.txt
-    echo "$negfolder" > ./negDataFolderList.txt
+    echo ${posfolder} > ./trainData.txt
+    echo ${negfolder} > ./negDataFolderList.txt
     for j in `seq 1 $num`
     do
 	
