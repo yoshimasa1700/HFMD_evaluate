@@ -387,9 +387,6 @@ detectionResult CRForest::detection(CTestDataset &testSet) const{
     }
 
     return detectResult;
-
-    //testSet.releaseImage();
-    //testSet.releaseFeatures();
 }
 
 // Regression 
