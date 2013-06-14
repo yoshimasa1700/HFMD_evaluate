@@ -16,6 +16,7 @@ done
 for i in `seq 1 ${#classname[@]}`
 do
     #実験フォルダの準備
+	./tools/changeConfig ./config.xml stride 1
     ./tools/setupExperiment.sh ${classname[$i]}VsAll
     echo ${classname[$i]}
     num=`expr ${#foldername[@]} / 2`
@@ -52,11 +53,12 @@ do
     
 	fi
     done
-    mv ./tainData.txt ../${classname[$i]}VsAll/dataset
-    mv ./negDataFolderList.txt ../${classname[$i]}VsAll/negdata
+    mv ../HFMD_evaluate/tainData.txt ../${classname[$i]}VsAll/dataset
+    mv ../HFMD_evaluate/negDataFolderList.txt ../${classname[$i]}VsAll/negdata
 
-    ../${classname[$i]VsAll}/learning
-    ../${classname[$i]VsAll}/objectPoseEstimation
+    ../${classname[$i]}VsAll/learning
+	../${classname[$i]}VsAll/tools/changeConfig.sh ./config.xml stride 5
+    ../${classname[$i]}VsAll/objectPoseEstimation
 done
 
 
