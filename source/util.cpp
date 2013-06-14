@@ -569,11 +569,12 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
                 int centerDepthFlag = 1;
 
                 // detect negative patch
-                for(int m = j; m < j + conf.p_width; ++m){
-                    for(int n = k; n < k + conf.p_height; ++n){
-                        pixNum += (int)(posSet.at(l).img.at(1)->at<ushort>(n, m));
+                if(conf.learningMode != 2)
+                    for(int m = j; m < j + conf.p_width; ++m){
+                        for(int n = k; n < k + conf.p_height; ++n){
+                            pixNum += (int)(posSet.at(l).img.at(1)->at<ushort>(n, m));
+                        }
                     }
-                }
 
                 // set patch class
                 classNum = classDatabase.search(posSet.at(l).getParam()->getClassName());//dataSet.at(l).className.at(0));
@@ -586,7 +587,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
 
 
                 CPosPatch posTemp(&posSet.at(l),tempRect);
-                if (pixNum > 0 && posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
+                if (conf.learningMode == 2 || pixNum > 0 && posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
                     tPosPatch.push_back(posTemp);
                     patchPerClass.at(classNum).push_back(posTemp);
                 } // if
@@ -649,14 +650,15 @@ void extractNegPatches(std::vector<CNegDataset> &negSet,
                 ushort pix = 0;
 
                 // detect negative patch
-                for(int m = j; m < j + conf.p_width; ++m){
-                    for(int n = k; n < k + conf.p_height; ++n){
-                        pix += negSet.at(i).img.at(1)->at<ushort>(n, m);
+                if(conf.learningMode != 2)
+                    for(int m = j; m < j + conf.p_width; ++m){
+                        for(int n = k; n < k + conf.p_height; ++n){
+                            pix += negSet.at(i).img.at(1)->at<ushort>(n, m);
+                        }
                     }
-                }
 
                 //tPatch.setPatch(temp, negImage.at(i));
-                if(pix > 0){
+                if(conf.learningMode == 2 || pix > 0){
                     CNegPatch negTemp(&negSet.at(i),tempRect);
                     tNegPatch.push_back(negTemp);
                 }
@@ -703,9 +705,10 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
 
             unsigned short depthSum;
 
-//            for(int p = 0; p < testSet.feature.at(32)->rows; ++p)
-//                for(int q = 0; q < testSet.feature.at(32)->cols; ++q)
-//                    depthSum += testSet.feature.at(32)->at<ushort>(p, q);
+            if(conf.learningMode != 2)
+                for(int p = 0; p < testSet.feature.at(32)->rows; ++p)
+                    for(int q = 0; q < testSet.feature.at(32)->cols; ++q)
+                        depthSum += testSet.feature.at(32)->at<ushort>(p, q);
 
             //std::cout << dataSet.className << std::endl;
 
@@ -718,13 +721,13 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
                 //exit(-1);
             //}
 
-            //if(depthSum > 0){
+            if(conf.learningMode == 2 || depthSum > 0){
                 CTestPatch testTemp(&testSet,tempRect);
                 //tesetPatch.setPatch(temp, image, dataSet, classNum);
 
                 //tPatch.setPosition(j,k);
                 testPatch.push_back(testTemp);
-            //}
+            }
         }
     }
 }

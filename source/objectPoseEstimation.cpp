@@ -105,7 +105,7 @@ void detect(const CRForest &forest, CConfig conf){
 
 
     for(int i = 0; i < dataSet.size(); ++i){
-        dataSet.at(i).loadImage(conf.mindist, conf.maxdist);
+        dataSet.at(i).loadImage(conf.mindist, conf.maxdist, conf.learningMode);
         detectR = forest.detection(dataSet.at(i));
         result << dataSet.at(i).param.at(0).getClassName() << " " << detectR.className << " " << detectR.found << " " << detectR.score << " " << detectR.error << std::endl;
     }

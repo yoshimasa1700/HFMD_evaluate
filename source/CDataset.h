@@ -43,7 +43,7 @@ public:
     CDataset();
     virtual ~CDataset();
 
-    int loadImage(double mindist, double maxdist);
+    int loadImage(double mindist, double maxdist, int learnMode);
     int releaseImage();
 
     int extractFeatures();

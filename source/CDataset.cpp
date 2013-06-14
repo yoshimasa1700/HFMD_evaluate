@@ -76,7 +76,7 @@ CDataset::~CDataset(){
     }
 }
 
-int CDataset::loadImage(double mindist, double maxdist){
+int CDataset::loadImage(double mindist, double maxdist, int learnMode){
     cv::Mat *rgbImg, *depthImg;
 
     //std::cout << rgb << " " << depth << std::endl;
@@ -94,6 +94,8 @@ int CDataset::loadImage(double mindist, double maxdist){
         return -1;
     }
 
+
+    if(learnMode != 2)
     cropImageAndDepth(rgbImg, depthImg, mindist, maxdist);
 
     img.push_back(rgbImg);
