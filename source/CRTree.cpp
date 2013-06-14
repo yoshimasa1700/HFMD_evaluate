@@ -117,7 +117,8 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
         cv::Mat tempFeture = *patch.getFeature(pnode[9]);
         cv::Mat ptC = tempFeture(patch.getRoi());
 
-        normarizationByDepth(&patch,ptC);
+        if(config.learningMode != 2)
+            normarizationByDepth(&patch,ptC);
 
 //        for(int i = 0; i < 11; ++i)
 //            std::cout << pnode[i] << " ";
@@ -825,7 +826,8 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
             cv::Mat tempMat = *trainSet.negPatch.at(i).getFeature(test[8]);
             cv::Mat ptC = tempMat(trainSet.negPatch.at(i).getRoi());
 
-            normarizationByDepth(&(trainSet.negPatch.at(i)) ,ptC);
+            if(config.learningMode != 2)
+                normarizationByDepth(&(trainSet.negPatch.at(i)) ,ptC);
             //cv::Mat ptC = (*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
             if(test[8] == 32){
                 //std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;
