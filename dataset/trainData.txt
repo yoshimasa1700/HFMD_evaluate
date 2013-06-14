@@ -1,7 +1,6 @@
-1
+4
 bottle/bottle_1
 bottle/bottle_2
-
 pack/pack_1
 pack/pack_2
 pakuncho/pakuncho_1
