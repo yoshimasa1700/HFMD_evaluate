@@ -572,7 +572,8 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
                 if(conf.learningMode != 2)
                     for(int m = j; m < j + conf.p_width; ++m){
                         for(int n = k; n < k + conf.p_height; ++n){
-                            pixNum += (int)(posSet.at(l).img.at(1)->at<ushort>(n, m));
+                            if(posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0)
+                                pixNum += (int)(posSet.at(l).img.at(1)->at<ushort>(n, m));
                         }
                     }
 
@@ -587,7 +588,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
 
 
                 CPosPatch posTemp(&posSet.at(l),tempRect);
-                if (conf.learningMode == 2 || pixNum > 0 && posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
+                if (conf.learningMode == 2 || pixNum > 0){
                     tPosPatch.push_back(posTemp);
                     patchPerClass.at(classNum).push_back(posTemp);
                 } // if

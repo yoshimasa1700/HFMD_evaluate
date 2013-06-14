@@ -50,7 +50,7 @@
   <testdataname>testData.txt</testdataname>
   <classdatabasename>classDatabase</classdatabasename>
   <!--learning mode 1:depth 2:rgb 0:rgbd-->
-  <learningmode>0</learningmode>
+  <learningmode>2</learningmode>
   <testmode>1</testmode>
   <detectthreshold>3.0</detectthreshold>
   <traindatalistname>dataList1.txt</traindatalistname>

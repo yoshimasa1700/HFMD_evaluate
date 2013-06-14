@@ -39,7 +39,10 @@ void CRForest::growATree(const int treeNum){
     for(int i = 0; i < posSet.size(); ++i){
         //std::cout << i << std::endl;
 
-        posSet.at(i).loadImage(conf.mindist, conf.maxdist, conf.learningMode);
+        //std::cout << posSet.at(i).rgb << std::endl;
+        if(posSet.at(i).loadImage(conf.mindist, conf.maxdist, conf.learningMode) == -1 && conf.learningMode != 2){
+            exit(-1);
+        }
         posSet.at(i).extractFeatures();
 
 

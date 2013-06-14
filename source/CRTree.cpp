@@ -781,7 +781,8 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
             cv::Mat tempMat = *trainSet.posPatch.at(i).getFeature(test[8]);
             cv::Mat ptC = tempMat(trainSet.posPatch.at(i).getRoi());//(*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
 
-            normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC);
+            if(config.learningMode != 2)
+                normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC);
 
             if(test[8] == 32){
 

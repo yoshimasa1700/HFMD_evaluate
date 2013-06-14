@@ -7,12 +7,13 @@ echo $currentD
 needFile+=("learning")
 needFile+=("objectPoseEstimation")
 needFile+=("config.xml")
-needFile+=("changeConfig.sh")
+#needFile+=("changeConfig.sh")
 
 needFolder+=("dataset")
 needFolder+=("negdata")
 needFolder+=("trees")
 needFolder+=("testdata")
+needFolder+=("tools")
 
 echo ${needFile[@]}
 echo ${needFolder[@]}

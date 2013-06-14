@@ -8,7 +8,7 @@ class CPatch
 {
 public:
     CPatch(CDataset *d, cv::Rect r) : data(d), roi(r){
-        cv::Mat* depthImage = d->img.at(1);
+        //cv::Mat* depthImage = d->img.at(1);
 
     }
     CPatch(){}

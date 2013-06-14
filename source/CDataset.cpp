@@ -85,18 +85,20 @@ int CDataset::loadImage(double mindist, double maxdist, int learnMode){
     *rgbImg = cv::imread(rgb,3).clone();
     if(rgbImg->empty()){
         std::cout << "error! rgb image file " << rgb << " not found!" << std::endl;
-        return -1;
+        exit(-1);
     }
     depthImg = new cv::Mat;
     *depthImg = cv::imread(depth, CV_LOAD_IMAGE_ANYDEPTH).clone();
     if(depthImg->empty()){
         std::cout << "error! depth image file " << depth << " not found!" << std::endl;
+        img.push_back(rgbImg);
+        imgFlag  = 1;
         return -1;
     }
 
 
     if(learnMode != 2)
-    cropImageAndDepth(rgbImg, depthImg, mindist, maxdist);
+        cropImageAndDepth(rgbImg, depthImg, mindist, maxdist);
 
     img.push_back(rgbImg);
     img.push_back(depthImg);
@@ -202,9 +204,10 @@ int CDataset::extractFeatures(){
     for(int c = 0; c < 16; ++c)
       maxFilter(feature[c], feature[c], 5);
 
-    cv::Mat *tempDepth = new cv::Mat(img.at(1)->clone());
-    feature.push_back(tempDepth);
-
+    if(img.size() > 1){
+        cv::Mat *tempDepth = new cv::Mat(img.at(1)->clone());
+        feature.push_back(tempDepth);
+    }
     featureFlag = 1;
 
     return 0;
