@@ -24,6 +24,8 @@ do
     posfolder=0
     negfolder=0
 
+	pwd
+
     for j in `seq 1 $num`
     do
 
@@ -38,8 +40,8 @@ do
 	fi
     done
     
-    echo "$posfolder"　> trainData.txt
-    echo "$negfolder" > negDataFolderList.txt
+    echo "$posfolder"　> ./trainData.txt
+    echo "$negfolder" > ./negDataFolderList.txt
     for j in `seq 1 $num`
     do
 	
@@ -53,7 +55,9 @@ do
     
 	fi
     done
-    mv ../HFMD_evaluate/tainData.txt ../${classname[$i]}VsAll/dataset
+	#pwd
+	#ls
+    mv ../HFMD_evaluate/trainData.txt ../${classname[$i]}VsAll/dataset
     mv ../HFMD_evaluate/negDataFolderList.txt ../${classname[$i]}VsAll/negdata
 
     ../${classname[$i]}VsAll/learning
