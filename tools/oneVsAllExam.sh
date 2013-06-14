@@ -16,19 +16,20 @@ done
 for i in `seq 1 ${#classname[@]}`
 do
     #実験フォルダの準備
-	./tools/changeConfig ./config.xml stride 1
+    ./tools/changeConfig.sh ./config.xml stride 1
     ./tools/setupExperiment.sh ${classname[$i]}VsAll
+    cd ../${classname[$i]}VsAll 
     echo ${classname[$i]}
     num=`expr ${#foldername[@]} / 2`
-
+    
     posfolder=0
     negfolder=0
-
-	pwd
-
+    
+    pwd
+    
     for j in `seq 1 $num`
     do
-
+	
 	k=`expr $j\*2`
 	if [ "${classname[$i]}" = "${foldername[$k-1]}" ]; then
 	    echo ${foldername[$k-1]}_${foldername[$k]}
@@ -47,22 +48,27 @@ do
 	
 	k=`expr $j\*2`
 	if [ "${classname[$i]}" = "${foldername[$k-1]}" ]; then
-	    echo ${foldername[$k-1]}_${foldername[$k]} >> trainData.txt
+	    echo "${foldername[$k-1]}/${foldername[$k-1]}_${foldername[$k]}" >> trainData.txt
 	    
 	fi
 	if [ "${classname[$i]}" != "${foldername[$k-1]}" ]; then
-	    echo ${foldername[$k-1]}_${foldername[$k]} >> negDataFolderList.txt
-    
+	    echo "../dataset/${foldername[$k-1]}/${foldername[$k-1]}_${foldername[$k]}" >> negDataFolderList.txt
+	    
 	fi
     done
 	#pwd
 	#ls
-    mv ../HFMD_evaluate/trainData.txt ../${classname[$i]}VsAll/dataset
-    mv ../HFMD_evaluate/negDataFolderList.txt ../${classname[$i]}VsAll/negdata
+    
+    mv ./trainData.txt ./dataset
+    mv ./negDataFolderList.txt ./negdata
+    
+expDir="../${classname[$i]}VsAll"
 
-    ../${classname[$i]}VsAll/learning
-	../${classname[$i]}VsAll/tools/changeConfig.sh ./config.xml stride 5
-    ../${classname[$i]}VsAll/objectPoseEstimation
+pwd
+./learning 
+./tools/changeConfig.sh ./config.xml stride 5
+./objectPoseEstimation
+cd ../HFMD_evaluate
 done
 
 
