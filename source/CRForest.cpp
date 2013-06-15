@@ -239,7 +239,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
                         cv::Point patchSize(conf.p_height/2,conf.p_width/2);
                         cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  result.at(m)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  result.at(m)->param.at(c).at(l).getCenterPoint().y);
                         if(pos.x > 0 && pos.y > 0 && pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){
-                            outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += result.at(m)->pfg.at(c) / 100.0;//(result.at(m)->pfg.at(c) - 0.9);// * 100;//weight * 500;
+                            outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += result.at(m)->pfg.at(c) / ( result.size() * result.at(m)->param.size());//(result.at(m)->pfg.at(c) - 0.9);// * 100;//weight * 500;
                             //std::cout << classDatabase.vNode.at(c).name << " " << result.at(m)->pfg.at(c) << std::endl;
 
                             totalVote.at(c) += 1;

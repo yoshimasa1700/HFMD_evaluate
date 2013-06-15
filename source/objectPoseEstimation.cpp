@@ -101,6 +101,7 @@ void detect(const CRForest &forest, CConfig conf){
     dataSet.clear();
     loadTestFileMultiObject(conf,dataSet);
 
+    result << "groundTruth detectedClass Score Error" << std::endl;
 
     for(int i = 0; i < dataSet.size(); ++i){
         CDetectionResult detectR;
@@ -108,7 +109,7 @@ void detect(const CRForest &forest, CConfig conf){
         dataSet.at(i).loadImage(conf);
         detectR = forest.detection(dataSet.at(i));
 
-        result << "groundTruth detectedClass Score Error" << std::endl;
+        
 
         for(int j = 0; j < dataSet.at(i).param.size(); ++j)
             for(int k = 0; k < detectR.detectedClass.size(); ++k)
