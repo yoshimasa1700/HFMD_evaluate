@@ -1,13 +1,23 @@
 #include <boost/timer.hpp>
 #include "CRForest.h"
 
+double euclideanDist(cv::Point p, cv::Point q)
+{
+    cv::Point diff = p - q;
+    return cv::sqrt(diff.x*diff.x + diff.y*diff.y);
+}
+
 void CRForest::learning(){
     // grow each tree
     // if you want to fix this program multi thread
     // you should change below
-    for(int i = 0;i < conf.ntrees; ++i){
-        growATree(i);
-    } // end tree loop
+#pragma omp parallel
+    {
+#pragma omp for
+        for(int i = 0;i < conf.ntrees; ++i){
+            growATree(i);
+        } // end tree loop
+    }
 }
 
 void CRForest::growATree(const int treeNum){
@@ -33,14 +43,14 @@ void CRForest::growATree(const int treeNum){
     std::cout << "dataset loaded" << std::endl;
 
     // initialize class database
-    classDatabase.clear();
+    //classDatabase.clear();
 
     // extract pos features and register classDatabase
     for(int i = 0; i < posSet.size(); ++i){
         //std::cout << i << std::endl;
 
         //std::cout << posSet.at(i).rgb << std::endl;
-        if(posSet.at(i).loadImage(conf.mindist, conf.maxdist, conf.learningMode) == -1 && conf.learningMode != 2){
+        if(posSet.at(i).loadImage(conf) == -1 && conf.learningMode != 2){
             exit(-1);
         }
         posSet.at(i).extractFeatures();
@@ -55,7 +65,7 @@ void CRForest::growATree(const int treeNum){
 
     // extract neg features
     for(int i = 0; i < negSet.size(); ++i){
-        negSet.at(i).loadImage(conf.mindist,conf.maxdist, conf.learningMode);
+        negSet.at(i).loadImage(conf);
         negSet.at(i).extractFeatures();
     }
 
@@ -114,6 +124,7 @@ void CRForest::growATree(const int treeNum){
 void CRForest::loadForest(){
     char buffer[256];
     char buffer2[256];
+    std::cout << "loading forest..." << std::endl;
     for(int i = 0; i < vTrees.size(); ++i){
         sprintf(buffer, "%s%03d.txt",conf.treepath.c_str(),i);
         sprintf(buffer2, "%s%s%03d.txt", conf.treepath.c_str(), conf.classDatabaseName.c_str(), i);
@@ -121,13 +132,15 @@ void CRForest::loadForest(){
 
         //std::cout << buffer2 << std::endl;
         classDatabase.read(buffer2);
+        pBar(i,vTrees.size(),50);
     }
+    std::cout << std::endl;
 }
 
 // name   : detect function
 // input  : image and dataset
 // output : classification result and detect picture
-detectionResult CRForest::detection(CTestDataset &testSet) const{
+CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     int classNum = classDatabase.vNode.size();//contain class number
     std::vector<CTestPatch> testPatch;
     std::vector<const LeafNode*> result;
@@ -136,16 +149,25 @@ detectionResult CRForest::detection(CTestDataset &testSet) const{
 
     cv::vector<cv::Mat> outputImage(classNum);
     cv::vector<cv::Mat> outputImageColorOnly(classNum);
+    //cv::vector<cv::vector<cv::Mat> > outputImageColorOnlyPerTree(classNum);
     std::vector<int> totalVote(classNum,0);
     boost::timer t;
 
-    testSet.loadImage(conf.mindist, conf.maxdist, conf.learningMode);
+    testSet.loadImage(conf);
     testSet.extractFeatures();
     //testSet.releaseImage();
 
+    //t.restart();
+
+#pragma omp parallel
+            {
+#pragma omp for
     for(int i = 0; i < classNum; ++i){
         outputImage.at(i) = testSet.img.at(0)->clone();
         outputImageColorOnly.at(i) = cv::Mat::zeros(testSet.img.at(0)->rows,testSet.img.at(0)->cols,CV_32FC1);
+        //        for(int j = 0; j < this->vTrees.size(); ++j)
+        //            outputImageColorOnlyPerTree.at(i).push_back()
+    }
     }
 
     // extract feature from test image
@@ -155,159 +177,212 @@ detectionResult CRForest::detection(CTestDataset &testSet) const{
     // add depth image to features
     //features.push_back(image.at(1));
 
+
     // extract patches from features
     extractTestPatches(testSet,testPatch,this->conf);
 
     std::cout << "patch num: " << testPatch.size() << std::endl;
 
-    t.restart();
+    //
 
+    std::cout << "detecting..." << std::endl;
     // regression and vote for every patch
+
     for(int j = 0; j < testPatch.size(); ++j){
         result.clear();
         this->regression(result, testPatch.at(j));
 
         storedLN.push_back(result);
 
+
         // vote for all trees (leafs)
-        for(std::vector<const LeafNode*>::const_iterator itL = result.begin();itL!=result.end(); ++itL) {
 
-            for(int c = 0; c < classNum; c++){
-                //if(!(*itL)->param.at(c).empty()){
-                //if((*itL)->pfg.at(c) > 0.9  ){
-                for(int l = 0; l < (*itL)->param.at(c).size(); ++l){
-                    cv::Point patchSize(conf.p_height/2,conf.p_width/2);
-                    cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->param.at(c).at(l).getCenterPoint().y);
-                    if(pos.x > 0 && pos.y > 0 && pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){
-                        outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 100.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
-                        //std::cout << classDatabase.vNode.at(c).name << " " << (*itL)->pfg.at(c) << std::endl;
+//        for(std::vector<const LeafNode*>::const_iterator itL = result.begin();itL!=result.end(); ++itL) {
 
-                        totalVote.at(c) += 1;
+//#pragma omp parallel
+//            {
+//#pragma omp for
+//                for(int c = 0; c < classNum; c++){
+//                    //if(!(*itL)->param.at(c).empty()){
+//                    //if((*itL)->pfg.at(c) > 0.9  ){
+
+
+//                    for(int l = 0; l < (*itL)->param.at(c).size(); ++l){
+//                        cv::Point patchSize(conf.p_height/2,conf.p_width/2);
+//                        cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->param.at(c).at(l).getCenterPoint().y);
+//                        if(pos.x > 0 && pos.y > 0 && pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){
+//                            outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 100.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
+//                            //std::cout << classDatabase.vNode.at(c).name << " " << (*itL)->pfg.at(c) << std::endl;
+
+//                            totalVote.at(c) += 1;
+//                        }
+//                    }
+//                    //}
+//                    //}
+//                }
+//            }
+//        } // for every leaf
+
+#pragma omp parallel
+        {
+#pragma omp for
+            for(int m = 0; m < result.size(); ++m){//std::vector<const LeafNode*>::const_iterator itL = result.begin();itL!=result.end(); ++itL) {
+#pragma omp parallel
+        {
+#pragma omp for
+                for(int c = 0; c < classNum; c++){
+                    //if(!result.at(m)->param.at(c).empty()){
+                    //if(result.at(m)->pfg.at(c) > 0.9  ){
+
+
+                    for(int l = 0; l < result.at(m)->param.at(c).size(); ++l){
+                        cv::Point patchSize(conf.p_height/2,conf.p_width/2);
+                        cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  result.at(m)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  result.at(m)->param.at(c).at(l).getCenterPoint().y);
+                        if(pos.x > 0 && pos.y > 0 && pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){
+                            outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += result.at(m)->pfg.at(c) / 100.0;//(result.at(m)->pfg.at(c) - 0.9);// * 100;//weight * 500;
+                            //std::cout << classDatabase.vNode.at(c).name << " " << result.at(m)->pfg.at(c) << std::endl;
+
+                            totalVote.at(c) += 1;
+                        }
                     }
+                    //}
+                    //}
                 }
-                //}
-                //}
-            }
-        } // for every leaf
+                }
+
+            } // for every leaf
+        }
+        //pBar(j,testPatch.size(),50);
     } // for every patch
+    //  }
+    std::cout << std::endl;
 
     // vote end
 
+#pragma omp parallel
+    {
+#pragma omp for
+        // find balance by mean shift
+        for(int i = 0; i < classNum; ++i){
+            //        cv::Mat hsv,hue,rgb;
+            //        int bins = 256;
 
-    // find balance by mean shift
-    for(int i = 0; i < classNum; ++i){
-        //        cv::Mat hsv,hue,rgb;
-        //        int bins = 256;
+            //        double min,max;
+            //        cv::Point minLoc,maxLoc;
+            //        cv::minMaxLoc(outputImageColorOnly.at(i),&min,&max,&minLoc,&maxLoc);
 
-        //        double min,max;
-        //        cv::Point minLoc,maxLoc;
-        //        cv::minMaxLoc(outputImageColorOnly.at(i),&min,&max,&minLoc,&maxLoc);
+            cv::GaussianBlur(outputImageColorOnly.at(i),outputImageColorOnly.at(i), cv::Size(21,21),0);
 
-        cv::GaussianBlur(outputImageColorOnly.at(i),outputImageColorOnly.at(i), cv::Size(21,21),0);
+            //        //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
+            //        //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
 
-        //        //cv::cvtColor(outputImageColorOnly.at(i), rgb, CV_GRAY2BGR);
-        //        //cv::cvtColor(rgb, hsv , CV_BGR2HSV);
-
-        //        hue.create( outputImageColorOnly.at(i).size(), outputImageColorOnly.at(i).depth() );
-        //        int ch[] = { 0, 0 };
-        //        mixChannels( &outputImageColorOnly.at(i), 1, &hue, 1, ch, 1 );
-
-
-        //        const int ch_width = 400;
-        //        cv::Mat hist;
-        //        cv::Mat hist_img(cv::Size(ch_width, 200), CV_8UC3, cv::Scalar::all(255));;
-        //        int histSize = MAX( bins, 2 );
-        //        float hue_range[] = { 0, 1 };
-        //        const float* ranges = { hue_range };
-        //        const int hist_size = 256;
-        //        double max_val = .0;
-        //        double second_val = .0;
-
-        //        /// Get the Histogram and normalize it
-        //        cv::calcHist( &outputImageColorOnly.at(i) , 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
-        //        cv::normalize( hist, hist, 0., 256., cv::NORM_MINMAX, -1, cv::Mat() );
-
-        //        cv::minMaxLoc(hist, 0, &max_val);
-        //        hist.at<float>(0) = 0;
-        //        cv::minMaxLoc(hist, 0, &second_val);
-
-        //        hist.at<float>(0) = max_val;
-
-        //        // (4)scale and draw the histogram(s)
-        //        cv::Scalar color = cv::Scalar::all(100);
-        //        //for(int i=0; i<sch; i++) {
-        //        //  if(sch==3)
-        //        //    color = Scalar((0xaa<<i*8)&0x0000ff,(0xaa<<i*8)&0x00ff00,(0xaa<<i*8)&0xff0000, 0);
-        //        hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);//?1./max_val:0.,0);
-        //        for(int j=0; j<hist_size; ++j) {
-        //            int bin_w = cv::saturate_cast<int>((double)ch_width/hist_size);
-        //            //std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
-        //            cv::rectangle(hist_img,
-        //                          cv::Point( j*bin_w, hist_img.rows),
-        //                          cv::Point((j+1)*bin_w, hist_img.rows-cv::saturate_cast<int>(hist.at<float>(j))),
-        //                          color, -1);
-        //        }
+            //        hue.create( outputImageColorOnly.at(i).size(), outputImageColorOnly.at(i).depth() );
+            //        int ch[] = { 0, 0 };
+            //        mixChannels( &outputImageColorOnly.at(i), 1, &hue, 1, ch, 1 );
 
 
-        //        //show and write histgram
-        ////        cv::imwrite("test.png",hist_img);
+            //        const int ch_width = 400;
+            //        cv::Mat hist;
+            //        cv::Mat hist_img(cv::Size(ch_width, 200), CV_8UC3, cv::Scalar::all(255));;
+            //        int histSize = MAX( bins, 2 );
+            //        float hue_range[] = { 0, 1 };
+            //        const float* ranges = { hue_range };
+            //        const int hist_size = 256;
+            //        double max_val = .0;
+            //        double second_val = .0;
 
-        ////        cv::namedWindow("test");
-        ////        cv::imshow("test",hist_img);
-        ////        cv::waitKey(0);
-        ////        cv::destroyWindow("test");
+            //        /// Get the Histogram and normalize it
+            //        cv::calcHist( &outputImageColorOnly.at(i) , 1, 0, cv::Mat(), hist, 1, &histSize, &ranges, true, false );
+            //        cv::normalize( hist, hist, 0., 256., cv::NORM_MINMAX, -1, cv::Mat() );
 
-        //        /// Get Backprojection
-        //        cv::Mat backproj;
-        //        calcBackProject( &hue, 1, 0, hist, backproj, &ranges, 1, true );
+            //        cv::minMaxLoc(hist, 0, &max_val);
+            //        hist.at<float>(0) = 0;
+            //        cv::minMaxLoc(hist, 0, &second_val);
 
-        //        cv::Rect tempRect = cv::Rect(maxLoc.x,maxLoc.y,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
-        //        cv::TermCriteria terminator;
-        //        terminator.maxCount = 1000;
-        //        terminator.epsilon  = 10;
-        //        terminator.type = cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS;
-        //        cv::meanShift(backproj,tempRect,terminator);
+            //        hist.at<float>(0) = max_val;
 
-        //        //cv::Size tempSize = classDatabase.vNode.at(c).classSize;
-        //        //cv::Rect_<int> outRect(tempRect.x,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
-        //        cv::rectangle(outputImage.at(i),tempRect,cv::Scalar(0,200,0),3);
-        //        cv::putText(outputImage.at(i),classDatabase.vNode.at(i).name,cv::Point(tempRect.x,tempRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,0), 2, CV_AA);
+            //        // (4)scale and draw the histogram(s)
+            //        cv::Scalar color = cv::Scalar::all(100);
+            //        //for(int i=0; i<sch; i++) {
+            //        //  if(sch==3)
+            //        //    color = Scalar((0xaa<<i*8)&0x0000ff,(0xaa<<i*8)&0x00ff00,(0xaa<<i*8)&0xff0000, 0);
+            //        hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);//?1./max_val:0.,0);
+            //        for(int j=0; j<hist_size; ++j) {
+            //            int bin_w = cv::saturate_cast<int>((double)ch_width/hist_size);
+            //            //std::cout << "draw rect " << bin_w << " " << i << " " << hist.at<float>(j) << " " << max_val << std::endl;
+            //            cv::rectangle(hist_img,
+            //                          cv::Point( j*bin_w, hist_img.rows),
+            //                          cv::Point((j+1)*bin_w, hist_img.rows-cv::saturate_cast<int>(hist.at<float>(j))),
+            //                          color, -1);
+            //        }
 
+
+            //        //show and write histgram
+            ////        cv::imwrite("test.png",hist_img);
+
+            ////        cv::namedWindow("test");
+            ////        cv::imshow("test",hist_img);
+            ////        cv::waitKey(0);
+            ////        cv::destroyWindow("test");
+
+            //        /// Get Backprojection
+            //        cv::Mat backproj;
+            //        calcBackProject( &hue, 1, 0, hist, backproj, &ranges, 1, true );
+
+            //        cv::Rect tempRect = cv::Rect(maxLoc.x,maxLoc.y,classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//classDatabase.vNode.at(i).classSize.width,classDatabase.vNode.at(i).classSize.height);//outputImageColorOnly.at(i).cols,outputImageColorOnly.at(i).rows);
+            //        cv::TermCriteria terminator;
+            //        terminator.maxCount = 1000;
+            //        terminator.epsilon  = 10;
+            //        terminator.type = cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS;
+            //        cv::meanShift(backproj,tempRect,terminator);
+
+            //        //cv::Size tempSize = classDatabase.vNode.at(c).classSize;
+            //        //cv::Rect_<int> outRect(tempRect.x,maxLoc.y - tempSize.height / 2 , tempSize.width,tempSize.height);
+            //        cv::rectangle(outputImage.at(i),tempRect,cv::Scalar(0,200,0),3);
+            //        cv::putText(outputImage.at(i),classDatabase.vNode.at(i).name,cv::Point(tempRect.x,tempRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,0), 2, CV_AA);
+
+        }
     }
+
+
 
     double time = t.elapsed();
     std::cout << time << "sec" << std::endl;
-    std::cout << 1 / (time / classNum) << "Hz" << std::endl;
+    std::cout << 1 / (time) << "Hz" << std::endl;
 
-    //create result directory
-    std::string opath(testSet.getRgbImagePath());
-    opath.erase(opath.find_last_of(PATH_SEP));
-    std::string imageFilename = testSet.getRgbImagePath();
-    imageFilename.erase(imageFilename.find_last_of("."));
-    //imageFilename.erase(imageFilename.begin(),imageFilename.find_last_of(PATH_SEP));
-    imageFilename = imageFilename.substr(imageFilename.rfind(PATH_SEP),imageFilename.length());
 
-    //opath += PATH_SEP;
-    opath += imageFilename;
-    std::string execstr = "mkdir ";
-    execstr += opath;
-    system( execstr.c_str() );
+    std::string opath;
+    if(!conf.demoMode){
+        //create result directory
+        opath = testSet.getRgbImagePath();
+        opath.erase(opath.find_last_of(PATH_SEP));
+        std::string imageFilename = testSet.getRgbImagePath();
+        imageFilename.erase(imageFilename.find_last_of("."));
+        //imageFilename.erase(imageFilename.begin(),imageFilename.find_last_of(PATH_SEP));
+        imageFilename = imageFilename.substr(imageFilename.rfind(PATH_SEP),imageFilename.length());
 
-    for(int c = 0; c < classNum; ++c){
-        std::stringstream cToString;
-        cToString << c;
-        std::string outputName = "output" + cToString.str() + ".png";
-        std::string outputName2 = opath + PATH_SEP + "vote_" + classDatabase.vNode.at(c).name + ".png";
-        //cv::imwrite(outputName.c_str(),outputImage.at(c));
-        //cv::cvtColor(outputImageColorOnly)
+        //opath += PATH_SEP;
+        opath += imageFilename;
+        std::string execstr = "mkdir -p ";
+        execstr += opath;
+        system( execstr.c_str() );
 
-        cv::Mat writeImage;
-        //hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);
-        outputImageColorOnly.at(c).convertTo(writeImage, CV_8UC1, 254);
-        cv::imwrite(outputName2.c_str(),writeImage);
+        for(int c = 0; c < classNum; ++c){
+            std::stringstream cToString;
+            cToString << c;
+            std::string outputName = "output" + cToString.str() + ".png";
+            std::string outputName2 = opath + PATH_SEP + "vote_" + classDatabase.vNode.at(c).name + ".png";
+            //cv::imwrite(outputName.c_str(),outputImage.at(c));
+            //cv::cvtColor(outputImageColorOnly)
+
+            cv::Mat writeImage;
+            //hist.convertTo(hist, hist.type(), 200 * 1.0/second_val,0);
+            outputImageColorOnly.at(c).convertTo(writeImage, CV_8UC1, 254);
+            cv::imwrite(outputName2.c_str(),writeImage);
+        }
     }
 
-    std::cout << "detection result outputed" << std::endl;
+    //std::cout << "detection result outputed" << std::endl;
 
 
     //    cv::cvtColor(outputImageColorOnly.at(0),outputImageC1,CV_8UC1);
@@ -318,15 +393,18 @@ detectionResult CRForest::detection(CTestDataset &testSet) const{
     //    cv::destroyWindow("test");
 
     //std::vector<detectionResult*> dResult(0);
-    detectionResult detectResult;
+    CDetectionResult detectResult;
 
-    std::cout << "show grand truth" << std::endl;
+    detectResult.voteImage = outputImageColorOnly;
+
+    std::cout << "show ground truth" << std::endl;
     //    std::cout << dataSet.className.size() << std::endl;
     //    std::cout << dataSet.centerPoint.size() << std::endl;
     for(int i = 0; i < testSet.param.size(); ++i){
         testSet.param.at(i).showParam();
     }
 
+    std::cout << "show result" << std::endl;
     for(int c = 0; c < classNum; ++c){
 
         double min,max;
@@ -348,7 +426,7 @@ detectionResult CRForest::detection(CTestDataset &testSet) const{
         //}
 
         // display grand truth
-        if(conf.showGT){
+        if(!conf.demoMode){
             for(int i = 0; i < testSet.param.size(); ++i){
                 int tempClassNum = classDatabase.search(testSet.param.at(i).getClassName());
                 if(tempClassNum != -1){
@@ -360,30 +438,33 @@ detectionResult CRForest::detection(CTestDataset &testSet) const{
             }
         }
 
-        std::cout << c << "\tName : " << classDatabase.vNode.at(c).name << "\tvote : " << totalVote.at(c) << "\tScore : " << outputImageColorOnly.at(c).at<float>(maxLoc.y, maxLoc.x) << "\tCenterPoint : " << maxLoc << std::endl;//"\tscore : " << score << std::endl;
+        std::cout << c << " Name : " << classDatabase.vNode.at(c).name << "\tvote : " << totalVote.at(c) << " Score : " << outputImageColorOnly.at(c).at<float>(maxLoc.y, maxLoc.x) << " CenterPoint : " << maxLoc << std::endl;//"\tscore : " << score << std::endl;
 
-        std::string outputName = opath + PATH_SEP + "detectionResult" + "_" + classDatabase.vNode.at(c).name + ".png";
+        if(!conf.demoMode){
+            std::string outputName = opath + PATH_SEP + "detectionResult" + "_" + classDatabase.vNode.at(c).name + ".png";
+            cv::imwrite(outputName.c_str(),outputImage.at(c));
+        }
 
-        cv::imwrite(outputName.c_str(),outputImage.at(c));
-        detectResult.className = classDatabase.vNode.at(c).name;
+        CDetectedClass detectedClass;
+        detectedClass.name = classDatabase.vNode.at(c).name;
 
-        double zizyoHeikin = (double)((maxLoc.x - testSet.param.at(0).getCenterPoint().x) ^ 2)
-                                       +  (double)((maxLoc.x - testSet.param.at(0).getCenterPoint().x) ^ 2);
-
-        std::cout << "maxLoc x is " << maxLoc.x << " y is " << maxLoc.y << " GT x " << testSet.param.at(0).getCenterPoint().x << " GT y " << testSet.param.at(0).getCenterPoint().y << std::endl;
-        std::cout << zizyoHeikin << " " << std::sqrt(std::abs(zizyoHeikin)) << std::endl;
-
-        if(zizyoHeikin != 0)
-            detectResult.error = std::sqrt(abs(zizyoHeikin));
-        else
-            detectResult.error = 0;
-
-        double saidaikyori = (double)((testSet.param.at(0).getCenterPoint().x)^2) + (double)((testSet.param.at(0).getCenterPoint().y)^2);
-        detectResult.score = outputImageColorOnly.at(c).at<float>(maxLoc.y, maxLoc.x);
-        if(detectResult.error >= saidaikyori != 0 ? std::sqrt( abs(saidaikyori)) : 0)
-            detectResult.found = 0;
-        else
-            detectResult.found = 1;
+        double minError = DBL_MAX;
+        std::string nearestObject;
+        for(int d = 0; d < testSet.param.size(); ++d){
+            double tempError = euclideanDist(maxLoc,testSet.param.at(d).getCenterPoint());//= std::sqrt(std::pow((double)(maxLoc.x - testSet.param.at(0).getCenterPoint().x), 2) + std::pow((double)(maxLoc.y - testSet.param.at(0).getCenterPoint().y), 2));
+            //std::cout << tempError << std::endl;
+            if(tempError < minError){
+                minError = tempError;
+                nearestObject = testSet.param.at(d).getClassName();
+            }
+        }
+        detectedClass.error = minError;
+        detectedClass.nearestClass = nearestObject;
+        //        std::cout << "maxLoc x is " << maxLoc.x << " y is " << maxLoc.y << " GT x " << testSet.param.at(0).getCenterPoint().x << " GT y " << testSet.param.at(0).getCenterPoint().y << std::endl;
+        //        std::cout << zizyoHeikin << " " << std::sqrt(std::abs(zizyoHeikin)) << std::endl;
+        //        detectedClass.error = std::sqrt(abs(zizyoHeikin));
+        detectedClass.score = outputImageColorOnly.at(c).at<float>(maxLoc.y, maxLoc.x);
+        detectResult.detectedClass.push_back(detectedClass);
     }
 
     return detectResult;

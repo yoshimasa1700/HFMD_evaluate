@@ -5,6 +5,7 @@
 #include "HoG.h"
 #include <iostream>
 #include <sstream>
+#include "CConfig.h"
 
 //#include "util.h"
 
@@ -43,7 +44,7 @@ public:
     CDataset();
     virtual ~CDataset();
 
-    int loadImage(double mindist, double maxdist, int learnMode);
+    int loadImage(const CConfig &);
     int releaseImage();
 
     int extractFeatures();

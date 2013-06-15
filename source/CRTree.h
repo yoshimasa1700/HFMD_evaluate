@@ -210,7 +210,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
             // caliculate haar-like features
             int angle = rand() % 360;
             int type = rand() % 3;
-            int ratio = (rand() % 60) + 20;
+            int ratio = (rand() % 30) + 10;
 
             test[0] = angle;
             test[1] = type;

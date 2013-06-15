@@ -97,17 +97,25 @@ void detect(const CRForest &forest, CConfig conf){
 
     std::fstream result("detectionResult.txt", std::ios::out);
 
-    detectionResult detectR;
-
     //set dataset
     dataSet.clear();
     loadTestFileMultiObject(conf,dataSet);
 
 
     for(int i = 0; i < dataSet.size(); ++i){
-        dataSet.at(i).loadImage(conf.mindist, conf.maxdist, conf.learningMode);
+        CDetectionResult detectR;
+
+        dataSet.at(i).loadImage(conf);
         detectR = forest.detection(dataSet.at(i));
-        result << dataSet.at(i).param.at(0).getClassName() << " " << detectR.className << " " << detectR.found << " " << detectR.score << " " << detectR.error << std::endl;
+
+        result << "groundTruth detectedClass Score Error" << std::endl;
+
+        for(int j = 0; j < dataSet.at(i).param.size(); ++j)
+            for(int k = 0; k < detectR.detectedClass.size(); ++k)
+                result << dataSet.at(i).param.at(j).getClassName() << " " <<
+                          detectR.detectedClass.at(k).name << " " <<
+                          detectR.detectedClass.at(k).score << " " <<
+                          detectR.detectedClass.at(k).error << std::endl;
     }
 
     result.close();

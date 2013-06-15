@@ -8,7 +8,9 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 
     int angle = test[0];
 
-    cv::Mat showMat(patch.rows, patch.cols, CV_8U);
+    int t1,t2,t3,t4;
+
+    //cv::Mat showMat(patch.rows, patch.cols, CV_8U);
 
     //    std::cout << angle << std::endl;
     //    patch.convertTo(showMat, CV_8U, 255.0/ 1000.0);
@@ -18,8 +20,14 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 
     cv::Mat affine = cv::getRotationMatrix2D(cv::Point(config.p_width / 2 + 1, config.p_height / 2 + 1), (float)test[0] /*/ 180 * CV_PI*/, 1.0);
     cv::Mat rotatedMat(patch.rows, patch.cols, patch.type());
-
     cv::warpAffine(patch, rotatedMat, affine, cv::Size(patch.cols, patch.rows));
+
+    cv::Mat convertedDepth = cv::Mat(rotatedMat.rows, rotatedMat.cols, CV_8U);
+    cv::Mat integralMat = cv::Mat(rotatedMat.rows + 1, rotatedMat.cols+1, CV_32F);
+    cv::Mat temp1,temp2;
+    rotatedMat.convertTo(convertedDepth,CV_8U,255.0/(double)(config.maxdist - config.mindist));
+
+    cv::integral(convertedDepth,integralMat,temp1,temp2,CV_32F);
 
     //    rotatedMat.convertTo(showMat, CV_8U, 255.0/ 1000.0);
 
@@ -37,49 +45,71 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     switch(test[1]){
     case 0:
         // edge feature
-        for(int i = 0; i < rotatedMat.rows; ++i){
-            for(int j = 0; j < rotatedMat.cols; ++j)
-                if(i < rotatedMat.rows * test[2] / 100){
-                    p1 += rotatedMat.at<ushort>(i, j);
-                    s1++;
-                }else{
-                    p2 += rotatedMat.at<ushort>(i, j);
-                    s2++;
-                }
-        }
+        p1 = integralMat.at<int>(patch.rows, patch.cols * test[2] / 100);
+        p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
+
+        s1 = patch.rows * patch.cols * test[2] / 100;
+        s2 = patch.rows * patch.cols * (1.0 - test[2] / 100);
+
+//        for(int i = 0; i < rotatedMat.rows; ++i){
+//            for(int j = 0; j < rotatedMat.cols; ++j)
+//                if(i < rotatedMat.rows * test[2] / 100){
+//                    p1 += rotatedMat.at<ushort>(i, j);
+//                    s1++;
+//                }else{
+//                    p2 += rotatedMat.at<ushort>(i, j);
+//                    s2++;
+//                }
+//        }
         break;
 
     case 1:
         // line feature
-        for(int i = 0; i < rotatedMat.rows; ++i){
-            for(int j = 0; j < rotatedMat.cols; ++j)
-                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2){
-                    p1 += rotatedMat.at<ushort>(i, j);
-                    s1++;
-                }else{
-                    p2 += rotatedMat.at<ushort>(i, j);
-                    s2++;
-                }
-        }
+        t1 = integralMat.at<int>(patch.rows, patch.cols * test[2] / 200);
+        t2 = integralMat.at<int>(patch.rows, patch.cols * (1- test[2] / 200));
+        p1 = t2 - t1;
+        p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
+        s1 = patch.rows * patch.cols * test[2] / 100;
+        s2 = patch.rows * patch.cols * (1.0 - test[2] / 100);
+
+//        for(int i = 0; i < rotatedMat.rows; ++i){
+//            for(int j = 0; j < rotatedMat.cols; ++j)
+//                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2){
+//                    p1 += rotatedMat.at<ushort>(i, j);
+//                    s1++;
+//                }else{
+//                    p2 += rotatedMat.at<ushort>(i, j);
+//                    s2++;
+//                }
+//        }
 
         break;
 
     case 2:
         // center
-        for(int i = 0; i < rotatedMat.rows; ++i){
-            for(int j = 0; j < rotatedMat.cols; ++j){
-                //std::cout << i << " " << j << std::endl;
-                //std::cout << rotatedMat.rows * test[2] / 100 / 2 << " " << rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 << " " << rotatedMat.cols * test[2] / 100 / 2 << " " << rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2 << std::endl;
-                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 || j < rotatedMat.cols * test[2] / 100 / 2 || j > rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2){
-                    p1 += rotatedMat.at<ushort>(i, j);
-                    s1++;
-                }else{
-                    p2 += rotatedMat.at<ushort>(i, j);
-                    s2++;
-                }
-            }
+        t1 = integralMat.at<int>(patch.rows * test[2] / 200, patch.cols * test[2] / 200);
+        t2 = integralMat.at<int>(patch.rows * test[2] / 200, patch.cols * (1- test[2] / 200));
+        t3 = integralMat.at<int>(patch.rows * (1- test[2] / 200), patch.cols * test[2] / 200);
+        t4 = integralMat.at<int>(patch.rows * (1- test[2] / 200), patch.cols * (1- test[2] / 200) / 200);
+        p1 = t4 + t1 - t2 - t3;
+        p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
+        s1 = patch.rows * patch.cols * test[2] / 100 * test[2] / 100;
+        s2 = patch.rows * patch.cols - s1;
 
-        }
+//        for(int i = 0; i < rotatedMat.rows; ++i){
+//            for(int j = 0; j < rotatedMat.cols; ++j){
+//                //std::cout << i << " " << j << std::endl;
+//                //std::cout << rotatedMat.rows * test[2] / 100 / 2 << " " << rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 << " " << rotatedMat.cols * test[2] / 100 / 2 << " " << rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2 << std::endl;
+//                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 || j < rotatedMat.cols * test[2] / 100 / 2 || j > rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2){
+//                    p1 += rotatedMat.at<ushort>(i, j);
+//                    s1++;
+//                }else{
+//                    p2 += rotatedMat.at<ushort>(i, j);
+//                    s2++;
+//                }
+//            }
+
+//        }
 
         break;
     default:
@@ -155,7 +185,7 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
 
 // Read tree from file
 CRTree::CRTree(const char* filename, const char* databaseName,CConfig &conf):config(conf) {
-    cout << "Load Tree " << filename << endl;
+    //cout << "Load Tree " << filename << endl;
 
     classDatabase.read(databaseName);
 
@@ -165,7 +195,7 @@ CRTree::CRTree(const char* filename, const char* databaseName,CConfig &conf):con
     if(in.is_open()) {
         // allocate memory for tree table
         in >> max_depth;
-        std::cout << "max depth: " << max_depth << std::endl;
+        //std::cout << "max depth: " << max_depth << std::endl;
         num_nodes = (int)pow(2.0,int(max_depth+1))-1;
         // num_nodes x 7 matrix as vector
         treetable = new int[num_nodes * 11];
@@ -175,7 +205,7 @@ CRTree::CRTree(const char* filename, const char* databaseName,CConfig &conf):con
         in >> num_leaf;
         leaf = new LeafNode[num_leaf];
 
-        std::cout << "number of leaf: " << num_leaf << std::endl;
+        //std::cout << "number of leaf: " << num_leaf << std::endl;
 
         // number of center points per patch
         in >> num_cp;

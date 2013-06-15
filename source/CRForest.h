@@ -8,7 +8,8 @@
 #include "HoG.h"
 #include "CDataset.h"
 
-#include "detectionresult.h"
+#include "CDetectionResult.h"
+#include <omp.h>
 
 static HoG hog;
 
@@ -30,7 +31,7 @@ class CRForest {
 
   void growATree(const int treeNum);
   
-  detectionResult detection(CTestDataset &testSet) const;//, std::vector<double> &detectionResult, int &detectClass) const;
+  CDetectionResult detection(CTestDataset &testSet) const;//, std::vector<double> &detectionResult, int &detectClass) const;
   
   void extractPatches(std::vector<std::vector<CPatch> > &patches, 
 		      const std::vector<CDataset> dataSet, 

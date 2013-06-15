@@ -40,9 +40,9 @@
   <!-- feature channel number-->
   <featurechannel>2</featurechannel>
   <!-- extract patch ratio-->
-  <patchratio>1000</patchratio>
+  <patchratio>100</patchratio>
   <!-- Stride -->
-  <stride>1</stride>
+  <stride>10</stride>
   <!-- Offset of tree-->
   <offTree>0</offTree>
   <!-- test data path -->
@@ -50,7 +50,7 @@
   <testdataname>testData.txt</testdataname>
   <classdatabasename>classDatabase</classdatabasename>
   <!--learning mode 1:depth 2:rgb 0:rgbd-->
-  <learningmode>2</learningmode>
+  <learningmode>0</learningmode>
   <testmode>1</testmode>
   <detectthreshold>3.0</detectthreshold>
   <traindatalistname>dataList1.txt</traindatalistname>

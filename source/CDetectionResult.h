@@ -4,17 +4,34 @@
 #include <string>
 #include <opencv2/opencv.hpp>
 
-class detectionResult
+class CDetectedClass
 {
 public:
-    detectionResult(){}
-    virtual ~detectionResult(){}
-    std::string className;
+    CDetectedClass(){}
+    virtual ~CDetectedClass(){}
+
+    std::string name;
     cv::Rect bbox;
+    cv::Point centerPoint;
 
     double error;
-    int found;
     float score;
+    std::string nearestClass;
+};
+
+class CDetectionResult
+{
+public:
+    CDetectionResult(){
+        voteImage.clear();
+        detectedClass.clear();
+    }
+    virtual ~CDetectionResult(){
+    }
+
+    std::vector<cv::Mat> voteImage;
+
+    std::vector<CDetectedClass> detectedClass;
 };
 
 #endif // DETECTIONRESULT_H
