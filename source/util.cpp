@@ -120,6 +120,7 @@ void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet)
 
         while(ite != chosenData.end()){
             posSet.push_back(tempDataSet.at(*ite + dataOffset));
+            //std::cout << tempDataSet.at(*ite + dataOffset).getRgbImagePath() << std::endl;
             ite++;
         }
         dataOffset += database.vNode.at(j).instances;
@@ -207,6 +208,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
 
     std::cout << "extracting patch from image" << std::endl;
     for(int l = 0;l < posSet.size(); ++l){
+        std::cout << posSet.at(l).getRgbImagePath() << std::endl;
         for(int j = 0; j < posSet.at(l).img.at(0)->cols - conf.p_width; j += conf.stride){
             for(int k = 0; k < posSet.at(l).img.at(0)->rows - conf.p_height; k += conf.stride){
                 tempRect.x = j;
@@ -264,6 +266,8 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
 
             while(ite != chosenPatch.end()){
                 //std::cout << "this is for debug ite is " << tPosPatch.at(*ite).center << std::endl;
+                //std::cout <<posPatch.at(i)
+                //std::cout << patchPerClass.at(i).at(*ite).getRgbImageFilePath() << std::endl;
                 posPatch.push_back(patchPerClass.at(i).at(*ite));
                 ite++;
             }

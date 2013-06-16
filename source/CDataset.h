@@ -53,6 +53,7 @@ public:
     void setRgbImagePath(std::string rgb_path){rgb = rgb_path;}
     void setDepthImagePath(std::string depth_path){depth = depth_path;}
 
+
     std::string getRgbImagePath(){return rgb;}
 
     // loaded images and features
@@ -87,6 +88,8 @@ public:
     void setClassName(std::string name){param.setClassName(name);}
     void setAngle(double an){param.setAngle(an);}
     void setCenterPoint(cv::Point cp){param.setCenterPoint(cp);}
+
+    std::string getClassName(){return param.getClassName();}
 
     CParamset* getParam(){return &param;}
 

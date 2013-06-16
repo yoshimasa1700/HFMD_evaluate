@@ -25,10 +25,11 @@ echo "sa is $haba"
 		foldername=$basename$param$lerolero2
 		echo "$lerolero2"
 		echo "$foldername"
-		./setupExperiment.sh $foldername
-		#cd ../$foldername
-		./changeConfig.sh config.xml $param $lerolero2
+		./tools/setupExperiment.sh $foldername
+		cd ../$foldername
+		./tools/changeConfig.sh config.xml $param $lerolero2
 		./learning
+		./tools/changeConfig.sh config.xml stride 5
 		./objectPoseEstimation
 		cd "$currentDir" 
 		echo "$currentDir" 

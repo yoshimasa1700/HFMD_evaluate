@@ -38,6 +38,7 @@ public:
     cv::Point getCenterPoint()const{return pData->getParam()->getCenterPoint();}
     int getFeatureNum()const{return pData->feature.size();}
     CParamset getParam()const{return *(pData->getParam());}
+    std::string getRgbImageFilePath(){return pData->getRgbImagePath();}
 private:
     CPosDataset *pData;
 };
