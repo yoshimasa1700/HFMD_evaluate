@@ -66,4 +66,5 @@
   <maxdistance>1400</maxdistance>
   <numberOfTrials>1000</numberOfTrials>
   <crossvalidationmode>1</crossvalidationmode>
+  <clusterNumLimit>20</clusterNumLimit>
 </root>

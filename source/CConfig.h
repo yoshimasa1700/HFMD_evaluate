@@ -115,6 +115,7 @@ public:
 
     std::string negFolderList;
     int demoMode;
+    int clusterNumLimit;
 
 private:
     boost::property_tree::ptree pt;

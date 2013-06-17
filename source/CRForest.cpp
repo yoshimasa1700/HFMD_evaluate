@@ -11,13 +11,13 @@ void CRForest::learning(){
     // grow each tree
     // if you want to fix this program multi thread
     // you should change below
-//#pragma omp parallel
-//    {
-//#pragma omp for
+#pragma omp parallel
+    {
+#pragma omp for
         for(int i = 0;i < conf.ntrees; ++i){
             growATree(i);
         } // end tree loop
-    //}
+    }
 }
 
 void CRForest::growATree(const int treeNum){
@@ -145,7 +145,10 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     std::vector<CTestPatch> testPatch;
     std::vector<const LeafNode*> result;
 
-    std::vector<std::vector<const LeafNode*> > storedLN(0);
+    //std::vector<const LeafNode*> storedLN(0);
+
+    std::vector<std::vector<CParamset> > cluster(0);
+    std::vector<CParamset> clusterMean(0);
 
     cv::vector<cv::Mat> outputImage(classNum);
     cv::vector<cv::Mat> outputImageColorOnly(classNum);
@@ -160,14 +163,14 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     //t.restart();
 
 #pragma omp parallel
-            {
+    {
 #pragma omp for
-    for(int i = 0; i < classNum; ++i){
-        outputImage.at(i) = testSet.img.at(0)->clone();
-        outputImageColorOnly.at(i) = cv::Mat::zeros(testSet.img.at(0)->rows,testSet.img.at(0)->cols,CV_32FC1);
-        //        for(int j = 0; j < this->vTrees.size(); ++j)
-        //            outputImageColorOnlyPerTree.at(i).push_back()
-    }
+        for(int i = 0; i < classNum; ++i){
+            outputImage.at(i) = testSet.img.at(0)->clone();
+            outputImageColorOnly.at(i) = cv::Mat::zeros(testSet.img.at(0)->rows,testSet.img.at(0)->cols,CV_32FC1);
+            //        for(int j = 0; j < this->vTrees.size(); ++j)
+            //            outputImageColorOnlyPerTree.at(i).push_back()
+        }
     }
 
     // extract feature from test image
@@ -192,62 +195,76 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
         result.clear();
         this->regression(result, testPatch.at(j));
 
-        storedLN.push_back(result);
 
-
-        // vote for all trees (leafs)
-
-//        for(std::vector<const LeafNode*>::const_iterator itL = result.begin();itL!=result.end(); ++itL) {
-
-//#pragma omp parallel
-//            {
-//#pragma omp for
-//                for(int c = 0; c < classNum; c++){
-//                    //if(!(*itL)->param.at(c).empty()){
-//                    //if((*itL)->pfg.at(c) > 0.9  ){
-
-
-//                    for(int l = 0; l < (*itL)->param.at(c).size(); ++l){
-//                        cv::Point patchSize(conf.p_height/2,conf.p_width/2);
-//                        cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  (*itL)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  (*itL)->param.at(c).at(l).getCenterPoint().y);
-//                        if(pos.x > 0 && pos.y > 0 && pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){
-//                            outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += (*itL)->pfg.at(c) / 100.0;//((*itL)->pfg.at(c) - 0.9);// * 100;//weight * 500;
-//                            //std::cout << classDatabase.vNode.at(c).name << " " << (*itL)->pfg.at(c) << std::endl;
-
-//                            totalVote.at(c) += 1;
-//                        }
-//                    }
-//                    //}
-//                    //}
-//                }
-//            }
-//        } // for every leaf
 
 #pragma omp parallel
         {
 #pragma omp for
             for(int m = 0; m < result.size(); ++m){//std::vector<const LeafNode*>::const_iterator itL = result.begin();itL!=result.end(); ++itL) {
 #pragma omp parallel
-        {
+                {
 #pragma omp for
-                for(int c = 0; c < classNum; c++){
-                    //if(!result.at(m)->param.at(c).empty()){
-                    //if(result.at(m)->pfg.at(c) > 0.9  ){
+                    for(int c = 0; c < classNum; c++){
+                        //if(!result.at(m)->param.at(c).empty()){
+                        if(result.at(m)->pfg.at(c) > 0.9  ){
+
+                            for(int l = 0; l < result.at(m)->param.at(c).size(); ++l){
+                                //storedLN.push_back(result.at(m));
+
+                                cv::Point patchSize(conf.p_height/2,conf.p_width/2);
+                                cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  result.at(m)->param.at(c).at(l).getCenterPoint().x,
+                                              testPatch.at(j).getRoi().y + patchSize.y +  result.at(m)->param.at(c).at(l).getCenterPoint().y);
+
+                                //std::cout << pos << std::endl;
+
+                                int found = 0;
+                                for(int p = 0; p < cluster.size(); ++p){
+                                    if(clusterMean.at(p).getClassName() == result.at(m)->param.at(c).at(l).getClassName()){
+                                        double distanceCtoP = std::sqrt(std::pow((double)(clusterMean.at(p).getCenterPoint().x - pos.x),(int)2) +
+                                                                        std::pow((double)(clusterMean.at(p).getCenterPoint().y - pos.y),(int)2));
+
+                                        if(distanceCtoP < 20.0){
+                                            //std::cout << "same object?" << std::endl;
+
+                                            found = 1;
+                                            CParamset new_param;
+                                            new_param = result.at(m)->param.at(c).at(l);
+                                            new_param.setCenterPoint(pos);
+                                            //std::cout << pos.x << " + " << clusterMean.at(p).getCenterPoint().x << std::endl;
+                                            cluster.at(p).push_back(new_param);
+                                            //clusterMean.at(p) += new_param;
+                                            //clusterMean.at(p) /= 2.0;
+                                            if(p == 0)
+                                                clusterMean.at(0).showParam();
+                                        }
+                                    }
+                                }
+                                if(found == 0 && conf.clusterNumLimit > cluster.size() && pos.x > 0 && pos.y > 0 && pos.x < outputImage.at(0).cols && pos.y < outputImage.at(0).rows){
+                                    std::vector<CParamset> new_cluster(0);
+                                    CParamset new_param;
+
+                                    new_param = result.at(m)->param.at(c).at(l);
+                                    new_param.setCenterPoint(pos);
+                                    //new_param.setAngle(re
+                                    new_cluster.push_back(new_param);
+                                    cluster.push_back(new_cluster);
+                                    clusterMean.push_back(new_param);
+
+                                    new_param.showParam();
+                                }
+                                //std::cout << c << " " << l << " " << result.at(m)->param.at(c).at(l).getClassName() << std::endl;
 
 
-                    for(int l = 0; l < result.at(m)->param.at(c).size(); ++l){
-                        cv::Point patchSize(conf.p_height/2,conf.p_width/2);
-                        cv::Point pos(testPatch.at(j).getRoi().x + patchSize.x +  result.at(m)->param.at(c).at(l).getCenterPoint().x, testPatch.at(j).getRoi().y + patchSize.y +  result.at(m)->param.at(c).at(l).getCenterPoint().y);
-                        if(pos.x > 0 && pos.y > 0 && pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){
-                            outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += result.at(m)->pfg.at(c) / ( result.size() * result.at(m)->param.size());//(result.at(m)->pfg.at(c) - 0.9);// * 100;//weight * 500;
-                            //std::cout << classDatabase.vNode.at(c).name << " " << result.at(m)->pfg.at(c) << std::endl;
+                                if(pos.x > 0 && pos.y > 0 && pos.x < outputImageColorOnly.at(c).cols && pos.y < outputImageColorOnly.at(c).rows){
+                                    outputImageColorOnly.at(c).at<float>(pos.y,pos.x) += result.at(m)->pfg.at(c) / ( result.size() * result.at(m)->param.size());//(result.at(m)->pfg.at(c) - 0.9);// * 100;//weight * 500;
+                                    //std::cout << classDatabase.vNode.at(c).name << " " << result.at(m)->pfg.at(c) << std::endl;
 
-                            totalVote.at(c) += 1;
+                                    totalVote.at(c) += 1;
+                                }
+                            }
                         }
+                        //}
                     }
-                    //}
-                    //}
-                }
                 }
 
             } // for every leaf
@@ -256,6 +273,12 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     } // for every patch
     //  }
     std::cout << std::endl;
+
+    for(int p = 0; p < cluster.size(); ++p){
+        //clusterMean.at(p) /= (float)cluster.at(p).size();
+        clusterMean.at(p).showParam();
+        std::cout << cluster.at(p).size() << std::endl;
+    }
 
     // vote end
 
@@ -350,6 +373,19 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     std::cout << time << "sec" << std::endl;
     std::cout << 1 / (time) << "Hz" << std::endl;
 
+    std::stringstream ss;
+
+
+
+    for(int p = 0; p < clusterMean.size(); ++p){
+        ss << clusterMean.at(p).getAngle();
+
+        int clustersClass = classDatabase.search(clusterMean.at(p).getClassName());
+        cv::circle(outputImage.at(clustersClass), clusterMean.at(p).getCenterPoint(), 10,cv::Scalar(200,200,0));
+        //cv::putText(outputImage.at(clustersClass),clusterMean.at(p).getClassName(),clusterMean.at(p).getCenterPoint(),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(200,200,0), 2, CV_AA);
+        //cv::putText(outputImage.at(clustersClass),ss.str(),clusterMean.at(p).getCenterPoint() + cv::Point(0,-10),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(200,200,0), 2, CV_AA);
+    }
+
 
     std::string opath;
     if(!conf.demoMode){
@@ -412,6 +448,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
         cv::minMaxLoc(outputImageColorOnly.at(c),&min,&max,&minLoc,&maxLoc);
         //double score  = (double)(outputImageColorOnly.at(c).at<int>(maxLoc.y,maxLoc.x) / (double)( conf.stride * conf.stride * outputImage.at(c).cols * outputImage.at(c).rows)) * 1000000;
 
+
         //cv::circle(outputImage.at(c),maxLoc,20,cv::Scalar(200,0,0),3);
 
         //if(score > conf.detectThreshold){
@@ -424,6 +461,10 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
         cv::rectangle(outputImage.at(c),outRect,cv::Scalar(0,0,200),3);
         cv::putText(outputImage.at(c),classDatabase.vNode.at(c).name,cv::Point(outRect.x,outRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,200), 2, CV_AA);
         //}
+
+        //        for(int i = 0; i < storedLN.size(); ++i){
+
+        //        }
 
         // display grand truth
         if(!conf.demoMode){

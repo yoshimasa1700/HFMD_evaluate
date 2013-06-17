@@ -1,5 +1,19 @@
 #include "CDataset.h"
 
+CParamset& CParamset::operator+=(const CParamset& obj){
+    this->setCenterPoint(this->getCenterPoint() + obj.getCenterPoint());
+    this->setAngle(this->getAngle() + obj.getAngle());
+
+    return *this;
+}
+
+CParamset& CParamset::operator/=(const float& div){
+    this->setCenterPoint(cv::Point(this->getCenterPoint().x / (int)div, this->getCenterPoint().y / (int)div));
+    this->setAngle(this->getAngle() / div);
+
+    return *this;
+}
+
 std::string CParamset::outputParam(){
     std::stringstream sstream;
 

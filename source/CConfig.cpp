@@ -360,6 +360,8 @@ int CConfig::loadConfig(const char* filename)
 
     crossVMode = *pt.get_optional<int>("root.crossvalidationmode");
 
+    clusterNumLimit = *pt.get_optional<int>("root.clusterNumLimit");
+
     widthScale = p_width / mindist;
     heightScale = p_height / mindist;
 

@@ -21,9 +21,12 @@ public:
     std::string getClassName()const{return className;}
 
     int setAngle(double an){angle = an;return 0;}
-    double getAngle(){return angle;}
+    double getAngle()const{return angle;}
 
     int showParam();
+
+    CParamset& operator+=(const CParamset& obj);
+    CParamset& operator/=(const float& div);
 
     std::string outputParam();
     //void readParam(std::stringstream *in);

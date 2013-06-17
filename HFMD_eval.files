@@ -3,7 +3,6 @@ source/CRForest.cpp
 source/CRForest.h
 source/CRTree.cpp
 source/CRTree.h
-source/detectionresult.h
 source/HoG.cpp
 source/HoG.h
 source/learning.cpp
@@ -13,3 +12,6 @@ source/util.h
 config.xml
 source/CDataset.h
 source/CDataset.cpp
+source/CDetectionResult.h
+source/CConfig.h
+source/CConfig.cpp

@@ -9,7 +9,10 @@
 #include "CDataset.h"
 
 #include "CDetectionResult.h"
+
+#ifndef __APPLE__
 #include <omp.h>
+#endif
 
 static HoG hog;
 
