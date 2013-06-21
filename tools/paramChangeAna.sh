@@ -26,13 +26,13 @@ echo "sa is $haba"
 		echo "$lerolero2"
 		echo "$foldername"
 		#./tools/setupExperiment.sh $foldername
-		cp ./tools/analyzeResult.py ../${foldername}/tools
-		cd ../$foldername
+#cp ./tools/analyzeResult.py ../${foldername}/tools
+#cd ../$foldername
 		#./tools/changeConfig.sh config.xml $param $lerolero2
 		#./learning
 		#./tools/changeConfig.sh config.xml stride 5
 		#./objectPoseEstimation
-		./tools/analyzeResult.py ./detectionResult.txt ../${foldername}Ana.txt ../${foldername}Res.txt
+        ./analyzeResult.py ./${foldername}Res.txt ./${foldername}Ana.txt
 
 		cd "$currentDir" 
 		echo "$currentDir" 
