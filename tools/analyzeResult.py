@@ -1,6 +1,20 @@
 # -*- coding: utf-8 -*-
 
 import matplotlib.pyplot as plt
+import sys
+
+argvs = sys.argv
+argc = len(argvs)
+
+if(argc == 2):
+	inputFileName = argvs[1]
+else:
+	inputFileName = '../detectionResult.txt'
+
+if(argc == 3):
+	outputFileName = argvs[2]
+else:
+	outputFileName = '../analyzedResult.txt'
 
 def drange(start, stop, step):
 	r = start
@@ -10,6 +24,7 @@ def drange(start, stop, step):
 
 TPPERT = []
 FPPERT = []
+FPPERT_SUM = 0
 
 for th in drange(0.00, 0.10 , 0.001):
 	print th
@@ -45,6 +60,9 @@ for th in drange(0.00, 0.10 , 0.001):
 	print "precision = %lf , recall = %lf , F = %lf , accuracy = %lf , FPF = %lf" % (precision,recall, F, accuracy, FPF)
 	TPPERT.append(precision)
 	FPPERT.append(FPF)
+	FPPERT_SUM += FPF
 
-plt.plot(TPPERT,FPPERT,'r*')
+print FPPERT_SUM
+
+plt.plot(TPPERT,FPPERT)
 plt.show()
