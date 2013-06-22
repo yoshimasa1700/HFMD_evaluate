@@ -80,7 +80,7 @@ void CRForest::growATree(const int treeNum){
 
     for(int j = 0; j < posPatch.size(); ++j)
         patchClassNum.at(classDatabase.search(posPatch.at(j).getClassName()))++;
-    
+
     // grow tree
     //vTrees.at(treeNum)->growTree(vPatches, 0,0, (float)(vPatches.at(0).size()) / ((float)(vPatches.at(0).size()) + (float)(vPatches.at(1).size())), conf, gen, patchClassNum);
     tree->growTree(posPatch,negPatch, 0,0, ((float)posPatch.size() / (float)(posPatch.size() + negPatch.size())), conf, patchClassNum);
@@ -162,16 +162,16 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
     //t.restart();
 
-#pragma omp parallel
-    {
-#pragma omp for
+//#pragma omp parallel
+    //{
+//#pragma omp for
         for(int i = 0; i < classNum; ++i){
             outputImage.at(i) = testSet.img.at(0)->clone();
             outputImageColorOnly.at(i) = cv::Mat::zeros(testSet.img.at(0)->rows,testSet.img.at(0)->cols,CV_32FC1);
             //        for(int j = 0; j < this->vTrees.size(); ++j)
             //            outputImageColorOnlyPerTree.at(i).push_back()
         }
-    }
+    //}
 
     // extract feature from test image
     //features.clear();
@@ -197,13 +197,13 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
 
 
-#pragma omp parallel
-        {
-#pragma omp for
+//#pragma omp parallel
+//        {
+//#pragma omp for
             for(int m = 0; m < result.size(); ++m){//std::vector<const LeafNode*>::const_iterator itL = result.begin();itL!=result.end(); ++itL) {
-#pragma omp parallel
-                {
-#pragma omp for
+//#pragma omp parallel
+//                {
+//#pragma omp for
                     for(int c = 0; c < classNum; c++){
                         //if(!result.at(m)->param.at(c).empty()){
                         if(result.at(m)->pfg.at(c) > 0.9  ){
@@ -234,8 +234,8 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
                                             cluster.at(p).push_back(new_param);
                                             //clusterMean.at(p) += new_param;
                                             //clusterMean.at(p) /= 2.0;
-                                            if(p == 0)
-                                                clusterMean.at(0).showParam();
+                                            //if(p == 0)
+                                                //clusterMean.at(0).showParam();
                                         }
                                     }
                                 }
@@ -250,7 +250,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
                                     cluster.push_back(new_cluster);
                                     clusterMean.push_back(new_param);
 
-                                    new_param.showParam();
+                                    //new_param.showParam();
                                 }
                                 //std::cout << c << " " << l << " " << result.at(m)->param.at(c).at(l).getClassName() << std::endl;
 
@@ -265,10 +265,10 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
                         }
                         //}
                     }
-                }
+                //}
 
             } // for every leaf
-        }
+       // }
         //pBar(j,testPatch.size(),50);
     } // for every patch
     //  }
@@ -282,9 +282,9 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
     // vote end
 
-#pragma omp parallel
-    {
-#pragma omp for
+//#pragma omp parallel
+    //{
+//#pragma omp for
         // find balance by mean shift
         for(int i = 0; i < classNum; ++i){
             //        cv::Mat hsv,hue,rgb;
@@ -365,7 +365,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
             //        cv::putText(outputImage.at(i),classDatabase.vNode.at(i).name,cv::Point(tempRect.x,tempRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,0), 2, CV_AA);
 
         }
-    }
+    //}
 
 
 
@@ -511,7 +511,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     return detectResult;
 }
 
-// Regression 
+// Regression
 void CRForest::regression(std::vector<const LeafNode*>& result, CTestPatch &patch) const{
     result.resize( vTrees.size() );
     //std::cout << "enter regression" << std::endl;

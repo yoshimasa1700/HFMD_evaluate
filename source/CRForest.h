@@ -51,7 +51,7 @@ class CRForest {
   void loadForest();
 
   // Regression 
-  void regression(std::vector<const LeafNode*>& result, 
+  void regression(std::vector<const LeafNode*>& result,
           CTestPatch &patch) const;
 
 
