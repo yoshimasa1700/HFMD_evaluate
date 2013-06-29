@@ -117,6 +117,9 @@ public:
     int demoMode;
     int clusterNumLimit;
 
+    int rgbFeature;
+    int depthFeature;
+
 private:
     boost::property_tree::ptree pt;
 

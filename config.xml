@@ -67,4 +67,7 @@
   <numberOfTrials>1000</numberOfTrials>
   <crossvalidationmode>1</crossvalidationmode>
   <clusterNumLimit>20</clusterNumLimit>
+  <!-- haar-like : 0, HOG : 1, rotated haar-like : 2-->
+  <rgbFeature>1</rgbFeature>
+  <depthFeature>0</depthFeature>
 </root>

@@ -365,5 +365,8 @@ int CConfig::loadConfig(const char* filename)
     widthScale = p_width / mindist;
     heightScale = p_height / mindist;
 
+    rgbFeature = *pt.get_optional<int>("root.rgbFeature");
+    depthFeature = *pt.get_optional<int>("root.depthFeature");
+
     return 0;
 }

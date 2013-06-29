@@ -50,7 +50,7 @@ public:
     int loadImage(const CConfig &);
     int releaseImage();
 
-    int extractFeatures();
+    int extractFeatures(const CConfig &);
     int releaseFeatures();
 
     void setRgbImagePath(std::string rgb_path){rgb = rgb_path;}
