@@ -68,7 +68,8 @@ pwd
 ./learning 
 ./tools/changeConfig.sh ./config.xml stride 5
 ./objectPoseEstimation
-cd ../HFMD_evaluate
+../base/tools/analyzeResult.py ./detectionResult.txt ../base/${classname[$i]}Ana.txt ../base/${classname[$i]}Res.txt
+cd ../base
 done
 
 
