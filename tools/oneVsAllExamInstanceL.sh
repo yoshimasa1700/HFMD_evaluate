@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 classfilename=$1
-folderfilename=$1
+folderfilename=$2
 
 cat ${classfilename}| while read line
 do
@@ -47,11 +47,11 @@ do
     do
 	
 	k=`expr $j\*2`
-	if [ "${classname[$i]}" = "${foldername[$k-1]}" ]; then
+	if [ "${classname[$i]}" = "${foldername[$k-1]}_${foldername[$k]}" ]; then
 	    echo "${foldername[$k-1]}/${foldername[$k-1]}_${foldername[$k]}" >> trainData.txt
 	    
 	fi
-	if [ "${classname[$i]}" != "${foldername[$k-1]}" ]; then
+	if [ "${classname[$i]}" != "${foldername[$k-1]}_${foldername[$k]}" ]; then
 	    echo "../dataset/${foldername[$k-1]}/${foldername[$k-1]}_${foldername[$k]}" >> negDataFolderList.txt
 	    
 	fi
