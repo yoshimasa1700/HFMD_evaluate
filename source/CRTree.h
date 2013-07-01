@@ -210,8 +210,10 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 	int angle = rand() % 360;
 	int type = rand() % 3;
 	int ratio = (rand() % 30) + 10;
-	
-	test[0] = angle;
+	if(config.depthFeature == 2)
+	  test[0] = angle;
+	else
+	  test[0] = 0;
 	test[1] = type;
 	test[2] = ratio;
 	
@@ -236,6 +238,8 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 
       if(config.depthFeature == 2)
 	test[0] = angle;
+      else
+	test[0] = 0;
       test[1] = type;
       test[2] = ratio;
 

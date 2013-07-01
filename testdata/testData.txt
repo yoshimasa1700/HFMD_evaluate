@@ -1,6 +1,4 @@
-8
-testData1
-testData2
+18
 ../dataset/bottle/bottle_1
 ../dataset/bottle/bottle_2
 ../dataset/pack/pack_1
