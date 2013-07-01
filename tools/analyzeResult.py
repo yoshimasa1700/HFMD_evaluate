@@ -93,6 +93,6 @@ outFile.write("%lf"%(auc))
 outFile.write('best accuracy = %lf, best th = %lf' % (bestAccu, bestTh))
 outFile.close()
 
-#plt.plot(TPPERT,FPPERT,"*r")
+plt.plot(TPPERT,FPPERT,"*r")
 plt.savefig('%s.png' % outputFileName , transparent=True)
-plt.show()
+#plt.show()
