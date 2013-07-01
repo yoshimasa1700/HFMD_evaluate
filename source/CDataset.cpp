@@ -234,6 +234,24 @@ int CDataset::extractFeatures(const CConfig& conf){
             feature.push_back(tempDepth);
         }
         featureFlag = 1;
+    }else{
+      feature.clear();
+      //cv::Mat *tempRgb = new cv::Mat(img.at(0)->clone());
+      std::vector<cv::Mat> splittedRgb;
+      cv::split(*img.at(0), splittedRgb);
+      for(int i = 0; i < splittedRgb.size(); ++i){
+          cv::Mat *tempRgb = new cv::Mat(splittedRgb.at(i).clone());
+          feature.push_back(tempRgb);
+//          cv::namedWindow("test");
+//          cv::imshow("test",splittedRgb.at(i));
+//          cv::waitKey(0);
+//          cv::destroyWindow("test");
+      }
+
+      cv::Mat *tempDepth = new cv::Mat(img.at(1)->clone());
+      feature.push_back(tempDepth);
+
+      featureFlag  = 1;
     }
 
     return 0;

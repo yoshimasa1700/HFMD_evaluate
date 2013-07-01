@@ -117,6 +117,7 @@ public:
     int demoMode;
     int clusterNumLimit;
 
+    // haar-like : 0, hog : 1, rotated haar-like : 2
     int rgbFeature;
     int depthFeature;
 

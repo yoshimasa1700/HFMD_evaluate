@@ -21,7 +21,7 @@ public:
     cv::Rect getRoi()const{return roi;}
 
     cv::Mat* getFeature(int featureNum) const{return data->feature.at(featureNum);}
-
+    cv::Mat* getDepth() const{return data->feature.at(data->feature.size() - 1);}
 private:
     cv::Rect roi;
     double scale;
@@ -47,6 +47,7 @@ class CNegPatch : public CPatch{
 public:
     CNegPatch(CNegDataset *neg, cv::Rect r) : nData(neg), CPatch(neg, r){}
     CNegPatch(){}
+    int getFeatureNum()const{return nData->feature.size();}
     virtual ~CNegPatch(){}
 
 private:
@@ -59,6 +60,7 @@ public:
     CTestPatch(){}
     virtual ~CTestPatch(){}
     //cv::Rect getPatchRoi(){return this->getRoi(
+    int getFeatureNum()const {return tData->feature.size();}
 
 private:
     CTestDataset *tData;

@@ -64,10 +64,10 @@
   <activepatchratio>0.4</activepatchratio>
   <mindistance>350</mindistance>
   <maxdistance>1400</maxdistance>
-  <numberOfTrials>1000</numberOfTrials>
+  <numberOfTrials>100</numberOfTrials>
   <crossvalidationmode>1</crossvalidationmode>
   <clusterNumLimit>20</clusterNumLimit>
   <!-- haar-like : 0, HOG : 1, rotated haar-like : 2-->
-  <rgbFeature>1</rgbFeature>
-  <depthFeature>0</depthFeature>
+  <rgbFeature>2</rgbFeature>
+  <depthFeature>2</depthFeature>
 </root>

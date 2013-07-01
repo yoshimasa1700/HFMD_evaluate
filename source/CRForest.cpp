@@ -31,7 +31,6 @@ void CRForest::growATree(const int treeNum){
 
     char buffer[256];
 
-    posPatch.
     std::cout << "tree number " << treeNum << std::endl;
 
     // initialize random seed
@@ -54,8 +53,8 @@ void CRForest::growATree(const int treeNum){
         if(posSet.at(i).loadImage(conf) == -1 && conf.learningMode != 2){
             exit(-1);
         }
+	
         posSet.at(i).extractFeatures(conf);
-
 
         //std::cout << posSet.size() << std::endl;
 

@@ -5,9 +5,7 @@ boost::lagged_fibonacci1279 CRTree::genTree = boost::lagged_fibonacci1279();
 
 void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1, int &p2) const{
     float m[6];
-
     int angle = test[0];
-
     int t1,t2,t3,t4;
 
     //cv::Mat showMat(patch.rows, patch.cols, CV_8U);
@@ -18,7 +16,9 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     //    cv::imshow("test", showMat);
     //    cv::waitKey(0);
 
-    cv::Mat affine = cv::getRotationMatrix2D(cv::Point(config.p_width / 2 + 1, config.p_height / 2 + 1), (float)test[0] /*/ 180 * CV_PI*/, 1.0);
+    cv::Mat affine = cv::getRotationMatrix2D(cv::Point(config.p_width / 2 + 1,
+						       config.p_height / 2 + 1),
+					     (float)test[0], 1.0);
     cv::Mat rotatedMat(patch.rows, patch.cols, patch.type());
     cv::warpAffine(patch, rotatedMat, affine, cv::Size(patch.cols, patch.rows));
 
@@ -157,7 +157,13 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
 
         //std::cout << ptC << std::endl;
 
-        if(pnode[9] == 32){
+	if(pnode[9] == 0 && config.rgbFeature == 2){
+	  int regTest[9];
+	  for(int i = 0; i < 9; ++i)
+	    regTest[i] = pnode[i + 1];
+	  calcHaarLikeFeature(ptC,regTest,p1,p2);
+	    
+    }else if(pnode[9] == patch.getFeatureNum() - 1){
 
             int regTest[9];
             for(int i = 0; i < 9; ++i)
@@ -753,7 +759,7 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &tra
 }
 
 void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const{//, const CConfig &config)const {
-    cv::Mat tempDepth = *patch->getFeature(32);
+    cv::Mat tempDepth = *patch->getDepth();
     cv::Mat depth = tempDepth(patch->getRoi());
 
     //                cv::namedWindow("test");
@@ -810,12 +816,13 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
 
             // pointer to channel
             cv::Mat tempMat = *trainSet.posPatch.at(i).getFeature(test[8]);
+            //std::cout << trainSet.posPatch.at(i).getRoi() << std::endl;
             cv::Mat ptC = tempMat(trainSet.posPatch.at(i).getRoi());//(*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
 
             if(config.learningMode != 2)
                 normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC);
 
-            if(test[8] == 32){
+            if(test[8] == trainSet.posPatch.at(i).getFeatureNum() - 1){
 
                 //std::cout << "yobareatyo" << std::endl;
                 calcHaarLikeFeature(ptC,test,p1,p2);
@@ -859,7 +866,7 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
             if(config.learningMode != 2)
                 normarizationByDepth(&(trainSet.negPatch.at(i)) ,ptC);
             //cv::Mat ptC = (*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
-            if(test[8] == 32){
+            if(test[8] == trainSet.negPatch.at(i).getFeatureNum() - 1){
                 //std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;
                 //int dummy;
                 //std::cin >> dummy;
