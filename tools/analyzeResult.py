@@ -59,11 +59,11 @@ for th in drange(sta, sto , ste):
                                 TP += 1
                         else:
                                 FP += 1
+                else:
+                        if data[0] == data[1]:
+                                FN += 1
                         else:
-                                if data[0] == data[1]:
-                                        FN += 1
-                                else:
-                                        TN += 1
+                                TN += 1
 
 	resultFile.close()
         print "TP = %d , FP = %d" % (TP, FP)
