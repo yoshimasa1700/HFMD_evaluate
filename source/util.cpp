@@ -76,6 +76,7 @@ void loadTrainPosFile(CConfig conf, std::vector<CPosDataset> &posSet)
             //read file names
             trainDataList >> nameTemp;
             posTemp.setRgbImagePath(imageFilePath + nameTemp);
+	    
 
             trainDataList >> nameTemp;
             posTemp.setDepthImagePath(imageFilePath + nameTemp);

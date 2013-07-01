@@ -31,6 +31,7 @@ void CRForest::growATree(const int treeNum){
 
     char buffer[256];
 
+    posPatch.
     std::cout << "tree number " << treeNum << std::endl;
 
     // initialize random seed
@@ -53,7 +54,7 @@ void CRForest::growATree(const int treeNum){
         if(posSet.at(i).loadImage(conf) == -1 && conf.learningMode != 2){
             exit(-1);
         }
-        posSet.at(i).extractFeatures();
+        posSet.at(i).extractFeatures(conf);
 
 
         //std::cout << posSet.size() << std::endl;
@@ -67,7 +68,7 @@ void CRForest::growATree(const int treeNum){
     for(int i = 0; i < negSet.size(); ++i){
         negSet.at(i).loadImage(conf);
 
-        negSet.at(i).extractFeatures();
+        negSet.at(i).extractFeatures(conf);
     }
 
     CRTree *tree = new CRTree(conf.min_sample, conf.max_depth, classDatabase.vNode.size(),this->classDatabase);
@@ -159,7 +160,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
     testSet.loadImage(conf);
 
-    testSet.extractFeatures();
+    testSet.extractFeatures(conf);
     //testSet.releaseImage();
 
     //t.restart();
