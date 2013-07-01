@@ -16,10 +16,10 @@ if [ $# -ge 1 ]; then
 	centx=`expr $width / 2`
 	centy=`expr $height / 2`
 
-	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${babasename} ${centx} ${centy} 0 EOL >> testDataList.txt
+	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${babasename} ${centx} ${centy} 0 EOL >> testDataListInst.txt
 	
     done
-    mv ./testDataList.txt ./dataset/${basename}/${babasename}
+    mv ./testDataListInst.txt ./dataset/${basename}/${babasename}
 else
     echo "usage : ./createNegList.sh [basename *example bottle_1]"
     exit 1
