@@ -68,6 +68,6 @@
   <crossvalidationmode>1</crossvalidationmode>
   <clusterNumLimit>20</clusterNumLimit>
   <!-- haar-like : 0, HOG : 1, rotated haar-like : 2-->
-  <rgbFeature>0</rgbFeature>
-  <depthFeature>0</depthFeature>
+  <rgbFeature>2</rgbFeature>
+  <depthFeature>2</depthFeature>
 </root>

@@ -1,2 +1,3 @@
 groundTruth detectedClass Score Error
-bottle_1 bottle1 7.75407 2.23607
+bottle_1 bottle1 0.030973 2.23607
+bottle_1 bottle1 0.0314767 2

@@ -153,6 +153,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
     cv::vector<cv::Mat> outputImage(classNum);
     cv::vector<cv::Mat> voteImage(classNum);//voteImage(classNum);
+    cv::vector<cv::Mat_<cv::Vec6d> > voteParam(classNum);
     //cv::vector<cv::vector<cv::Mat> > outputImageColorOnlyPerTree(classNum);
     std::vector<int> totalVote(classNum,0);
     boost::timer t;
@@ -168,8 +169,13 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     //{
     //#pragma omp for
     for(int i = 0; i < classNum; ++i){
+        int imgRow = testSet.img.at(0)->rows;
+        int imgCol = testSet.img.at(0)->cols;
+
         outputImage.at(i) = testSet.img.at(0)->clone();
-        voteImage.at(i) = cv::Mat::zeros(testSet.img.at(0)->rows,testSet.img.at(0)->cols,CV_32FC1);
+        voteImage.at(i) = cv::Mat::zeros(imgRow,imgCol,CV_32FC1);
+        voteParam.at(i) = cv::Mat_<cv::Vec6d>(imgRow,imgCol);
+
         //        for(int j = 0; j < this->vTrees.size(); ++j)
         //            voteImagePerTree.at(i).push_back()
     }
@@ -217,49 +223,51 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
                             //std::cout << pos << std::endl;
 
                             // find cluster and calc cluster mean
-                            int found = 0;
-                            for(int p = 0; p < cluster.size(); ++p){
-                                if(clusterMean.at(p).getClassName() == result.at(m)->param.at(c).at(l).getClassName()){
-                                    double distanceCtoP = std::sqrt(std::pow((double)(clusterMean.at(p).getCenterPoint().x - pos.x),(int)2) +
-                                                                    std::pow((double)(clusterMean.at(p).getCenterPoint().y - pos.y),(int)2));
+//                            int found = 0;
+//                            for(int p = 0; p < cluster.size(); ++p){
+//                                if(clusterMean.at(p).getClassName() == result.at(m)->param.at(c).at(l).getClassName()){
+//                                    double distanceCtoP = std::sqrt(std::pow((double)(clusterMean.at(p).getCenterPoint().x - pos.x),(int)2) +
+//                                                                    std::pow((double)(clusterMean.at(p).getCenterPoint().y - pos.y),(int)2));
 
-                                    if(distanceCtoP < 20.0){
-                                        //std::cout << "same object?" << std::endl;
+//                                    if(distanceCtoP < 20.0){
+//                                        //std::cout << "same object?" << std::endl;
 
-                                        found = 1;
-                                        CParamset new_param;
-                                        new_param = result.at(m)->param.at(c).at(l);
-                                        new_param.setCenterPoint(pos);
-                                        //std::cout << pos.x << " + " << clusterMean.at(p).getCenterPoint().x << std::endl;
-                                        cluster.at(p).push_back(new_param);
-                                        //clusterMean.at(p) += new_param;
-                                        //clusterMean.at(p) /= 2.0;
-                                        //if(p == 0)
-                                        //clusterMean.at(0).showParam();
-                                    }
-                                }
-                            }
+//                                        found = 1;
+//                                        CParamset new_param;
+//                                        new_param = result.at(m)->param.at(c).at(l);
+//                                        new_param.setCenterPoint(pos);
+//                                        //std::cout << pos.x << " + " << clusterMean.at(p).getCenterPoint().x << std::endl;
+//                                        cluster.at(p).push_back(new_param);
+//                                        //clusterMean.at(p) += new_param;
+//                                        //clusterMean.at(p) /= 2.0;
+//                                        //if(p == 0)
+//                                        //clusterMean.at(0).showParam();
+//                                    }
+//                                }
+//                            }
 
                             // if cluster is not found, create new cluster
-                            if(found == 0 && conf.clusterNumLimit > cluster.size() && pos.x > 0 && pos.y > 0 && pos.x < outputImage.at(0).cols && pos.y < outputImage.at(0).rows){
-                                std::vector<CParamset> new_cluster(0);
-                                CParamset new_param;
+//                            if(found == 0 && conf.clusterNumLimit > cluster.size() && pos.x > 0 && pos.y > 0 && pos.x < outputImage.at(0).cols && pos.y < outputImage.at(0).rows){
+//                                std::vector<CParamset> new_cluster(0);
+//                                CParamset new_param;
 
-                                new_param = result.at(m)->param.at(c).at(l);
-                                new_param.setCenterPoint(pos);
-                                //new_param.setAngle(re
-                                new_cluster.push_back(new_param);
-                                cluster.push_back(new_cluster);
-                                clusterMean.push_back(new_param);
+//                                new_param = result.at(m)->param.at(c).at(l);
+//                                new_param.setCenterPoint(pos);
+//                                //new_param.setAngle(re
+//                                new_cluster.push_back(new_param);
+//                                cluster.push_back(new_cluster);
+//                                clusterMean.push_back(new_param);
 
-                                //new_param.showParam();
-                            }
+//                                //new_param.showParam();
+//                            }
                             //std::cout << c << " " << l << " " << result.at(m)->param.at(c).at(l).getClassName() << std::endl;
 
                             // vote to result image
                             if(pos.x > 0 && pos.y > 0 && pos.x < voteImage.at(c).cols && pos.y < voteImage.at(c).rows){
-                                voteImage.at(c).at<float>(pos.y,pos.x) += result.at(m)->pfg.at(c) / ( result.size() * result.at(m)->param.size());//(result.at(m)->pfg.at(c) - 0.9);// * 100;//weight * 500;
-                                //std::cout << classDatabase.vNode.at(c).name << " " << result.at(m)->pfg.at(c) << std::endl;
+                                voteImage.at(c).at<float>(pos.y,pos.x) += result.at(m)->pfg.at(c) / ( result.size() * result.at(m)->param.at(c).size());//(result.at(m)->pfg.at(c) - 0.9);// * 100;//weight * 500;
+
+                                voteParam.at(c).at<cv::Vec6d>(pos.y, pos.x)[0] += result.at(m)->pfg.at(c) * cos(result.at(m)->param.at(c).at(l).getAngle()) / ( result.size() * result.at(m)->param.at(c).size());
+                                voteParam.at(c).at<cv::Vec6d>(pos.y, pos.x)[1] += result.at(m)->pfg.at(c) * sin(result.at(m)->param.at(c).at(l).getAngle()) / ( result.size() * result.at(m)->param.at(c).size());
 
                                 totalVote.at(c) += 1;
                             }
@@ -272,11 +280,11 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     } // for every patch
 
     // show clusters parameter
-    for(int p = 0; p < cluster.size(); ++p){
-        //clusterMean.at(p) /= (float)cluster.at(p).size();
-        clusterMean.at(p).showParam();
-        std::cout << cluster.at(p).size() << std::endl;
-    }
+//    for(int p = 0; p < cluster.size(); ++p){
+//        //clusterMean.at(p) /= (float)cluster.at(p).size();
+//        clusterMean.at(p).showParam();
+//        std::cout << cluster.at(p).size() << std::endl;
+//    }
 
     // vote end
 
@@ -458,7 +466,8 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
         std::cout << c << " Name : " << classDatabase.vNode.at(c).name <<
                      "\tvote : " << totalVote.at(c) <<
                      " Score : " << voteImage.at(c).at<float>(maxLoc.y, maxLoc.x) <<
-                     " CenterPoint : " << maxLoc << std::endl;
+                     " CenterPoint : " << maxLoc <<
+                     " Angle : " << atan(voteParam.at(c).at<cv::Vec6d>(maxLoc.y, maxLoc.x)[1] / voteParam.at(c).at<cv::Vec6d>(maxLoc.y, maxLoc.x)[0]) / CV_PI * 180.0 << std::endl;
 
         // if not in demo mode, output image to file
         if(!conf.demoMode){

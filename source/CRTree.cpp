@@ -45,15 +45,15 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     switch(test[1]){
     case 0:
         // edge feature
-        p1 = integralMat.at<int>(patch.rows, patch.cols * test[2] / 100);
+        p1 = integralMat.at<int>(patch.rows, patch.cols * (double)test[2] / 100.0);
         p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
 
-        s1 = patch.rows * patch.cols * test[2] / 100;
-        s2 = patch.rows * patch.cols * (1.0 - test[2] / 100);
+        s1 = patch.rows * patch.cols * (double)test[2] / 100.0;
+        s2 = patch.rows * patch.cols * (1.0 - (double)test[2] / 100.0);
 
 //        for(int i = 0; i < rotatedMat.rows; ++i){
 //            for(int j = 0; j < rotatedMat.cols; ++j)
-//                if(i < rotatedMat.rows * test[2] / 100){
+//                if(i < rotatedMat.rows * (double)test[2] / 100){
 //                    p1 += rotatedMat.at<ushort>(i, j);
 //                    s1++;
 //                }else{
@@ -65,16 +65,16 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 
     case 1:
         // line feature
-        t1 = integralMat.at<int>(patch.rows, patch.cols * test[2] / 200);
-        t2 = integralMat.at<int>(patch.rows, patch.cols * (1- test[2] / 200));
+        t1 = integralMat.at<int>(patch.rows, patch.cols * (double)test[2] / 200.0);
+        t2 = integralMat.at<int>(patch.rows, patch.cols * (1- (double)test[2] / 200.0));
         p1 = t2 - t1;
         p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
-        s1 = patch.rows * patch.cols * test[2] / 100;
-        s2 = patch.rows * patch.cols * (1.0 - test[2] / 100);
+        s1 = patch.rows * patch.cols * (double)test[2] / 100.0;
+        s2 = patch.rows * patch.cols * (1.0 - (double)test[2] / 100.0);
 
 //        for(int i = 0; i < rotatedMat.rows; ++i){
 //            for(int j = 0; j < rotatedMat.cols; ++j)
-//                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2){
+//                if(i < rotatedMat.rows * (double)test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * (double)test[2] / 100 / 2){
 //                    p1 += rotatedMat.at<ushort>(i, j);
 //                    s1++;
 //                }else{
@@ -87,20 +87,21 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 
     case 2:
         // center
-        t1 = integralMat.at<int>(patch.rows * test[2] / 200, patch.cols * test[2] / 200);
-        t2 = integralMat.at<int>(patch.rows * test[2] / 200, patch.cols * (1- test[2] / 200));
-        t3 = integralMat.at<int>(patch.rows * (1- test[2] / 200), patch.cols * test[2] / 200);
-        t4 = integralMat.at<int>(patch.rows * (1- test[2] / 200), patch.cols * (1- test[2] / 200) / 200);
+        t1 = integralMat.at<int>(patch.rows * (double)test[2] / 200.0, patch.cols * (double)test[2] / 200.0);
+        t2 = integralMat.at<int>(patch.rows * (double)test[2] / 200.0, patch.cols * (1.0 - (double)test[2] / 200.0));
+        t3 = integralMat.at<int>(patch.rows * (1.0 - (double)test[2] / 200.0), patch.cols * (double)test[2] / 200.0);
+        t4 = integralMat.at<int>(patch.rows * (1.0 - (double)test[2] / 200.0), patch.cols * (1.0 - (double)test[2] / 200.0));
         p1 = t4 + t1 - t2 - t3;
+        //std::cout << t1 << " " << t2 << " " << t3 << " " << t4 << " " << patch.rows * (1.0 - (double)test[2] / 200.0) << " " <<  patch.cols * (1.0 - (double)test[2] / 200.0) / 200.0 << std::endl;
         p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
-        s1 = patch.rows * patch.cols * test[2] / 100 * test[2] / 100;
+        s1 = patch.rows * patch.cols * (double)test[2] / 100 * (double)test[2] / 100;
         s2 = patch.rows * patch.cols - s1;
 
 //        for(int i = 0; i < rotatedMat.rows; ++i){
 //            for(int j = 0; j < rotatedMat.cols; ++j){
 //                //std::cout << i << " " << j << std::endl;
-//                //std::cout << rotatedMat.rows * test[2] / 100 / 2 << " " << rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 << " " << rotatedMat.cols * test[2] / 100 / 2 << " " << rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2 << std::endl;
-//                if(i < rotatedMat.rows * test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * test[2] / 100 / 2 || j < rotatedMat.cols * test[2] / 100 / 2 || j > rotatedMat.cols - rotatedMat.cols * test[2] / 100 / 2){
+//                //std::cout << rotatedMat.rows * (double)test[2] / 100 / 2 << " " << rotatedMat.rows - rotatedMat.rows * (double)test[2] / 100 / 2 << " " << rotatedMat.cols * (double)test[2] / 100 / 2 << " " << rotatedMat.cols - rotatedMat.cols * (double)test[2] / 100 / 2 << std::endl;
+//                if(i < rotatedMat.rows * (double)test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * (double)test[2] / 100 / 2 || j < rotatedMat.cols * (double)test[2] / 100 / 2 || j > rotatedMat.cols - rotatedMat.cols * (double)test[2] / 100 / 2){
 //                    p1 += rotatedMat.at<ushort>(i, j);
 //                    s1++;
 //                }else{
@@ -116,7 +117,7 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
         break;
     }
 
-    //std::cout << test[0] << " " << test[1] << " " << test[2] << std::endl;
+    //std::cout << test[0] << " " << test[1] << " " << (double)test[2] << std::endl;
     //std::cout << p1 << " " << p2 << " " << s1 << " " << s2 << std::endl;
     if(s1 == 0 || s2 == 0){
         std::cout << "error! can't get enouch space for haar-like feature" << std::endl;
@@ -126,6 +127,7 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
         p2 /= s2;
     }
 
+   // std::cout << "p1 = " << p1 << " p2 = " << p2 << std::endl;
     return;
 }
 
@@ -621,7 +623,7 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &tra
                 config.p_height,//posPatch.at(0).patchRoi.height,
                 trainSet.posPatch.at(0).getFeatureNum(),
                 depth);
-        //std::cout << tmpTest[0] << " " << tmpTest[1] << " " << tmpTest[2] << std::endl;
+        //std::cout << tmpTest[0] << " " << tmpTest[1] << " " << tmp(double)test[2] << std::endl;
 
 
         //for(int q = 0; q < 9; ++q)

@@ -15,9 +15,10 @@ if [ $# -ge 1 ]; then
 	#echo "$width"
 	centx=`expr $width / 2`
 	centy=`expr $height / 2`
+	angle=`expr $i \* 6`
 
-	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${basename} ${centx} ${centy} 0 EOL >> testDataList.txt
-	
+	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${basename} ${centx} ${centy} ${angle} EOL >> testDataList.txt
+
     done
     mv ./testDataList.txt ./dataset/${basename}/${babasename}
 else

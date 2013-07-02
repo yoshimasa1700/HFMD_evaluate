@@ -53,7 +53,7 @@ public:
            int		max_d,	//max depth of tree
            int		cp,	//number of center point
            CClassDatabase cDatabase/*,
-                         boost::mt19937	randomGen*/	// random number seed
+                                boost::mt19937	randomGen*/	// random number seed
            )
         : min_samples(min_s), max_depth(max_d), num_leaf(0), num_cp(cp), classDatabase(cDatabase)
     {
@@ -187,7 +187,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 
     switch(config.learningMode){
     case 0:// rgbd
-        if((1 - exp(-1 * (double)depth / (lamda/5))) > rand2()){
+        if(rand2() > 0.5){//(1 - exp(-1 * (double)depth / (lamda/5))) > rand2()){
 
             if(config.rgbFeature == 1){
 
