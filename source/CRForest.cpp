@@ -288,9 +288,9 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
     // vote end
 
-    //#pragma omp parallel
-    //{
-    //#pragma omp for
+    #pragma omp parallel
+    {
+    #pragma omp for
     // find balance by mean shift
     for(int i = 0; i < classNum; ++i){
         //        cv::Mat hsv,hue,rgb;
@@ -371,7 +371,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
         //        cv::putText(outputImage.at(i),classDatabase.vNode.at(i).name,cv::Point(tempRect.x,tempRect.y),cv::FONT_HERSHEY_SIMPLEX,1.2, cv::Scalar(0,0,0), 2, CV_AA);
 
     }
-    //}
+    }
 
     // measure time
     double time = t.elapsed();
