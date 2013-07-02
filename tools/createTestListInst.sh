@@ -4,6 +4,7 @@ basename=$1
 number=$2
 echo "${basename}_${number}"
 babasename=${basename}_${number}
+bababasename=${basename}${number}
 
 if [ $# -ge 1 ]; then
     echo "60" > testDataListInst.txt
@@ -17,7 +18,7 @@ if [ $# -ge 1 ]; then
 	centy=`expr $height / 2`
 	angle=`expr $i \* 6`
 
-	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${babasename} ${centx} ${centy} ${angle} EOL >> testDataListInst.txt
+	echo ${numberedname}crop.png ${numberedname}depthcrop.png nodata ${bababasename} ${centx} ${centy} ${angle} EOL >> testDataListInst.txt
 	
     done
     mv ./testDataListInst.txt ./dataset/${basename}/${babasename}
