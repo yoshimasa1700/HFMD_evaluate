@@ -11,13 +11,13 @@ void CRForest::learning(){
     // grow each tree
     // if you want to fix this program multi thread
     // you should change below
-//#pragma omp parallel
-//    {
-//#pragma omp for
+#pragma omp parallel
+    {
+#pragma omp for
         for(int i = 0;i < conf.ntrees; ++i){
             growATree(i);
         } // end tree loop
-    //}
+    }
 }
 
 void CRForest::growATree(const int treeNum){
