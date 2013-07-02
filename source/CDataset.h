@@ -58,6 +58,7 @@ public:
 
 
     std::string getRgbImagePath(){return rgb;}
+    std::string getDepthImagePath(){return depth;}
 
     // loaded images and features
     std::vector<cv::Mat*> img, feature;
@@ -114,5 +115,7 @@ public:
 
     std::vector<CParamset> param;
 };
+
+CNegDataset convertPosToNeg2(CPosDataset& pos);
 
 #endif // CDATASET_H

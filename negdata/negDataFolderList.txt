@@ -1,4 +1,4 @@
-18
+1
 ./background
 ../dataset/bottle/bottle_2
 ../dataset/ornament/ornament_1

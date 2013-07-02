@@ -24,8 +24,8 @@ if(argc > 3):
         os.system('cp %s ./%s'% (inputFileName, argvs[3]))
         
 sta = 0.00
-sto = 20.0
-ste = 0.1
+sto = 3.0
+ste = 0.001
 preval = 0.0
 bestAccu = 0.0
 bestTh = 0.0

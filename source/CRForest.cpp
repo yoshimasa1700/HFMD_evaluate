@@ -38,6 +38,40 @@ void CRForest::growATree(const int treeNum){
     boost::timer t;
 
     loadTrainPosFile(conf, posSet);//, gen);
+
+    CClassDatabase tempClassDatabase;
+    // extract pos features and register classDatabase
+    for(int i = 0; i < posSet.size(); ++i){
+        //std::cout << i << std::endl;
+
+        //std::cout << posSet.at(i).rgb << std::endl;
+//        if(posSet.at(i).loadImage(conf) == -1 && conf.learningMode != 2){
+//            exit(-1);
+//        }
+
+        //posSet.at(i).extractFeatures(conf);
+
+        //std::cout << posSet.size() << std::endl;
+
+        tempClassDatabase.add(posSet.at(i).getParam()->getClassName(),cv::Size(),0);
+    }
+
+    std::vector<CPosDataset> tempPosSet(0);
+    int currentClass = treeNum % tempClassDatabase.vNode.size();
+
+    //std::cout << "okashiina" << std::endl;
+    for(int i = 0; i < posSet.size(); ++i){
+        if(tempClassDatabase.search(posSet.at(i).getClassName()) == currentClass){
+            tempPosSet.push_back(posSet.at(i));
+            //std::cout << "teketeke" << std::endl;
+        }else{
+            negSet.push_back(convertPosToNeg2(posSet.at(i)));
+            //std::cout << "negneg" << std::endl;
+        }
+    }
+
+    posSet = tempPosSet;
+
     loadTrainNegFile(conf, negSet);
 
     std::cout << "dataset loaded" << std::endl;

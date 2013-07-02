@@ -333,3 +333,12 @@ void CDataset::maxFilter(cv::Mat* src, cv::Mat* des, int fWind) {
   } // for image width
 
 }
+
+CNegDataset convertPosToNeg2(CPosDataset &pos)
+{
+    CNegDataset tempNegDataset;
+    tempNegDataset.setRgbImagePath(pos.getRgbImagePath());
+    tempNegDataset.setDepthImagePath(pos.getDepthImagePath());
+
+    return tempNegDataset;
+}

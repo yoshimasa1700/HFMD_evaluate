@@ -1,4 +1,4 @@
-1
+9
 bottle/bottle_1
 bottle/bottle_2
 pack/pack_1
@@ -11,8 +11,6 @@ koaramarch/koaramarch_2
 ornament/ornament_1
 ornament/ornament_2
 ornament/ornament_3
-
-
 
 can/can_1
 can/can_2

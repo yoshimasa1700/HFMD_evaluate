@@ -161,7 +161,7 @@ void loadTrainNegFile(CConfig conf, std::vector<CNegDataset> &negSet)
         std::cout << negDataFilePath << " loaded!" << std::endl;
         in >> n_files;
 
-        negSet.clear();
+        //negSet.clear();
 
         for(int i = 0; i < n_files; ++i){
             CNegDataset negTemp;
