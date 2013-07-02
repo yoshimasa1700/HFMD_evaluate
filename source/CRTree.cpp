@@ -157,7 +157,7 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
 
         //std::cout << ptC << std::endl;
 
-	if(pnode[9] == 0 && config.rgbFeature == 2){
+    if(pnode[9] < patch.getFeatureNum() - 1 && config.rgbFeature != 1){
 	  int regTest[9];
 	  for(int i = 0; i < 9; ++i)
 	    regTest[i] = pnode[i + 1];
@@ -714,7 +714,7 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &tra
 
     //    if(test[8] == 32){
     if(found)
-        for(int i = 0; i < 8; ++i){
+        for(int i = 0; i < 9; ++i){
             std::cout << test[i] << " ";
         }
     else
@@ -822,7 +822,12 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
             if(config.learningMode != 2)
                 normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC);
 
-            if(test[8] == trainSet.posPatch.at(i).getFeatureNum() - 1){
+
+            //std::cout << "test[8] " << test[8] << " featureNum " << trainSet.posPatch.at(i).getFeatureNum() - 1 << std::endl;
+            if(test[8] < trainSet.posPatch.at(i).getFeatureNum() - 1 && config.rgbFeature != 1){
+
+                calcHaarLikeFeature(ptC,test,p1,p2);
+            }else if(test[8] == trainSet.posPatch.at(i).getFeatureNum() - 1){
 
                 //std::cout << "yobareatyo" << std::endl;
                 calcHaarLikeFeature(ptC,test,p1,p2);
