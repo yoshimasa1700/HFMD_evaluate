@@ -1,4 +1,5 @@
-${num}npack_1_1_10_crop.png pack_1_1_10_depthcrop.png pack_1_1_10_maskcrop.png pack_1 60
+60
+pack_1_1_10_crop.png pack_1_1_10_depthcrop.png pack_1_1_10_maskcrop.png pack_1 60
 pack_1_1_11_crop.png pack_1_1_11_depthcrop.png pack_1_1_11_maskcrop.png pack_1 66
 pack_1_1_12_crop.png pack_1_1_12_depthcrop.png pack_1_1_12_maskcrop.png pack_1 72
 pack_1_1_13_crop.png pack_1_1_13_depthcrop.png pack_1_1_13_maskcrop.png pack_1 78

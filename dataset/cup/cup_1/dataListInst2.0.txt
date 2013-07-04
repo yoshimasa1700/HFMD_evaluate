@@ -1,4 +1,5 @@
-${num}ncup_1_1_10_crop.png cup_1_1_10_depthcrop.png cup_1_1_10_maskcrop.png cup_1 60
+60
+cup_1_1_10_crop.png cup_1_1_10_depthcrop.png cup_1_1_10_maskcrop.png cup_1 60
 cup_1_1_11_crop.png cup_1_1_11_depthcrop.png cup_1_1_11_maskcrop.png cup_1 66
 cup_1_1_12_crop.png cup_1_1_12_depthcrop.png cup_1_1_12_maskcrop.png cup_1 72
 cup_1_1_13_crop.png cup_1_1_13_depthcrop.png cup_1_1_13_maskcrop.png cup_1 78

@@ -53,8 +53,8 @@
   <learningmode>0</learningmode>
   <testmode>1</testmode>
   <detectthreshold>3.0</detectthreshold>
-  <traindatalistname>dataList1.txt</traindatalistname>
-  <testdatalistname>testDataList.txt</testdatalistname>
+  <traindatalistname>dataList2.0.txt</traindatalistname>
+  <testdatalistname>testDataList2.0.txt</testdatalistname>
   <showgrandtruth>1</showgrandtruth>
   <negativedatapath>negdata</negativedatapath>
   <negativedatafolderlist>negDataFolderList.txt</negativedatafolderlist>
@@ -68,6 +68,6 @@
   <crossvalidationmode>1</crossvalidationmode>
   <clusterNumLimit>20</clusterNumLimit>
   <!-- haar-like : 0, HOG : 1, rotated haar-like : 2-->
-  <rgbFeature>2</rgbFeature>
+  <rgbFeature>1</rgbFeature>
   <depthFeature>2</depthFeature>
 </root>

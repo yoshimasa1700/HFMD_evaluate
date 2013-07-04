@@ -1,4 +1,5 @@
-${num}ncan_4_1_10_crop.png can_4_1_10_depthcrop.png can_4_1_10_maskcrop.png can_4 60
+60
+can_4_1_10_crop.png can_4_1_10_depthcrop.png can_4_1_10_maskcrop.png can_4 60
 can_4_1_11_crop.png can_4_1_11_depthcrop.png can_4_1_11_maskcrop.png can_4 66
 can_4_1_12_crop.png can_4_1_12_depthcrop.png can_4_1_12_maskcrop.png can_4 72
 can_4_1_13_crop.png can_4_1_13_depthcrop.png can_4_1_13_maskcrop.png can_4 78

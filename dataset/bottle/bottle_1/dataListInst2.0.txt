@@ -1,4 +1,5 @@
-${num}nbottle_1_1_10_crop.png bottle_1_1_10_depthcrop.png bottle_1_1_10_maskcrop.png bottle_1 60
+60
+bottle_1_1_10_crop.png bottle_1_1_10_depthcrop.png bottle_1_1_10_maskcrop.png bottle_1 60
 bottle_1_1_11_crop.png bottle_1_1_11_depthcrop.png bottle_1_1_11_maskcrop.png bottle_1 66
 bottle_1_1_12_crop.png bottle_1_1_12_depthcrop.png bottle_1_1_12_maskcrop.png bottle_1 72
 bottle_1_1_13_crop.png bottle_1_1_13_depthcrop.png bottle_1_1_13_maskcrop.png bottle_1 78

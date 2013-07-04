@@ -1,4 +1,5 @@
-${num}nornament_1_1_10_crop.png ornament_1_1_10_depthcrop.png ornament_1_1_10_maskcrop.png ornament_1 60
+60
+ornament_1_1_10_crop.png ornament_1_1_10_depthcrop.png ornament_1_1_10_maskcrop.png ornament_1 60
 ornament_1_1_11_crop.png ornament_1_1_11_depthcrop.png ornament_1_1_11_maskcrop.png ornament_1 66
 ornament_1_1_12_crop.png ornament_1_1_12_depthcrop.png ornament_1_1_12_maskcrop.png ornament_1 72
 ornament_1_1_13_crop.png ornament_1_1_13_depthcrop.png ornament_1_1_13_maskcrop.png ornament_1 78

@@ -29,7 +29,6 @@ do
 
 
 	    num=0
-
 	    for f in ${fileList}
 	    do
 		if [ ! -d $f ]; then
@@ -38,9 +37,9 @@ do
 			*_crop*)
 			    bName=${f##*/}
 			    bbName=${bName%_*}
-			    echo ${bbName}
+			    #echo ${bbName}
 			    angle=`expr ${bbName##*_} \* 6`
-			    echo ${angle}
+			    #echo ${angle}
 
 			    width=`identify -format "%w" ${iFolder}/${bName%_*}_crop.png`
 			    height=`identify -format "%h" ${iFolder}/${bName%_*}_crop.png`
@@ -50,21 +49,29 @@ do
 
 			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png ${bName%_*}_maskcrop.png ${cFolder##*/} $angle >> ${iFolder}/dataList2.0.txt
 			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png ${bName%_*}_maskcrop.png ${iFolder##*/} $angle >> ${iFolder}/dataListInst2.0.txt
-			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png nodata ${cFolder##*/} ${centx} ${centy} ${angle} EOL >> testDataList.txt
-			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png nodata ${iFolder##*/} ${centx} ${centy} ${angle} EOL >> testDataList.txt
-		    esac
+			    echo "${bName%_*}_crop.png ${bName%_*}_depthcrop.png nodata ${cFolder##*/} ${centx} ${centy} ${angle} EOL" >> ${iFolder}/testDataList2.0.txt
+			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png nodata ${iFolder##*/} ${centx} ${centy} ${angle} EOL >> ${iFolder}/testDataListInst2.0.txt			
+	#echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png nodata ${cFolder##*/} ${centx} ${centy} ${angle} EOL
+			    #echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png nodata ${iFolder##*/} ${centx} ${centy} ${angle} EOL 		
+		
+num=`expr ${num} + 1`	
+			
+			
+			
+		esac
 
-		    num=`expr $num + 1`
+		#	echo ${num}
 		fi
 	    done
+	#echo ${num}
 
 	    #cat ${iFolder}/dataList2.0.txt | sed -i "1 ${num}"  > ${iFolder}/dataList2.0.txt
-	    #sed -i .bk  '1s \\${num}' '${iFolder}/dataList2.0.txt'
+	    #sed -i "1s \\${num}" '${iFolder}/dataList2.0.txt'
 
-	    sed -i .bk '1s/^/${num}\n/' ${iFolder}/dataList2.0.txt
-	    sed -i .bk '1s/^/${num}\n/' ${iFolder}/dataListInst2.0.txt
-	    sed -i .bk '1s/^/${num}\n/' ${iFolder}/testDataList2.0.txt
-	    sed -i .bk '1s/^/${num}\n/' ${iFolder}/testDataListInst2.0.txt
+	    sed -i "1s/^/${num}\n/" ${iFolder}/dataList2.0.txt
+	    sed -i "1s/^/${num}\n/" ${iFolder}/dataListInst2.0.txt
+	    sed -i "1s/^/${num}\n/" ${iFolder}/testDataList2.0.txt
+	    sed -i "1s/^/${num}\n/" ${iFolder}/testDataListInst2.0.txt
 
 	done
     fi

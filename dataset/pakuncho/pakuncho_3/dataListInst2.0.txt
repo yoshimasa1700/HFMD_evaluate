@@ -1,3 +1,4 @@
+60
 pakuncho_3_1_10_crop.png pakuncho_3_1_10_depthcrop.png pakuncho_3_1_10_maskcrop.png pakuncho_3 60
 pakuncho_3_1_11_crop.png pakuncho_3_1_11_depthcrop.png pakuncho_3_1_11_maskcrop.png pakuncho_3 66
 pakuncho_3_1_12_crop.png pakuncho_3_1_12_depthcrop.png pakuncho_3_1_12_maskcrop.png pakuncho_3 72
