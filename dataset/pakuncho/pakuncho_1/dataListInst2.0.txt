@@ -1,0 +1,11 @@
+pakuncho_1_1_10_crop.png pakuncho_1_1_10_depthcrop.png pakuncho_1_1_10_maskcrop.png pakuncho_1 60
+pakuncho_1_1_11_crop.png pakuncho_1_1_11_depthcrop.png pakuncho_1_1_11_maskcrop.png pakuncho_1 66
+pakuncho_1_1_12_crop.png pakuncho_1_1_12_depthcrop.png pakuncho_1_1_12_maskcrop.png pakuncho_1 72
+pakuncho_1_1_13_crop.png pakuncho_1_1_13_depthcrop.png pakuncho_1_1_13_maskcrop.png pakuncho_1 78
+pakuncho_1_1_14_crop.png pakuncho_1_1_14_depthcrop.png pakuncho_1_1_14_maskcrop.png pakuncho_1 84
+pakuncho_1_1_15_crop.png pakuncho_1_1_15_depthcrop.png pakuncho_1_1_15_maskcrop.png pakuncho_1 90
+pakuncho_1_1_16_crop.png pakuncho_1_1_16_depthcrop.png pakuncho_1_1_16_maskcrop.png pakuncho_1 96
+pakuncho_1_1_17_crop.png pakuncho_1_1_17_depthcrop.png pakuncho_1_1_17_maskcrop.png pakuncho_1 102
+pakuncho_1_1_18_crop.png pakuncho_1_1_18_depthcrop.png pakuncho_1_1_18_maskcrop.png pakuncho_1 108
+pakuncho_1_1_19_crop.png pakuncho_1_1_19_depthcrop.png pakuncho_1_1_19_maskcrop.png pakuncho_1 114
+pakuncho_1_1_1_crop.png pakuncho_1_1_1_depthcrop.png pakuncho_1_1_1_maskcrop.png pakuncho_1 6

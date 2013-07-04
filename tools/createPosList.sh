@@ -19,8 +19,15 @@ do
 	    fileList=(`echo ${iFolder}/*`)
 
 	    rm ${iFolder}/dataList2.0.txt
+	    rm ${iFolder}/dataListInst2.0.txt
+	    rm ${iFolder}/testDataList2.0.txt
+	    rm ${iFolder}/testDataListInst2.0.txt
 	    touch ${iFolder}/dataList2.0.txt
-	    
+	    touch ${iFolder}/dataListInst2.0.txt
+	    touch ${iFolder}/testDataList2.0.txt
+	    touch ${iFolder}/testDataListInst2.0.txt
+
+
 	    num=0
 
 	    for f in ${fileList}
@@ -34,15 +41,30 @@ do
 			    echo ${bbName}
 			    angle=`expr ${bbName##*_} \* 6`
 			    echo ${angle}
-			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png ${bName%_*}_maskcrop.png $angle >> ${iFolder}/dataList2.0.txt
+
+			    width=`identify -format "%w" ${iFolder}/${bName%_*}_crop.png`
+			    height=`identify -format "%h" ${iFolder}/${bName%_*}_crop.png`
+			    #echo "$width"
+			    centx=`expr $width / 2`
+			    centy=`expr $height / 2`
+
+			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png ${bName%_*}_maskcrop.png ${cFolder##*/} $angle >> ${iFolder}/dataList2.0.txt
+			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png ${bName%_*}_maskcrop.png ${iFolder##*/} $angle >> ${iFolder}/dataListInst2.0.txt
+			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png nodata ${cFolder##*/} ${centx} ${centy} ${angle} EOL >> testDataList.txt
+			    echo ${bName%_*}_crop.png ${bName%_*}_depthcrop.png nodata ${iFolder##*/} ${centx} ${centy} ${angle} EOL >> testDataList.txt
 		    esac
 
 		    num=`expr $num + 1`
 		fi
 	    done
 
-	    cat ${iFolder}/dataList2.0.txt | sed "1i\\${num}"  > ${iFolder}/dataList2.0.txt
-	    #sed -i '1s/^/${num}}\n/' ${iFolder}/dataList2.0.txt
+	    #cat ${iFolder}/dataList2.0.txt | sed -i "1 ${num}"  > ${iFolder}/dataList2.0.txt
+	    #sed -i .bk  '1s \\${num}' '${iFolder}/dataList2.0.txt'
+
+	    sed -i .bk '1s/^/${num}\n/' ${iFolder}/dataList2.0.txt
+	    sed -i .bk '1s/^/${num}\n/' ${iFolder}/dataListInst2.0.txt
+	    sed -i .bk '1s/^/${num}\n/' ${iFolder}/testDataList2.0.txt
+	    sed -i .bk '1s/^/${num}\n/' ${iFolder}/testDataListInst2.0.txt
 
 	done
     fi
