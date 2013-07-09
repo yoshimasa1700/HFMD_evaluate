@@ -21,7 +21,7 @@ public:
     cv::Rect getRoi()const{return roi;}
 
     cv::Mat* getFeature(int featureNum) const{return data->feature.at(featureNum);}
-    cv::Mat* getDepth() const{return data->feature.at(data->feature.size() - 1);}
+    cv::Mat* getDepth() const{return data->img.at(1);}
 private:
     cv::Rect roi;
     double scale;

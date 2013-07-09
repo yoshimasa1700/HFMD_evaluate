@@ -18,18 +18,18 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     //    cv::imshow("test", showMat);
     //    cv::waitKey(0);
 
-    cv::Mat affine = cv::getRotationMatrix2D(cv::Point(config.p_width / 2 + 1,
-						       config.p_height / 2 + 1),
-					     (float)test[0], 1.0);
-    cv::Mat rotatedMat(patch.rows, patch.cols, patch.type());
-    cv::warpAffine(patch, rotatedMat, affine, cv::Size(patch.cols, patch.rows));
+//    cv::Mat affine = cv::getRotationMatrix2D(cv::Point(config.p_width / 2 + 1,
+//						       config.p_height / 2 + 1),
+//					     (float)test[0], 1.0);
+//    cv::Mat rotatedMat(patch.rows, patch.cols, patch.type());
+//    cv::warpAffine(patch, rotatedMat, affine, cv::Size(patch.cols, patch.rows));
 
-    cv::Mat convertedDepth = cv::Mat(rotatedMat.rows, rotatedMat.cols, CV_8U);
-    cv::Mat integralMat = cv::Mat(rotatedMat.rows + 1, rotatedMat.cols+1, CV_32F);
-    cv::Mat temp1,temp2;
-    rotatedMat.convertTo(convertedDepth,CV_8U,255.0/(double)(config.maxdist - config.mindist));
+//    cv::Mat convertedDepth = cv::Mat(rotatedMat.rows, rotatedMat.cols, CV_8U);
+//    cv::Mat integralMat = cv::Mat(rotatedMat.rows + 1, rotatedMat.cols+1, CV_32F);
+//    cv::Mat temp1,temp2;
+//    rotatedMat.convertTo(convertedDepth,CV_8U,255.0/(double)(config.maxdist - config.mindist));
 
-    cv::integral(convertedDepth,integralMat,temp1,temp2,CV_32F);
+    //cv::integral(convertedDepth,integralMat,temp1,temp2,CV_32F);
 
     //std::cout << "calc haar like fearutre " << t.elapsed() << " sec" << std::endl;
     
@@ -49,11 +49,17 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     switch(test[1]){
     case 0:
         // edge feature
-        p1 = integralMat.at<int>(patch.rows, patch.cols * (double)test[2] / 100.0);
-        p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
+        p1 = patch.at<int>(patch.rows - 1, (patch.cols - 1) * (double)test[2] / 100.0)
+                - (patch.at<int>(0, (patch.cols - 1 ) * (double)test[2] / 100.0)
+                + patch.at<int>(patch.rows - 1, 0))
+                + patch.at<int>(0,0);
+        p2 = patch.at<int>(patch.rows - 1, patch.cols - 1)
+                - (patch.at<int>(patch.rows - 1, (patch.cols - 1) * (double)test[2] / 100.0)
+                + patch.at<int>(patch.rows - 1, (patch.cols - 1) * (double)test[2] / 100.0))
+                + patch.at<int>(0, (patch.cols - 1 ) * (double)test[2] / 100.0);
 
-        s1 = patch.rows * patch.cols * (double)test[2] / 100.0;
-        s2 = patch.rows * patch.cols * (1.0 - (double)test[2] / 100.0);
+        s1 = (patch.rows - 1) * patch.cols - 1 * (double)test[2] / 100.0;
+        s2 = (patch.rows - 1) * patch.cols - 1 * (1.0 - (double)test[2] / 100.0);
 
 //        for(int i = 0; i < rotatedMat.rows; ++i){
 //            for(int j = 0; j < rotatedMat.cols; ++j)
@@ -69,10 +75,22 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 
     case 1:
         // line feature
-        t1 = integralMat.at<int>(patch.rows, patch.cols * (double)test[2] / 200.0);
-        t2 = integralMat.at<int>(patch.rows, patch.cols * (1- (double)test[2] / 200.0));
-        p1 = t2 - t1;
-        p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
+//        t1 = integralMat.at<int>(patch.rows, patch.cols * (double)test[2] / 200.0);
+//        t2 = integralMat.at<int>(patch.rows, patch.cols * (1- (double)test[2] / 200.0));
+//        p1 = t2 - t1;
+//        p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
+        t1 = patch.at<int>(patch.rows - 1, patch.cols - 1)
+                - (patch.at<int>(patch.rows - 1, 0)
+                   + patch.at<int>(0, patch.cols - 1))
+                + patch.at<int>(0,0);
+        t2 = patch.at<int>((patch.rows - 1) * (double)test[2] / 200.0, patch.cols - 1)
+                - (patch.at<int>((patch.rows - 1) * (double)test[2] / 200.0, 0)
+                + (patch.at<int>(patch.rows - 1, (patch.cols - 1) * ( 1 - (double)test[2] / 200.0 ))))
+                + patch.at<int>(0, (patch.cols - 1) * ( 1 - (double)test[2] / 200.0 ));
+
+        p2 = t2;
+        p1 = t1 - t2;
+
         s1 = patch.rows * patch.cols * (double)test[2] / 100.0;
         s2 = patch.rows * patch.cols * (1.0 - (double)test[2] / 100.0);
 
@@ -90,16 +108,24 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
         break;
 
     case 2:
+    {
         // center
-        t1 = integralMat.at<int>(patch.rows * (double)test[2] / 200.0, patch.cols * (double)test[2] / 200.0);
-        t2 = integralMat.at<int>(patch.rows * (double)test[2] / 200.0, patch.cols * (1.0 - (double)test[2] / 200.0));
-        t3 = integralMat.at<int>(patch.rows * (1.0 - (double)test[2] / 200.0), patch.cols * (double)test[2] / 200.0);
-        t4 = integralMat.at<int>(patch.rows * (1.0 - (double)test[2] / 200.0), patch.cols * (1.0 - (double)test[2] / 200.0));
+        int all = patch.at<int>(patch.rows - 1, patch.cols - 1)
+                - (patch.at<int>(patch.rows - 1, 0)
+                   + patch.at<int>(0, patch.cols - 1))
+                + patch.at<int>(0,0);
+        t1 = patch.at<int>((patch.rows - 1) * (double)test[2] / 200.0, (patch.cols - 1) * (double)test[2] / 200.0);
+        t2 = patch.at<int>((patch.rows - 1) * (double)test[2] / 200.0, (patch.cols - 1) * (1.0 - (double)test[2] / 200.0));
+        t3 = patch.at<int>((patch.rows - 1) * (1.0 - (double)test[2] / 200.0), (patch.cols - 1) * (double)test[2] / 200.0);
+        t4 = patch.at<int>((patch.rows - 1) * (1.0 - (double)test[2] / 200.0), (patch.cols - 1) * (1.0 - (double)test[2] / 200.0));
         p1 = t4 + t1 - t2 - t3;
-        //std::cout << t1 << " " << t2 << " " << t3 << " " << t4 << " " << patch.rows * (1.0 - (double)test[2] / 200.0) << " " <<  patch.cols * (1.0 - (double)test[2] / 200.0) / 200.0 << std::endl;
-        p2 = integralMat.at<int>(patch.rows, patch.cols) - p1;
-        s1 = patch.rows * patch.cols * (double)test[2] / 100 * (double)test[2] / 100;
-        s2 = patch.rows * patch.cols - s1;
+//        //std::cout << t1 << " " << t2 << " " << t3 << " " << t4 << " " << (patch.rows - 1) * (1.0 - (double)test[2] / 200.0) << " " <<  (patch.cols - 1) * (1.0 - (double)test[2] / 200.0) / 200.0 << std::endl;
+        p2 = all - p1;
+
+
+
+        s1 = (patch.rows - 1) * (patch.cols - 1) * (double)test[2] / 100 * (double)test[2] / 100;
+        s2 = (patch.rows - 1) * (patch.cols - 1) - s1;
 
 //        for(int i = 0; i < rotatedMat.rows; ++i){
 //            for(int j = 0; j < rotatedMat.cols; ++j){
@@ -115,8 +141,8 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 //            }
 
 //        }
-
         break;
+    }
     default:
         break;
     }
@@ -583,7 +609,7 @@ void CRTree::makeLeaf(CTrainSet &trainSet, float pnratio, int node) {
     ++num_leaf;
 }
 
-bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &trainSet, int* test, unsigned int iter, unsigned int measure_mode, int depth) {
+bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, CTrainSet &trainSet, int* test, unsigned int iter, unsigned int measure_mode, int depth) {
 
     bool found = false;
 
@@ -764,7 +790,7 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, const CTrainSet &tra
     return found;
 }
 
-void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const{//, const CConfig &config)const {
+void CRTree::normarizationByDepth(CPatch* patch,cv::Mat& rgb)const{//, const CConfig &config)const {
     cv::Mat tempDepth = *patch->getDepth();
     cv::Mat depth = tempDepth(patch->getRoi());
 
@@ -794,8 +820,12 @@ void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const{//, con
     roi.width = (int)realWindowWidth;
     roi.height = (int)realWindowHeight;
 
-    rgb = rgb(roi);
-    cv::resize(rgb,rgb,cv::Size(config.p_width,config.p_height));
+    std::cout << depth.at<ushort>(config.p_height / 2 + 1, config.p_width / 2 + 1) << std::endl;
+    std::cout << roi << std::endl;
+
+    //rgb = rgb(roi);
+    patch->setRoi(roi);
+    //cv::resize(rgb,rgb,cv::Size(config.p_width,config.p_height));
 
 
     //                cv::namedWindow("test");
@@ -804,7 +834,7 @@ void CRTree::normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const{//, con
     //                cv::destroyAllWindows();
 }
 
-void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const CTrainSet &trainSet) {
+void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, CTrainSet &trainSet) {
 
     // for(int m = 0; m < 6; ++m)
     //   std::cout << test[m] << ", ";
@@ -868,6 +898,7 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
 
     {
         valSet[1].resize(trainSet.negPatch.size());
+
         for(unsigned int i=0;i<trainSet.negPatch.size();++i) {
 
             // pointer to channel
@@ -877,7 +908,11 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
             if(config.learningMode != 2)
                 normarizationByDepth(&(trainSet.negPatch.at(i)) ,ptC);
             //cv::Mat ptC = (*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
-            if(test[8] == trainSet.negPatch.at(i).getFeatureNum() - 1){
+
+            if(test[8] < trainSet.negPatch.at(i).getFeatureNum() - 1 && config.rgbFeature != 1){
+
+                calcHaarLikeFeature(ptC,test,p1,p2);
+            }else if(test[8] == trainSet.negPatch.at(i).getFeatureNum() - 1){
                 //std::cout << "this is for debug hyahhaaaaaaaaaaaaaaaaaaaa" << std::endl;
                 //int dummy;
                 //std::cin >> dummy;

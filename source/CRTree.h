@@ -95,7 +95,7 @@ public:
     //boost::mt19937 gen;
     bool optimizeTest(CTrainSet &SetA,
                       CTrainSet &SetB,
-                      const CTrainSet &trainSet,
+                      CTrainSet &trainSet,
                       int* test,
                       unsigned int iter,
                       unsigned int measure_mode,
@@ -105,7 +105,7 @@ public:
 
     void makeLeaf(CTrainSet &trainSet, float pnratio, int node);
 
-    void evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, const CTrainSet &trainSet);
+    void evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int* test, CTrainSet &trainSet);
     void split(CTrainSet& SetA, CTrainSet& SetB, const CTrainSet& TrainSet, const std::vector<std::vector<IntIndex> >& valSet, int t);
     double distMean(const std::vector<CPosPatch>& SetA, const std::vector<CPosPatch>& SetB);
     double InfGain(const CTrainSet& SetA, const CTrainSet& SetB);
@@ -165,7 +165,7 @@ private:
 
     CClassDatabase classDatabase;
 
-    void normarizationByDepth(const CPatch* patch,cv::Mat& rgb)const;//, const CConfig &config)const;
+    void normarizationByDepth(CPatch* patch,cv::Mat& rgb)const;//, const CConfig &config)const;
 
 };
 
