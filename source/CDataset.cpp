@@ -235,8 +235,8 @@ int CDataset::extractFeatures(const CConfig& conf){
             cv::Mat tempDepth = cv::Mat(img.at(0)->rows, img.at(0)->cols, CV_8U);// = *img.at(1);
             img.at(1)->convertTo(tempDepth, CV_8U, 255.0 / (double)(conf.maxdist - conf.mindist));
             cv::Mat temp1, temp2;
-            cv::Mat *integralMat = new cv::Mat(tempDepth.rows + 1, tempDepth.cols + 1, CV_32F);
-            cv::integral(tempDepth, *integralMat, temp1, temp2, CV_32F);
+            cv::Mat *integralMat = new cv::Mat(tempDepth.rows + 1, tempDepth.cols + 1, CV_64F);
+            cv::integral(tempDepth, *integralMat, temp1, temp2, CV_64F);
             feature.push_back(integralMat);
 //            cv::Mat *td = new img.at(1)->clone();
 //            feature.push_back(new img.at(1));
@@ -247,13 +247,13 @@ int CDataset::extractFeatures(const CConfig& conf){
       //cv::Mat *tempRgb = new cv::Mat(img.at(0)->clone());
       std::vector<cv::Mat> splittedRgb;
       cv::split(*img.at(0), splittedRgb);
-      std::cout << "integral image caliculating start " << std::endl;
+      //std::cout << "integral image caliculating start " << std::endl;
 
       for(int i = 0; i < splittedRgb.size(); ++i){
           cv::Mat tempRgb = splittedRgb.at(i);
           cv::Mat temp1, temp2;
-          cv::Mat *integralMat = new cv::Mat(tempRgb.rows + 1, tempRgb.cols + 1, CV_32F);
-          cv::integral(tempRgb, *integralMat, temp1, temp2, CV_32F);
+          cv::Mat *integralMat = new cv::Mat(tempRgb.rows + 1, tempRgb.cols + 1, CV_64F);
+          cv::integral(tempRgb, *integralMat, temp1, temp2, CV_64F);
           feature.push_back(integralMat);
 //          cv::namedWindow("test");
 //          cv::imshow("test",splittedRgb.at(i));
@@ -261,15 +261,24 @@ int CDataset::extractFeatures(const CConfig& conf){
 //          cv::destroyWindow("test");
       }
 
-      std::cout << "extracted integral image" << std::endl;
+      //std::cout << "extracted integral image" << std::endl;
       cv::Mat tempDepth = cv::Mat(img.at(0)->rows, img.at(0)->cols, CV_8U);// = *img.at(1);
       img.at(1)->convertTo(tempDepth, CV_8U, 255.0 / (double)(conf.maxdist - conf.mindist));
+
+
+
       cv::Mat temp1, temp2;
-      cv::Mat *integralMat = new cv::Mat(tempDepth.rows + 1, tempDepth.cols + 1, CV_32F);
-      cv::integral(tempDepth, *integralMat, temp1, temp2, CV_32F);
+      cv::Mat *integralMat = new cv::Mat(tempDepth.rows + 1, tempDepth.cols + 1, CV_64F);
+      cv::integral(tempDepth, *integralMat, temp1, temp2, CV_64F);
       feature.push_back(integralMat);
+
+//            cv::namedWindow("test");
+//            cv::imshow("test", *integralMat);
+//            cv::waitKey(0);
+//            cv::destroyWindow("test");
+
 //      feature.push_back(new img.at(1)->clone());
-//      featureFlag  = 1;
+      featureFlag  = 1;
     }
 
     return 0;

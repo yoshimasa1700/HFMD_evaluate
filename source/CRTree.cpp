@@ -5,10 +5,12 @@
 using namespace std;
 boost::lagged_fibonacci1279 CRTree::genTree = boost::lagged_fibonacci1279();
 
-void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1, int &p2) const{
+void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, double &p1, double &p2) const{
     float m[6];
     int angle = test[0];
-    int t1,t2,t3,t4;
+    double t1,t2,t3,t4;
+
+
     //boost::timer t;
     //cv::Mat showMat(patch.rows, patch.cols, CV_8U);
 
@@ -18,11 +20,11 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     //    cv::imshow("test", showMat);
     //    cv::waitKey(0);
 
-    cv::Mat affine = cv::getRotationMatrix2D(cv::Point(config.p_width / 2 + 1,
-                               config.p_height / 2 + 1),
-                         (float)test[0], 1.0);
-    cv::Mat rotatedMat(patch.rows, patch.cols, patch.type());
-    cv::warpAffine(patch, rotatedMat, affine, cv::Size(patch.cols, patch.rows));
+//    cv::Mat affine = cv::getRotationMatrix2D(cv::Point(config.p_width / 2 + 1,
+//                               config.p_height / 2 + 1),
+//                         (float)test[0], 1.0);
+//    cv::Mat rotatedMat(patch.rows, patch.cols, patch.type());
+//    cv::warpAffine(patch, rotatedMat, affine, cv::Size(patch.cols, patch.rows));
 
 //    cv::Mat convertedDepth = cv::Mat(rotatedMat.rows, rotatedMat.cols, CV_8U);
 //    cv::Mat integralMat = cv::Mat(rotatedMat.rows + 1, rotatedMat.cols+1, CV_32F);
@@ -48,59 +50,70 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 
     switch(test[1]){
     case 0:
+    {
         // edge feature
-        p1 = rotatedMat.at<int>(rotatedMat.rows - 1, (rotatedMat.cols - 1) * (double)test[2] / 100.0)
-                - (rotatedMat.at<int>(0, (rotatedMat.cols - 1 ) * (double)test[2] / 100.0)
-                + rotatedMat.at<int>(rotatedMat.rows - 1, 0))
-                + rotatedMat.at<int>(0,0);
-        p2 = rotatedMat.at<int>(rotatedMat.rows - 1, rotatedMat.cols - 1)
-                - (rotatedMat.at<int>(rotatedMat.rows - 1, (rotatedMat.cols - 1) * (double)test[2] / 100.0)
-                + rotatedMat.at<int>(rotatedMat.rows - 1, (rotatedMat.cols - 1) * (double)test[2] / 100.0))
-                + rotatedMat.at<int>(0, (rotatedMat.cols - 1 ) * (double)test[2] / 100.0);
+        //std::cout << "haittayo" << std::endl;
 
-        s1 = (rotatedMat.rows - 1) * rotatedMat.cols - 1 * (double)test[2] / 100.0;
-        s2 = (rotatedMat.rows - 1) * rotatedMat.cols - 1 * (1.0 - (double)test[2] / 100.0);
+        p1 = patch.at<double>(patch.rows - 1, (patch.cols - 1) * (double)test[2] / 100.0)
+                - (patch.at<double>(0, (patch.cols - 1 ) * (double)test[2] / 100.0)
+                + patch.at<double>(patch.rows - 1, 0))
+                + patch.at<double>(0,0);
+//        p2 = patch.at<double>(patch.rows - 1, patch.cols - 1)
+//                - (patch.at<double>(0, patch.cols - 1)
+//                + patch.at<double>(patch.rows - 1, (patch.cols - 1) * (double)test[2] / 100.0))
+//                + patch.at<double>(0, (patch.cols - 1 ) * (double)test[2] / 100.0);
+        t1 = patch.at<double>(patch.rows - 1, patch.cols - 1)
+                - (patch.at<double>(patch.rows - 1, 0)
+                   + patch.at<double>(0, patch.cols - 1))
+                + patch.at<double>(0,0);
 
-//        for(int i = 0; i < rotatedMat.rows; ++i){
-//            for(int j = 0; j < rotatedMat.cols; ++j)
-//                if(i < rotatedMat.rows * (double)test[2] / 100){
-//                    p1 += rotatedMat.at<ushort>(i, j);
+        p2 = t1 - p1;
+
+        //std::cout << patch.at<double>(patch.rows - 1, (patch.cols - 1) * (double)test[2] / 100.0) << std::endl;
+
+        s1 = patch.rows * patch.cols * (double)test[2] / 100.0;
+        s2 = patch.rows * patch.cols * (1.0 - (double)test[2] / 100.0);
+
+//        for(int i = 0; i < patch.rows; ++i){
+//            for(int j = 0; j < patch.cols; ++j)
+//                if(i < patch.rows * (double)test[2] / 100){
+//                    p1 += patch.at<ushort>(i, j);
 //                    s1++;
 //                }else{
-//                    p2 += rotatedMat.at<ushort>(i, j);
+//                    p2 += patch.at<ushort>(i, j);
 //                    s2++;
 //                }
 //        }
         break;
-
+    }
     case 1:
         // line feature
-//        t1 = integralMat.at<int>(rotatedMat.rows, rotatedMat.cols * (double)test[2] / 200.0);
-//        t2 = integralMat.at<int>(rotatedMat.rows, rotatedMat.cols * (1- (double)test[2] / 200.0));
+//        t1 = integralMat.at<double>(patch.rows, patch.cols * (double)test[2] / 200.0);
+//        t2 = integralMat.at<double>(patch.rows, patch.cols * (1- (double)test[2] / 200.0));
 //        p1 = t2 - t1;
-//        p2 = integralMat.at<int>(rotatedMat.rows, rotatedMat.cols) - p1;
-        t1 = rotatedMat.at<int>(rotatedMat.rows - 1, rotatedMat.cols - 1)
-                - (rotatedMat.at<int>(rotatedMat.rows - 1, 0)
-                   + rotatedMat.at<int>(0, rotatedMat.cols - 1))
-                + rotatedMat.at<int>(0,0);
-        t2 = rotatedMat.at<int>((rotatedMat.rows - 1) * (double)test[2] / 200.0, rotatedMat.cols - 1)
-                - (rotatedMat.at<int>((rotatedMat.rows - 1) * (double)test[2] / 200.0, 0)
-                + (rotatedMat.at<int>(rotatedMat.rows - 1, (rotatedMat.cols - 1) * ( 1 - (double)test[2] / 200.0 ))))
-                + rotatedMat.at<int>(0, (rotatedMat.cols - 1) * ( 1 - (double)test[2] / 200.0 ));
+//        p2 = integralMat.at<double>(patch.rows, patch.cols) - p1;
+        t1 = patch.at<double>(patch.rows - 1, patch.cols - 1)
+                - (patch.at<double>(patch.rows - 1, 0)
+                   + patch.at<double>(0, patch.cols - 1))
+                + patch.at<double>(0,0);
+        t2 = patch.at<double>((patch.rows - 1),  (1 - (double)test[2] / 200.0) * patch.cols - 1)
+                - (patch.at<double>(0, (patch.rows - 1) * (1 - (double)test[2] / 200.0))
+                + (patch.at<double>(patch.rows - 1, (patch.cols - 1) * ((double)test[2] / 200.0 ))))
+                + patch.at<double>(0, (patch.cols - 1) * ((double)test[2] / 200.0 ));
 
         p2 = t2;
         p1 = t1 - t2;
 
-        s1 = rotatedMat.rows * rotatedMat.cols * (double)test[2] / 100.0;
-        s2 = rotatedMat.rows * rotatedMat.cols * (1.0 - (double)test[2] / 100.0);
+        s1 = patch.rows * patch.cols * (double)test[2] / 100.0;
+        s2 = patch.rows * patch.cols * (1.0 - (double)test[2] / 100.0);
 
-//        for(int i = 0; i < rotatedMat.rows; ++i){
-//            for(int j = 0; j < rotatedMat.cols; ++j)
-//                if(i < rotatedMat.rows * (double)test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * (double)test[2] / 100 / 2){
-//                    p1 += rotatedMat.at<ushort>(i, j);
+//        for(int i = 0; i < patch.rows; ++i){
+//            for(int j = 0; j < patch.cols; ++j)
+//                if(i < patch.rows * (double)test[2] / 100 / 2 || i > patch.rows - patch.rows * (double)test[2] / 100 / 2){
+//                    p1 += patch.at<ushort>(i, j);
 //                    s1++;
 //                }else{
-//                    p2 += rotatedMat.at<ushort>(i, j);
+//                    p2 += patch.at<ushort>(i, j);
 //                    s2++;
 //                }
 //        }
@@ -110,32 +123,32 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     case 2:
     {
         // center
-        int all = rotatedMat.at<int>(rotatedMat.rows - 1, rotatedMat.cols - 1)
-                - (rotatedMat.at<int>(rotatedMat.rows - 1, 0)
-                   + rotatedMat.at<int>(0, rotatedMat.cols - 1))
-                + rotatedMat.at<int>(0,0);
-        t1 = rotatedMat.at<int>((rotatedMat.rows - 1) * (double)test[2] / 200.0, (rotatedMat.cols - 1) * (double)test[2] / 200.0);
-        t2 = rotatedMat.at<int>((rotatedMat.rows - 1) * (double)test[2] / 200.0, (rotatedMat.cols - 1) * (1.0 - (double)test[2] / 200.0));
-        t3 = rotatedMat.at<int>((rotatedMat.rows - 1) * (1.0 - (double)test[2] / 200.0), (rotatedMat.cols - 1) * (double)test[2] / 200.0);
-        t4 = rotatedMat.at<int>((rotatedMat.rows - 1) * (1.0 - (double)test[2] / 200.0), (rotatedMat.cols - 1) * (1.0 - (double)test[2] / 200.0));
+        int all = patch.at<double>(patch.rows - 1, patch.cols - 1)
+                - (patch.at<double>(patch.rows - 1, 0)
+                   + patch.at<double>(0, patch.cols - 1))
+                + patch.at<double>(0,0);
+        t1 = patch.at<double>((patch.rows - 1) * (double)test[2] / 200.0, (patch.cols - 1) * (double)test[2] / 200.0);
+        t2 = patch.at<double>((patch.rows - 1) * (double)test[2] / 200.0, (patch.cols - 1) * (1.0 - (double)test[2] / 200.0));
+        t3 = patch.at<double>((patch.rows - 1) * (1.0 - (double)test[2] / 200.0), (patch.cols - 1) * (double)test[2] / 200.0);
+        t4 = patch.at<double>((patch.rows - 1) * (1.0 - (double)test[2] / 200.0), (patch.cols - 1) * (1.0 - (double)test[2] / 200.0));
         p1 = t4 + t1 - t2 - t3;
-//        //std::cout << t1 << " " << t2 << " " << t3 << " " << t4 << " " << (rotatedMat.rows - 1) * (1.0 - (double)test[2] / 200.0) << " " <<  (rotatedMat.cols - 1) * (1.0 - (double)test[2] / 200.0) / 200.0 << std::endl;
+        //std::cout << all << " " <<  t1 << " " << t2 << " " << t3 << " " << t4 << " " << (patch.rows - 1) * (1.0 - (double)test[2] / 200.0) << " " <<  (patch.cols - 1) * ( (double)test[2] / 200.0) << std::endl;
         p2 = all - p1;
 
 
 
-        s1 = (rotatedMat.rows - 1) * (rotatedMat.cols - 1) * (double)test[2] / 100 * (double)test[2] / 100;
-        s2 = (rotatedMat.rows - 1) * (rotatedMat.cols - 1) - s1;
+        s1 = patch.rows * patch.cols * (double)test[2] / 100.0 * (double)test[2] / 100.0;
+        s2 = patch.rows * patch.cols - s1;
 
-//        for(int i = 0; i < rotatedMat.rows; ++i){
-//            for(int j = 0; j < rotatedMat.cols; ++j){
+//        for(int i = 0; i < patch.rows; ++i){
+//            for(int j = 0; j < patch.cols; ++j){
 //                //std::cout << i << " " << j << std::endl;
-//                //std::cout << rotatedMat.rows * (double)test[2] / 100 / 2 << " " << rotatedMat.rows - rotatedMat.rows * (double)test[2] / 100 / 2 << " " << rotatedMat.cols * (double)test[2] / 100 / 2 << " " << rotatedMat.cols - rotatedMat.cols * (double)test[2] / 100 / 2 << std::endl;
-//                if(i < rotatedMat.rows * (double)test[2] / 100 / 2 || i > rotatedMat.rows - rotatedMat.rows * (double)test[2] / 100 / 2 || j < rotatedMat.cols * (double)test[2] / 100 / 2 || j > rotatedMat.cols - rotatedMat.cols * (double)test[2] / 100 / 2){
-//                    p1 += rotatedMat.at<ushort>(i, j);
+//                //std::cout << patch.rows * (double)test[2] / 100 / 2 << " " << patch.rows - patch.rows * (double)test[2] / 100 / 2 << " " << patch.cols * (double)test[2] / 100 / 2 << " " << patch.cols - patch.cols * (double)test[2] / 100 / 2 << std::endl;
+//                if(i < patch.rows * (double)test[2] / 100 / 2 || i > patch.rows - patch.rows * (double)test[2] / 100 / 2 || j < patch.cols * (double)test[2] / 100 / 2 || j > patch.cols - patch.cols * (double)test[2] / 100 / 2){
+//                    p1 += patch.at<ushort>(i, j);
 //                    s1++;
 //                }else{
-//                    p2 += rotatedMat.at<ushort>(i, j);
+//                    p2 += patch.at<ushort>(i, j);
 //                    s2++;
 //                }
 //            }
@@ -147,14 +160,23 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
         break;
     }
 
-    //std::cout << test[0] << " " << test[1] << " " << (double)test[2] << std::endl;
-    //std::cout << p1 << " " << p2 << " " << s1 << " " << s2 << std::endl;
+//    if(p1 == 0 || p2 == 0){
+//        cv::namedWindow("test");
+//        cv::imshow("test", patch);
+//        cv::waitKey(0);
+//        cv::destroyWindow("test");
+//    }
+//    if(test[8] == 3){
+//    std::cout << test[0] << " " << test[1] << " " << (double)test[2] << std::endl;
+//    std::cout << p1 << " " << p2 << " " << s1 << " " << s2 << std::endl;
+//            std::cout << patch << std::endl;
+//    }
     if(s1 == 0 || s2 == 0){
         std::cout << "error! can't get enouch space for haar-like feature" << std::endl;
         exit(-1);
     }else{
-        p1 /= s1;
-        p2 /= s2;
+        p1 /= (double)s1;
+        p2 /= (double)s2;
     }
 
    // std::cout << "p1 = " << p1 << " p2 = " << p2 << std::endl;
@@ -165,7 +187,7 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
     // pointer to current node
     const int* pnode = &treetable[0];
     int node = 0;
-    int p1,p2;
+    double p1,p2;
 
     // Go through tree until one arrives at a leaf, i.e. pnode[0]>=0)
     while(pnode[0]==-1) {
@@ -176,11 +198,16 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
         // pointer to channel
         //uchar* ptC = ptFCh[pnode[5]];
 
-        cv::Mat tempFeture = *patch.getFeature(pnode[9]);
-        cv::Mat ptC = tempFeture(patch.getRoi());
+        cv::Mat ptC;
+
 
         if(config.learningMode != 2)
             normarizationByDepth(&patch,ptC);
+
+        cv::Mat tempFeture = *patch.getFeature(pnode[9]);
+        ptC = tempFeture(patch.getRoi());
+
+
 
 //        for(int i = 0; i < 11; ++i)
 //            std::cout << pnode[i] << " ";
@@ -204,8 +231,8 @@ const LeafNode* CRTree::regression(CTestPatch &patch) const {
 
         }else{
             // get pixel values
-            p1 = (int)ptC.at<uchar>(pnode[2], pnode[1]);//*(ptC+pnode[1]+pnode[2]*stepImg);
-            p2 = (int)ptC.at<uchar>(pnode[6], pnode[5]);//*(ptC+pnode[3]+pnode[4]*stepImg);
+            p1 = (double)ptC.at<uchar>(pnode[2], pnode[1]);//*(ptC+pnode[1]+pnode[2]*stepImg);
+            p2 = (double)ptC.at<uchar>(pnode[6], pnode[5]);//*(ptC+pnode[3]+pnode[4]*stepImg);
         }
         // test
         bool test = ( p1 - p2 ) >= pnode[10];
@@ -696,6 +723,8 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, CTrainSet &trainSet,
                 // // Split training data into two sets A,B accroding to threshold t
                 split(tmpA, tmpB, trainSet, valSet, tr);
 
+                std::cout << "a " << tmpA.posPatch.size() << " b " << tmpB.posPatch.size() << std::endl;
+
                 // std::cout << "this is for debug " << std::endl;
                 // std::cout << "setA----------------------------------------------------" << std::endl;
                 // for(int j = 0; j < tmpA.at(0).size(); ++j)
@@ -714,6 +743,10 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, CTrainSet &trainSet,
                     // Measure quality of split with measure_mode 0 - classification, 1 - regression
 
                     tmpDist = measureSet(tmpA, tmpB, depth, measure_mode);
+                    std::cout << tmpDist << std::endl;
+                    for(int w = 0; w < 9; ++w)
+                        std::cout << tmpTest[w] << " ";
+                    std::cout << std::endl;
 
                     // Take binary test with best split
                     if(tmpDist>bestDist) {
@@ -792,7 +825,10 @@ bool CRTree::optimizeTest(CTrainSet &SetA, CTrainSet &SetB, CTrainSet &trainSet,
 
 void CRTree::normarizationByDepth(CPatch* patch,cv::Mat& rgb)const{//, const CConfig &config)const {
     cv::Mat tempDepth = *patch->getDepth();
+
     cv::Mat depth = tempDepth(patch->getRoi());
+
+    //std::cout << depth << std::endl;
 
     //                cv::namedWindow("test");
     //                cv::imshow("test",rgb);
@@ -820,8 +856,8 @@ void CRTree::normarizationByDepth(CPatch* patch,cv::Mat& rgb)const{//, const CCo
     roi.width = (int)realWindowWidth;
     roi.height = (int)realWindowHeight;
 
-    std::cout << depth.at<ushort>(config.p_height / 2 + 1, config.p_width / 2 + 1) << std::endl;
-    std::cout << roi << std::endl;
+    //std::cout << depth.at<ushort>(config.p_height / 2 + 1, config.p_width / 2 + 1) << std::endl;
+    //std::cout << roi << std::endl;
 
     //rgb = rgb(roi);
     patch->setRoi(roi);
@@ -840,7 +876,7 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
     //   std::cout << test[m] << ", ";
     // std::cout << std::endl;
 
-    int p1, p2;
+    double p1, p2;
 
     valSet.clear();
     valSet.resize(2);
@@ -849,14 +885,17 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
     {
         valSet[0].resize(trainSet.posPatch.size());
         for(unsigned int i=0;i<trainSet.posPatch.size();++i) {
+            cv::Mat ptC;
+
+            if(config.learningMode != 2)
+                normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC);
 
             // pointer to channel
             cv::Mat tempMat = *trainSet.posPatch.at(i).getFeature(test[8]);
             //std::cout << trainSet.posPatch.at(i).getRoi() << std::endl;
-            cv::Mat ptC = tempMat(trainSet.posPatch.at(i).getRoi());//(*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
+            ptC = tempMat(trainSet.posPatch.at(i).getRoi());//(*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
 
-            if(config.learningMode != 2)
-                normarizationByDepth(&(trainSet.posPatch.at(i)) ,ptC);
+
 
 
             //std::cout << "test[8] " << test[8] << " featureNum " << trainSet.posPatch.at(i).getFeatureNum() - 1 << std::endl;
@@ -882,15 +921,23 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
                 //                        p2 += (int)ptC.at<uchar>(k + test[5],j +  test[4]);
                 //                }
 
-                //std::cout << p1 << " " << p2 << std::endl;
+//                for(int w = 0; w < 9; ++w)
+//                    std::cout << test[w] << " ";
+//                std::cout << std::endl;
+//                std::cout << p1 << " " << p2 << std::endl;
+
 
             }else{
                 // get pixel values
-                p1 = (int)ptC.at<uchar>(test[1], test[0]);
-                p2 = (int)ptC.at<uchar>(test[5], test[4]);
+                p1 = (double)ptC.at<uchar>(test[1], test[0]);
+                p2 = (double)ptC.at<uchar>(test[5], test[4]);
             }
-            valSet[0][i].val = p1 - p2;
+
+            valSet[0][i].val = (int)(p1 - p2);
             valSet[0][i].index = i;
+
+
+
         }
 
         sort( valSet[0].begin(), valSet[0].end() , IntIndex::lessVal);
@@ -900,13 +947,16 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
         valSet[1].resize(trainSet.negPatch.size());
 
         for(unsigned int i=0;i<trainSet.negPatch.size();++i) {
-
-            // pointer to channel
-            cv::Mat tempMat = *trainSet.negPatch.at(i).getFeature(test[8]);
-            cv::Mat ptC = tempMat(trainSet.negPatch.at(i).getRoi());
+            cv::Mat ptC;
 
             if(config.learningMode != 2)
                 normarizationByDepth(&(trainSet.negPatch.at(i)) ,ptC);
+
+            // pointer to channel
+            cv::Mat tempMat = *trainSet.negPatch.at(i).getFeature(test[8]);
+            ptC = tempMat(trainSet.negPatch.at(i).getRoi());
+
+
             //cv::Mat ptC = (*(TrainSet[l][i].patch[test[8]]))(TrainSet[l][i].patchRoi);
 
             if(test[8] < trainSet.negPatch.at(i).getFeatureNum() - 1 && config.rgbFeature != 1){
@@ -930,12 +980,23 @@ void CRTree::evaluateTest(std::vector<std::vector<IntIndex> >& valSet, const int
 
                 calcHaarLikeFeature(ptC,test,p1,p2);
 
+                //std::cout << p1 << " " << p2 << std::endl;
+
+//                for(int w = 0; w < 9; ++w)
+//                    std::cout << test[w] << " ";
+//                std::cout << std::endl;
+//                std::cout << p1 << " " << p2 << std::endl;
+
+
             }else{
                 // get pixel values
-                p1 = (int)ptC.at<uchar>(test[1], test[0]);
-                p2 = (int)ptC.at<uchar>(test[5], test[4]);
+                p1 = (double)ptC.at<uchar>(test[1], test[0]);
+                p2 = (double)ptC.at<uchar>(test[5], test[4]);
             }
-            valSet[1][i].val = p1 - p2;
+
+
+
+            valSet[1][i].val = (int)(p1 - p2);
             valSet[1][i].index = i;
         }
 

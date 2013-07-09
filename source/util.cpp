@@ -8,6 +8,11 @@ float calcSumOfDepth(cv::Mat &depth, const CConfig &conf){
     cv::Mat temp1,temp2;
     depth.convertTo(convertedDepth,CV_8U,255.0/(double)(conf.maxdist - conf.mindist));
 
+//    cv::namedWindow("test");
+//    cv::imshow("test",convertedDepth);
+//    cv::waitKey(0);
+//    cv::destroyWindow("test");
+
     cv::integral(convertedDepth,integralMat,temp1,temp2,CV_32F);
     return integralMat.at<int>(depth.rows, depth.cols);
 }
@@ -199,6 +204,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
     int pixNum;
     nCk nck;
     int classNum = 0;
+    cv::Mat roi;
 
     posPatch.clear();
 
@@ -219,7 +225,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
 
                 // detect negative patch
                 if(conf.learningMode != 2 && posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
-                    cv::Mat roi;
+
                     roi = (*posSet.at(l).img.at(1))(cv::Rect(j, k, conf.p_width, conf.p_height));
                     pixNum = calcSumOfDepth(roi,conf);
                 }
@@ -244,6 +250,7 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
                 if (conf.learningMode == 2 || pixNum > 0){
                     tPosPatch.push_back(posTemp);
                     patchPerClass.at(classNum).push_back(posTemp);
+
                 } // if
             }//x
         }//y
@@ -360,11 +367,11 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
 
             int depthSum;
 
-            if(conf.learningMode != 2 && testSet.img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
-                cv::Mat roi;
-                roi = (*testSet.img.at(1))(cv::Rect(j, k, conf.p_width, conf.p_height));
-                depthSum = calcSumOfDepth(roi,conf);
-            }
+//            if(conf.learningMode != 2 && testSet.img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
+//                cv::Mat roi;
+//                roi = (*testSet.img.at(1))(cv::Rect(j, k, conf.p_width, conf.p_height));
+//                depthSum = calcSumOfDepth(roi,conf);
+//            }
 //                for(int p = 0; p < testSet.feature.at(32)->rows; ++p)
 //                    for(int q = 0; q < testSet.feature.at(32)->cols; ++q)
 //                        depthSum += testSet.feature.at(32)->at<ushort>(p, q);
@@ -380,7 +387,7 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
                 //exit(-1);
             //}
 
-            if(conf.learningMode == 2 || depthSum > 0){
+            if(conf.learningMode == 2){// || depthSum > 0){
                 CTestPatch testTemp(&testSet,tempRect);
                 //tesetPatch.setPatch(temp, image, dataSet, classNum);
 

@@ -117,7 +117,7 @@ public:
         else
             return distMean(SetA.posPatch, SetB.posPatch) * -1;
     }
-    void calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1, int &p2) const;
+    void calcHaarLikeFeature(const cv::Mat &patch, const int* test, double &p1, double &p2) const;
 
 
 
@@ -187,7 +187,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 
     switch(config.learningMode){
     case 0:// rgbd
-        if(rand2() > 0.5){//(1 - exp(-1 * (double)depth / (lamda/5))) > rand2()){
+        if(rand2() > 0.3){//(1 - exp(-1 * (double)depth / (lamda/5))) > rand2()){
 
             if(config.rgbFeature == 1){
 
