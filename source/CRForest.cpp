@@ -195,6 +195,9 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     testSet.loadImage(conf);
 
     testSet.extractFeatures(conf);
+
+    std::cout << "extracted feature " << t.elapsed() << " sec" << std::endl;
+    
     //testSet.releaseImage();
 
     //t.restart();
@@ -225,6 +228,8 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
     // extract patches from features
     extractTestPatches(testSet,testPatch,this->conf);
+
+    std::cout << "extracted feature " << t.elapsed() << " sec" << std::endl;
 
     std::cout << "patch num: " << testPatch.size() << std::endl;
 

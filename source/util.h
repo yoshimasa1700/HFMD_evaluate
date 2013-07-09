@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <ctime>
+#include <set>
 
 // opencv include file
 #include <opencv2/opencv.hpp>

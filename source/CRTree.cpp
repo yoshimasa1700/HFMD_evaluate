@@ -1,5 +1,7 @@
 #include "CRTree.h"
 
+#include <boost/timer.hpp>
+
 using namespace std;
 boost::lagged_fibonacci1279 CRTree::genTree = boost::lagged_fibonacci1279();
 
@@ -7,7 +9,7 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
     float m[6];
     int angle = test[0];
     int t1,t2,t3,t4;
-
+    //boost::timer t;
     //cv::Mat showMat(patch.rows, patch.cols, CV_8U);
 
     //    std::cout << angle << std::endl;
@@ -29,6 +31,8 @@ void CRTree::calcHaarLikeFeature(const cv::Mat &patch, const int* test, int &p1,
 
     cv::integral(convertedDepth,integralMat,temp1,temp2,CV_32F);
 
+    //std::cout << "calc haar like fearutre " << t.elapsed() << " sec" << std::endl;
+    
     //    rotatedMat.convertTo(showMat, CV_8U, 255.0/ 1000.0);
 
     //    cv::imshow("test", showMat);
