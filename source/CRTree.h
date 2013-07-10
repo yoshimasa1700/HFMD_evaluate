@@ -208,7 +208,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
                 test[8] = rgb;
                 // caliculate haar-like features
                 int angle = rand() % 360;
-                int type = rand() % 3;
+                int type = rand() % 5;
                 int ratio = (rand() % 30) + 10;
                 if(config.depthFeature == 2)
                     test[0] = angle;
@@ -233,7 +233,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 
             // caliculate haar-like features
             int angle = rand() % 360;
-            int type = rand() % 3;
+            int type = rand() % 5;
             int ratio = (rand() % 30) + 10;
 
             if(config.depthFeature == 2)
@@ -257,7 +257,7 @@ inline void CRTree::generateTest(int* test, unsigned int max_w, unsigned int max
 
         // caliculate haar-like features
         int angle = rand() % 360;
-        int type = rand() % 3;
+        int type = rand() % 5;
         int ratio = (rand() % 60) + 20;
 
         test[0] = angle;

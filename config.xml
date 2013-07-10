@@ -3,7 +3,7 @@
   <!-- Path to trees -->
   <treepath>trees/treetable</treepath>
   <!-- Number of trees -->
-  <ntree>10</ntree>
+  <ntree>100</ntree>
   <!-- Patch width -->
   <pwidth>20</pwidth>
   <!-- Patch height -->
@@ -53,15 +53,15 @@
   <learningmode>0</learningmode>
   <testmode>1</testmode>
   <detectthreshold>3.0</detectthreshold>
-  <traindatalistname>dataList2.0.txt</traindatalistname>
-  <testdatalistname>testDataList2.0.txt</testdatalistname>
+  <traindatalistname>dataListInst2.0.txt</traindatalistname>
+  <testdatalistname>testDataListInst2.0.txt</testdatalistname>
   <showgrandtruth>1</showgrandtruth>
   <negativedatapath>negdata</negativedatapath>
   <negativedatafolderlist>negDataFolderList.txt</negativedatafolderlist>
   <negativedatalist>negDataList.txt</negativedatalist>
   <negativemode>1</negativemode>
   <posnegpatchratio>1.2</posnegpatchratio>
-  <activepatchratio>0.4</activepatchratio>
+  <activepatchratio>1.0</activepatchratio>
   <mindistance>350</mindistance>
   <maxdistance>1400</maxdistance>
   <numberOfTrials>100</numberOfTrials>

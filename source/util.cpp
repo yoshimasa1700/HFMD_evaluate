@@ -216,6 +216,10 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
     std::cout << "extracting patch from image" << std::endl;
     for(int l = 0;l < posSet.size(); ++l){
         std::cout << posSet.at(l).getRgbImagePath() << std::endl;
+//                    cv::namedWindow("test");
+//                    cv::imshow("test", *posSet.at(l).img.at(0));
+//                    cv::waitKey(0);
+//                    cv::destroyWindow("test");
         for(int j = 0; j < posSet.at(l).img.at(0)->cols - conf.p_width; j += conf.stride){
             for(int k = 0; k < posSet.at(l).img.at(0)->rows - conf.p_height; k += conf.stride){
                 tempRect.x = j;
@@ -224,11 +228,11 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
                 int centerDepthFlag = 1;
 
                 // detect negative patch
-                if(conf.learningMode != 2 && posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
+//                if(conf.learningMode != 2 && posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
 
-                    roi = (*posSet.at(l).img.at(1))(cv::Rect(j, k, conf.p_width, conf.p_height));
-                    pixNum = calcSumOfDepth(roi,conf);
-                }
+//                    roi = (*posSet.at(l).img.at(1))(cv::Rect(j, k, conf.p_width, conf.p_height));
+//                    pixNum = calcSumOfDepth(roi,conf);
+//                }
 //                    for(int m = j; m < j + conf.p_width; ++m){
 //                        for(int n = k; n < k + conf.p_height; ++n){
 //                            if(posSet.at(l).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0)
@@ -247,14 +251,19 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
 
 
                 CPosPatch posTemp(&posSet.at(l),tempRect);
-                if (conf.learningMode == 2 || pixNum > 0){
+                //if (conf.learningMode == 2){// || pixNum > 0){
                     tPosPatch.push_back(posTemp);
                     patchPerClass.at(classNum).push_back(posTemp);
 
-                } // if
+                //} // if
             }//x
         }//y
     }//allimages
+
+    for(int w = 0; w < patchPerClass.size(); ++w){
+        std::cout << patchPerClass.at(w).size() << " ";
+    }
+    std::cout << std::endl;
 
     std::vector<int> patchNum(patchPerClass.size(),conf.patchRatio);
 
@@ -263,6 +272,10 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
             patchNum.at(i) = conf.patchRatio;
         else
             patchNum.at(i) = conf.patchRatio * conf.acPatchRatio;
+    }
+
+    for(int w = 0; w < patchPerClass.size(); ++w){
+        std::cout << patchPerClass.at(w).size() << " ";
     }
 
     // choose patch from each image
@@ -280,7 +293,16 @@ void extractPosPatches(std::vector<CPosDataset> &posSet,
                 ite++;
             }
         }else{
+//                std::cout << classNum << std::endl;
+////            cv::namedWindow("test");
+////            cv::imshow("test", *posSet.at(0).img.at(0));
+////            cv::waitKey(0);
+////            cv::destroyWindow("test");
+//            //std::cout << *posSet.at(1).img.at(1) << std::endl;
+//                std::cout << patchPerClass.size() << std::endl;
+
             std::cout << "can't extruct enough patch" << std::endl;
+            //exit(-1);
         }
     }
     return;
@@ -313,17 +335,17 @@ void extractNegPatches(std::vector<CNegDataset> &negSet,
                 int pix = 0;
 
                 // detect negative patch
-                if(conf.learningMode != 2 && negSet.at(i).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
-                    cv::Mat roi;
-                    roi = (*negSet.at(i).img.at(1))(cv::Rect(j, k, conf.p_width, conf.p_height));
-                    pix = calcSumOfDepth(roi,conf);
-                }
+//                if(conf.learningMode != 2 && negSet.at(i).img.at(1)->at<ushort>(k + (conf.p_height / 2) + 1, j + (conf.p_width / 2) + 1 ) != 0){
+//                    cv::Mat roi;
+//                    roi = (*negSet.at(i).img.at(1))(cv::Rect(j, k, conf.p_width, conf.p_height));
+//                    pix = calcSumOfDepth(roi,conf);
+//                }
 
                 //tPatch.setPatch(temp, negImage.at(i));
-                if(conf.learningMode == 2 || pix > 0){
+                //if(conf.learningMode == 2 || pix > 0){
                     CNegPatch negTemp(&negSet.at(i),tempRect);
                     tNegPatch.push_back(negTemp);
-                }
+                //}
             }//x
         }//y
     } // every image
@@ -387,13 +409,13 @@ void extractTestPatches(CTestDataset &testSet,std::vector<CTestPatch> &testPatch
                 //exit(-1);
             //}
 
-            if(conf.learningMode == 2){// || depthSum > 0){
+            //if(conf.learningMode == 2){// || depthSum > 0){
                 CTestPatch testTemp(&testSet,tempRect);
                 //tesetPatch.setPatch(temp, image, dataSet, classNum);
 
                 //tPatch.setPosition(j,k);
                 testPatch.push_back(testTemp);
-            }
+            //}
         }
     }
 }

@@ -81,12 +81,12 @@ CDataset::CDataset()
 CDataset::~CDataset(){
     if(imgFlag){
         releaseImage();
-        //std::cout << "image released!" << std::endl;
+        std::cout << "image released!" << std::endl;
     }
 
     if(featureFlag){
         releaseFeatures();
-        //std::cout << "feature released!" << std::endl;
+        std::cout << "feature released!" << std::endl;
     }
 }
 
