@@ -368,5 +368,7 @@ int CConfig::loadConfig(const char* filename)
     rgbFeature = *pt.get_optional<int>("root.rgbFeature");
     depthFeature = *pt.get_optional<int>("root.depthFeature");
 
+    paramRadius = *pt.get_optional<int>("root.paramradius");
+
     return 0;
 }

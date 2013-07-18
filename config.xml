@@ -70,4 +70,5 @@
   <!-- haar-like : 0, HOG : 1, rotated haar-like : 2-->
   <rgbFeature>2</rgbFeature>
   <depthFeature>2</depthFeature>
+  <paramradius>5</paramradius>
 </root>

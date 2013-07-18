@@ -29,6 +29,10 @@ public:
     ~paramHist(){
 
     }
+
+    paramHist& operator+(const paramHist&);
+    paramHist& operator+=(const paramHist&);
+
     cv::Mat_<double> row, pitch, yaw;
     void showHist();
 };

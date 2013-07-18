@@ -2,6 +2,22 @@
 //#include <boost/timer/timer.hpp>
 #include "CRForest.h"
 
+paramHist& paramHist::operator +(const paramHist& obj){
+    this->row += obj.row;
+    this->pitch += obj.pitch;
+    this->yaw += obj.yaw;
+
+    return *this;
+}
+
+paramHist& paramHist::operator +=(const paramHist& obj){
+    this->row += obj.row;
+    this->pitch += obj.pitch;
+    this->yaw += obj.yaw;
+
+    return *this;
+}
+
 void paramHist::showHist(){
     for(int i = 0; i < 360; ++i){
         std::cout << i << " degree " << yaw.at<double>(0,i) <<  std::endl;
@@ -194,9 +210,6 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     std::vector<const LeafNode*> result;
 
     //std::vector<const LeafNode*> storedLN(0);
-
-
-
     //std::vector<std::vector<CParamset> > cluster(0);
     //std::vector<CParamset> clusterMean(0);
 
@@ -282,7 +295,9 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
                             if(pos.x > 0 && pos.y > 0 && pos.x < voteImage.at(cl).cols && pos.y < voteImage.at(cl).rows){
                                 double v = result.at(m)->pfg.at(cl) / ( result.size() * result.at(m)->param.at(l).size());
                                 voteImage.at(cl).at<float>(pos.y,pos.x) += v;//(result.at(m)->pfg.at(c) - 0.9);// * 100;//weight * 500;
-                                voteParam2.at(cl)[pos.y][pos.x].yaw.at<double>(result.at(m)->param.at(l).at(n).getAngle()) += v;
+                                voteParam2.at(cl)[pos.y][pos.x].yaw.at<double>(0,result.at(m)->param.at(l).at(n).getAngle()) += v * 10000;
+                                //std::cout << result.at(m)->param.at(l).at(n).getAngle() << std::endl;
+                                //std::cout << v << std::endl;
                                 totalVote.at(cl) += 1;
                             }
 
@@ -294,7 +309,6 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
         } // for every leaf
     } // for every patch
-
 
     // vote end
 
@@ -367,13 +381,26 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
         double min_pose_value[3], max_pose_value[3];
         cv::Point min_pose[3], max_pose[3];
 
+        paramHist hist;
+
+        for(int x = 0; x < conf.paramRadius; ++x){
+            for(int y = 0; y < conf.paramRadius; ++y){
+                    if( maxLoc.x + x < imgCol &&  maxLoc.y + y < imgRow)
+                        hist += voteParam2.at(c)[maxLoc.y + y][maxLoc.x + x];
+                    if(maxLoc.x - x > 0 && maxLoc.y - y > 0)
+                        hist += voteParam2.at(c)[maxLoc.y - y][maxLoc.x - x];
+            }
+        }
+
+        //hist.showHist();
+
 //        for(int p = 0; p < 360; ++p){
 //            std::cout << p << " " <<  voteParam2.at(c)[maxLoc.y][maxLoc.x].yaw.at<double>(0,p) << std::endl;
 //        }
 
-        voteParam2.at(c)[maxLoc.y][maxLoc.x].showHist();
+        //voteParam2.at(c)[maxLoc.y][maxLoc.x].showHist();
 
-        cv::minMaxLoc(voteParam2.at(c)[maxLoc.y][maxLoc.x].yaw, &min_pose_value[0], &max_pose_value[0], &min_pose[0], &max_pose[0]);
+        cv::minMaxLoc(hist.yaw, &min_pose_value[0], &max_pose_value[0], &min_pose[0], &max_pose[0]);
 
         // draw detected class bounding box to result image
         // if you whant add condition of detection threshold, add here

@@ -121,6 +121,8 @@ public:
     int rgbFeature;
     int depthFeature;
 
+    int paramRadius;
+
 private:
     boost::property_tree::ptree pt;
 
