@@ -437,6 +437,7 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 
         CDetectedClass detectedClass;
         detectedClass.name = classDatabase.vNode.at(c).name;
+        detectedClass.angle[0] = max_pose[0].x;
 
         // calc euclidean dist to nearest object
         double minError = DBL_MAX;

@@ -7,7 +7,10 @@
 class CDetectedClass
 {
 public:
-    CDetectedClass(){}
+    CDetectedClass(){
+        for(int i = 0; i < 3; ++i)
+            angle[i] = 0;
+    }
     virtual ~CDetectedClass(){}
 
     std::string name;
@@ -17,6 +20,7 @@ public:
     double error;
     float score;
     std::string nearestClass;
+    double angle[3];
 };
 
 class CDetectionResult

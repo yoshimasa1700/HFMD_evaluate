@@ -120,7 +120,7 @@ for th in drange(sta, sto , ste):
 
 #error = error / datanum
 print auc
-# print error
+# print error0
 #print 'best accuracy = %lf, best th = %lf' % (bestAccu, bestTh)
 print('best accuracy = %lf, best th = %lf, error = %lf, angle error = %lf' % (bestAccu, bestTh, bestError, bestAngleError))
 outFile.write("auc = %lf"%(auc))
