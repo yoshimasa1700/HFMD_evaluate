@@ -2,6 +2,12 @@
 //#include <boost/timer/timer.hpp>
 #include "CRForest.h"
 
+void paramHist::showHist(){
+    for(int i = 0; i < 360; ++i){
+        std::cout << i << " degree " << yaw.at<double>(0,i) <<  std::endl;
+    }
+}
+
 double euclideanDist(cv::Point p, cv::Point q)
 {
     cv::Point diff = p - q;
@@ -95,9 +101,6 @@ void CRForest::growATree(const int treeNum){
 
         classDatabase.add(posSet.at(i).getParam()->getClassName(),posSet.at(i).img.at(0)->size(),0);
     }
-
-
-
     classDatabase.show();
 
     // extract neg features
@@ -201,7 +204,6 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
     cv::vector<cv::Mat> voteImage(classNum);//voteImage(classNum);
     //cv::vector<cv::Mat_<std::vector<CParamset> > > voteParam(classNum);
 
-    //cv::vector<cv::vector<cv::Mat> > outputImageColorOnlyPerTree(classNum);
     std::vector<int> totalVote(classNum,0);
 
     //boost::timer t;
@@ -368,6 +370,8 @@ CDetectionResult CRForest::detection(CTestDataset &testSet) const{
 //        for(int p = 0; p < 360; ++p){
 //            std::cout << p << " " <<  voteParam2.at(c)[maxLoc.y][maxLoc.x].yaw.at<double>(0,p) << std::endl;
 //        }
+
+        voteParam2.at(c)[maxLoc.y][maxLoc.x].showHist();
 
         cv::minMaxLoc(voteParam2.at(c)[maxLoc.y][maxLoc.x].yaw, &min_pose_value[0], &max_pose_value[0], &min_pose[0], &max_pose[0]);
 

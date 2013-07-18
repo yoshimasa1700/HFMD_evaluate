@@ -30,6 +30,7 @@ public:
 
     }
     cv::Mat_<double> row, pitch, yaw;
+    void showHist();
 };
 
 static HoG hog;
