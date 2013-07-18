@@ -34,15 +34,15 @@
   <!-- Train image per tree-->
   <trainimagepertree>20</trainimagepertree>
   <!-- min sample number-->
-  <minsample>20</minsample>
+  <minsample>10</minsample>
   <!-- max depth of tree-->
   <maxdepth>10</maxdepth>
   <!-- feature channel number-->
   <featurechannel>2</featurechannel>
   <!-- extract patch ratio-->
-  <patchratio>1000</patchratio>
+  <patchratio>3000</patchratio>
   <!-- Stride -->
-  <stride>1</stride>
+  <stride>5</stride>
   <!-- Offset of tree-->
   <offTree>0</offTree>
   <!-- test data path -->
