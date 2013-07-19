@@ -100,10 +100,10 @@ for th in drange(sta, sto , ste):
 	specificity = float(TN) / (float(TN) + float(FP) + 0.000000001)
         F = 2 * recall * precision / (recall + precision + 0.000001)
 	
-	if (float(TP) + float(TN) + float(FP) + float(FN)) == 0.0:
-		    accuracy = (float(TP) + float(TN)) / ((float(TP) + float(TN) + float(FP) + float(FN)) + 0.00000001)
-        else:
-		    accuracy = 0
+	#if (float(TP) + float(TN) + float(FP) + float(FN)) == 0.0:
+	accuracy = (float(TP) + float(TN)) / ((float(TP) + float(TN) + float(FP) + float(FN)) + 0.00000001)
+        #else:
+	#	    accuracy = 0
 	if accuracy > bestAccu:
                 bestAccu = accuracy
                 bestTh = th
